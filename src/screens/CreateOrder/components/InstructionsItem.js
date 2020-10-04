@@ -5,23 +5,25 @@ import {Checkbox, Col, Collapse, Image, Input, Row, Select, Switch} from 'antd';
 import {CREATE_ORDER_VALUES} from "../../../constants";
 
 const InstructionsItem = ({
-                            description,
-                            fileFormat,
-                            background,
-                            size,
-                            aspectRatio,
-                            minMaxSize,
-                            psdWithLayers,
-                            margin,
-                            margin_left,
-                            margin_right,
-                            margin_top,
-                            margin_bottom,
-                            preFix,
-                            postFix,
-                            dpi,
-                            compression,
-                          }, onChange) => {
+                            instruction: {
+                              description,
+                              fileFormat,
+                              background,
+                              size,
+                              aspectRatio,
+                              minMaxSize,
+                              psdWithLayers,
+                              margin,
+                              margin_left,
+                              margin_right,
+                              margin_top,
+                              margin_bottom,
+                              preFix,
+                              postFix,
+                              dpi,
+                              compression,
+                            }, onChange
+                          }) => {
   return (
     <>
       <Row gutter={[12, 12]} justify="space-around" align="middle" className="uploading-file__item">
@@ -36,6 +38,7 @@ const InstructionsItem = ({
         <Col flex={'auto'}>
           <Input.TextArea
             value={description}
+            onChange={({target: {value}}) => onChange('description', value)}
             placeholder="Please provide instructions ..."
             rows="6"
           />
@@ -43,16 +46,17 @@ const InstructionsItem = ({
       </Row>
       <Row>
         <Col span="24">
-          <Collapse defaultActiveKey={['1']}>
+          <Collapse>
             <Collapse.Panel header="Basic Setting" key="1">
               <Row gutter="24">
                 <Col flex="1">
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">File format</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Select
                         value={fileFormat}
                         onChange={(val) => onChange('fileFormat', val)}
+                        mode="multiple"
                         size="small"
                         style={{width: 150}}>
                         {CREATE_ORDER_VALUES.FILE_FORMAT.map((item, index) => {
@@ -65,13 +69,17 @@ const InstructionsItem = ({
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Background</div>
-                    <div>
-                      <ColorPicker color={'#0F0'} placement="bottomRight"/>
+                    <div className="basic-setting__control">
+                      <ColorPicker
+                        color={background || '#fff'}
+                        onChange={({color}) => onChange('background', color)}
+                        className="basic-setting__color-picker"
+                        placement="bottomRight"/>
                     </div>
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Size</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Select
                         value={size}
                         onChange={(val) => onChange('size', val)}
@@ -87,7 +95,7 @@ const InstructionsItem = ({
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Aspect Ratio</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Select
                         value={aspectRatio}
                         onChange={(val) => onChange('aspectRatio', val)}
@@ -103,7 +111,7 @@ const InstructionsItem = ({
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Min-Max size</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Select
                         value={minMaxSize}
                         onChange={(val) => onChange('minMaxSize', val)}
@@ -121,7 +129,7 @@ const InstructionsItem = ({
                 <Col flex="1">
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">PSD with layers</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Checkbox
                         checked={psdWithLayers}
                         onChange={({target: {checked}}) => onChange('psdWithLayers', checked)}
@@ -131,7 +139,7 @@ const InstructionsItem = ({
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Margin</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Switch
                         checked={margin}
                         onChange={(val) => onChange('margin', val)}
@@ -141,7 +149,7 @@ const InstructionsItem = ({
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Left</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Input
                         value={margin_left}
                         onChange={({target: {value}}) => onChange('margin_left', value)}
@@ -152,7 +160,7 @@ const InstructionsItem = ({
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Right</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Input
                         value={margin_right}
                         onChange={({target: {value}}) => onChange('margin_right', value)}
@@ -163,7 +171,7 @@ const InstructionsItem = ({
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Top</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Input
                         value={margin_top}
                         onChange={({target: {value}}) => onChange('margin_top', value)}
@@ -174,7 +182,7 @@ const InstructionsItem = ({
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Bottom</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Input
                         value={margin_bottom}
                         onChange={({target: {value}}) => onChange('margin_bottom', value)}
@@ -187,7 +195,7 @@ const InstructionsItem = ({
                 <Col flex="1">
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Prefix</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Input
                         value={preFix}
                         onChange={({target: {value}}) => onChange('preFix', value)}
@@ -198,7 +206,7 @@ const InstructionsItem = ({
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Postfix</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Input
                         value={postFix}
                         onChange={({target: {value}}) => onChange('postFix', value)}
@@ -209,7 +217,7 @@ const InstructionsItem = ({
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">DPI</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Select
                         value={dpi}
                         onChange={(value) => onChange('dpi', value)}
@@ -225,7 +233,7 @@ const InstructionsItem = ({
                   </div>
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Compression</div>
-                    <div>
+                    <div className="basic-setting__control">
                       <Select
                         value={compression}
                         onChange={(value) => onChange('compression', value)}
@@ -244,7 +252,7 @@ const InstructionsItem = ({
             </Collapse.Panel>
             <Collapse.Panel header="Advance Setting" key="2">
               <div className="advance-setting__list">
-                {CREATE_ORDER_VALUES.ADVANCE_LIST.map((setting, index) => <Checkbox
+                {CREATE_ORDER_VALUES.CODES.map((setting, index) => <Checkbox
                   key={index}>{setting.text}</Checkbox>)}
               </div>
             </Collapse.Panel>

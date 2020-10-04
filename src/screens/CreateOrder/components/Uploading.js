@@ -1,43 +1,34 @@
-import React, {useRef} from "react";
-import {Button, Col, Row} from 'antd';
+import React from "react";
+import {Card, Col, Divider, Row} from 'antd';
 import UploadingItem from "./UploadingItem";
-import {PlusOutlined} from '@ant-design/icons';
+import UploadButton from "../../../components/UploadButton";
 
 const Uploading = ({
-                     files,
+                     files = [],
                      onAddFiles,
                      onDeleteFile,
                    }) => {
-  const inputFiles = useRef(null);
   return (
     <>
       <Row gutter={[0, 12]}>
         <Col span="24">
-          <Button
-            onClick={() => inputFiles.current.click()}
-            type="primary"
-            icon={<PlusOutlined/>}
-          >
-            Upload Files ...
-          </Button>
-          <input
-            multiple
-            accept="image/*"
+          <UploadButton
             onChange={onAddFiles}
-            ref={inputFiles}
-            type="file"
-            style={{display: 'none'}}/>
+          />
         </Col>
       </Row>
-      {files.map((file, index) => {
-        return (
-          <UploadingItem
-            key={index}
-            file={file}
-            onDeleteFile={() => onDeleteFile(index)}
-          />
-        )
-      })}
+      <Divider orientation="left">Photos Uploading</Divider>
+      <Card>
+        {files.map((file, index) => {
+          return (
+            <UploadingItem
+              key={index}
+              file={file}
+              onDeleteFile={() => onDeleteFile(index)}
+            />
+          )
+        })}
+      </Card>
     </>
   )
 }

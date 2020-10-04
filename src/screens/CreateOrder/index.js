@@ -2,40 +2,77 @@ import React, {useState} from "react";
 import {Row, Col, Card, Button, Space} from "antd";
 import Uploading from "./components/Uploading";
 import StepTracking from "./components/StepsTracking";
-import Intructions from "./components/Instructions";
+import Instructions from "./components/Instructions";
 import './styles.less';
+import Submitting from "./components/Submitting";
 
 const CreateOrder = () => {
   const [step, setStep] = useState(0);
-  const [files, setFiles] = useState([{
-    name: 'BNT-12345.png',
-    size: 102345
-  }]);
+  const [instructions, setInstructions] = useState([
+    {
+      name: 'hello.png',
+      size: 10244440594,
+      basicPrice: 10,
+      advancePrice: 10,
+    }
+  ]);
 
   const onAddFiles = (event) => {
     const {files: fileSelect} = event.target;
-    setFiles([...files, ...Array.from(fileSelect)]);
+    const newInstructions = Array.from(fileSelect).map(file => {
+      return {
+        name: file.name,
+        size: file.size,
+        basicPrice: 10,
+        advancePrice: 10,
+      }
+    })
+    setInstructions([
+      ...instructions,
+      ...newInstructions]);
   }
   const onDeleteFile = (index) => {
-    let tmpFiles = [...files];
-    tmpFiles.splice(index, 1);
-    setFiles(tmpFiles);
+    let tmpInstructions = [...instructions];
+    tmpInstructions.splice(index, 1);
+    setInstructions(tmpInstructions);
+  }
+
+  const onItemInstructionChange = (index, key, value) => {
+    const tmpInstructions = [...instructions];
+    tmpInstructions[index][key] = value;
+    setInstructions(tmpInstructions);
+  }
+
+  const onChangeRushService = (val) => {
+    console.log(val);
+  }
+
+  const onSubmit = () => {
+    console.log('Submit');
   }
 
   const _renderStep = () => {
     switch (step) {
       case 0: {
         return <Uploading
-          files={files}
+          files={instructions}
           onAddFiles={onAddFiles}
           onDeleteFile={onDeleteFile}
         />
       }
       case 1: {
-        return <Intructions/>
+        return <Instructions
+          data={instructions}
+          onAddFiles={onAddFiles}
+          onItemChange={onItemInstructionChange}
+        />
       }
       default: {
-        return null
+        return <Submitting
+          instructions={instructions}
+          rushService={0}
+          onChangeRushService={onChangeRushService}
+        />
       }
     }
   }
@@ -60,10 +97,17 @@ const CreateOrder = () => {
                 onClick={() => setStep(step - 1)}
               >Back</Button>
             ) : null}
-            <Button
-              type="primary"
-              onClick={() => setStep(step + 1)}
-            >Continue</Button>
+            {step < 2 ? (
+              <Button
+                type="primary"
+                onClick={() => setStep(step + 1)}
+              >Continue</Button>
+            ) : (
+              <Button
+                type="primary"
+                onClick={onSubmit}
+              >Submit</Button>
+            )}
           </Space>
         </Col>
       </Row>

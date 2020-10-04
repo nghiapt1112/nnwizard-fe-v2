@@ -1,31 +1,37 @@
-import React, {useState} from 'react';
+import React from 'react';
 import 'rc-color-picker/assets/index.css';
-import {Button, Col, Divider, Row} from 'antd';
-import {PlusOutlined} from '@ant-design/icons';
+import {Card, Col, Divider, Row} from 'antd';
 import InstructionsItem from "./InstructionsItem";
+import UploadButton from "../../../components/UploadButton";
 
-const Intructions = () => {
-  const [intructions] = useState([{name: 'DING DONG'}]);
+const Instructions = ({
+                        data = [],
+                        onItemChange,
+                        onAddFiles
+                      }) => {
   return (
     <>
       <Row gutter={[0, 12]}>
         <Col span="24">
-          <Button
-            type="primary"
-            icon={<PlusOutlined/>}
-          >
-            Upload Files ...
-          </Button>
+          <UploadButton
+            onChange={onAddFiles}
+          />
         </Col>
       </Row>
-      <Divider orientation="left">File Uploaded</Divider>
-      {intructions.map((intruction, index) => {
+      <Divider orientation="left">Instructions Providing</Divider>
+      {data.map((instruction, index) => {
         return (
-          <InstructionsItem key={index} {...intruction} />
+          <Card
+            key={index}
+            className="instructions-card__instructions--item">
+            <InstructionsItem
+              instruction={instruction}
+              onChange={(key, value) => onItemChange(index, key, value)}/>
+          </Card>
         )
       })}
     </>
   )
 }
 
-export default Intructions;
+export default Instructions;
