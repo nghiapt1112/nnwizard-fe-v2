@@ -1,6 +1,6 @@
 import React from 'react';
 import 'rc-color-picker/assets/index.css';
-import {Button, Card, Col, Divider, Image, Row, Select, Space, Typography} from 'antd';
+import {Button, Col, Divider, Image, Row, Select, Space, Typography} from 'antd';
 import {PlusOutlined} from '@ant-design/icons';
 import {CREATE_ORDER_VALUES} from "../../../constants";
 
@@ -23,10 +23,10 @@ const Submitting = ({
         </Col>
       </Row>
       <Divider orientation="left">Order Submitting</Divider>
-      <Card>
+      <div className="uploading__list-file">
         {instructions.map((instruction, index) => {
           return (
-            <Row key={index} gutter={[0, 12]} className="uploading-file__item">
+            <Row key={index} gutter={[0, 12]} className="b-b">
               <Col span="12">
                 <Space size="large">
                   <Image
@@ -47,7 +47,8 @@ const Submitting = ({
             </Row>
           )
         })}
-      </Card>
+      </div>
+      <Divider orientation="left">Price</Divider>
       <Row gutter={[0, 12]} style={{marginTop: '10px'}} align="middle">
         <Col span="12">
           <div className="basic-setting__item" style={{justifyContent: 'flex-start'}}>

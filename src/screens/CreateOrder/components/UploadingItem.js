@@ -4,12 +4,13 @@ import {Button, Col, Image, Row, Space, Typography} from 'antd';
 import {WarningOutlined} from '@ant-design/icons';
 
 const UploadingItem = ({
+                         className,
                          file,
                          onDeleteFile,
                        }) => {
   return (
     <>
-      <Row gutter={[0, 12]} justify="space-around" align="middle" className="uploading-file__item">
+      <Row gutter={[0, 12]} justify="space-around" align="middle" className='b-b'>
         <Col span="12">
           <Space size="large">
             <Image

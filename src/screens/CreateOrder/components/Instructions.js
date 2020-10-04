@@ -1,6 +1,6 @@
 import React from 'react';
 import 'rc-color-picker/assets/index.css';
-import {Card, Col, Divider, Row} from 'antd';
+import {Col, Divider, Row} from 'antd';
 import InstructionsItem from "./InstructionsItem";
 import UploadButton from "../../../components/UploadButton";
 
@@ -19,17 +19,15 @@ const Instructions = ({
         </Col>
       </Row>
       <Divider orientation="left">Instructions Providing</Divider>
-      {data.map((instruction, index) => {
-        return (
-          <Card
-            key={index}
-            className="instructions-card__instructions--item">
+      <div className="instruction__list-item">
+        {data.map((instruction, index) => {
+          return (
             <InstructionsItem
               instruction={instruction}
               onChange={(key, value) => onItemChange(index, key, value)}/>
-          </Card>
-        )
-      })}
+          )
+        })}
+      </div>
     </>
   )
 }

@@ -1,8 +1,9 @@
 import React from 'react';
 import 'rc-color-picker/assets/index.css';
 import ColorPicker from 'rc-color-picker';
-import {Checkbox, Col, Collapse, Image, Input, Row, Select, Switch} from 'antd';
+import {Checkbox, Col, Collapse, Image, Input, Row, Select, Switch, Tooltip} from 'antd';
 import {CREATE_ORDER_VALUES} from "../../../constants";
+import {InfoCircleOutlined} from '@ant-design/icons';
 
 const InstructionsItem = ({
                             instruction: {
@@ -25,8 +26,8 @@ const InstructionsItem = ({
                             }, onChange
                           }) => {
   return (
-    <>
-      <Row gutter={[12, 12]} justify="space-around" align="middle" className="uploading-file__item">
+    <div className="gx-mb-3">
+      <Row gutter={[12, 12]} justify="space-around" align="middle" className="gx-mb-0">
         <Col flex={'150px'}>
           <Image
             width={142}
@@ -128,13 +129,18 @@ const InstructionsItem = ({
                 </Col>
                 <Col flex="1">
                   <div className="basic-setting__item">
-                    <div className="basic-setting__label">PSD with layers</div>
+                    <div className="basic-setting__label">
+                      <span className="gx-mr-1">PSD with layers</span>
+                      <Tooltip placement="topRight"
+                               title="Price + 100% (double price)">
+                        <InfoCircleOutlined/>
+                      </Tooltip></div>
                     <div className="basic-setting__control">
                       <Checkbox
                         checked={psdWithLayers}
                         onChange={({target: {checked}}) => onChange('psdWithLayers', checked)}
                         size="small"
-                      >Price + 100% (double price)</Checkbox>
+                      ></Checkbox>
                     </div>
                   </div>
                   <div className="basic-setting__item">
@@ -259,7 +265,7 @@ const InstructionsItem = ({
           </Collapse>
         </Col>
       </Row>
-    </>
+    </div>
   )
 }
 

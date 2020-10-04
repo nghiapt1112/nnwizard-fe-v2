@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Col, Divider, Row} from 'antd';
+import {Col, Divider, Row} from 'antd';
 import UploadingItem from "./UploadingItem";
 import UploadButton from "../../../components/UploadButton";
 
@@ -18,7 +18,7 @@ const Uploading = ({
         </Col>
       </Row>
       <Divider orientation="left">Photos Uploading</Divider>
-      <Card>
+      <div className="uploading__list-file">
         {files.map((file, index) => {
           return (
             <UploadingItem
@@ -28,7 +28,7 @@ const Uploading = ({
             />
           )
         })}
-      </Card>
+      </div>
     </>
   )
 }

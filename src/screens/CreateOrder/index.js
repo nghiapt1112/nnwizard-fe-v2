@@ -14,6 +14,12 @@ const CreateOrder = () => {
       size: 10244440594,
       basicPrice: 10,
       advancePrice: 10,
+    },
+    {
+      name: 'hello.png',
+      size: 10244440594,
+      basicPrice: 10,
+      advancePrice: 10,
     }
   ]);
 
