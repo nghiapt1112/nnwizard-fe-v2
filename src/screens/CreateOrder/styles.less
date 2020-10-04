@@ -1,0 +1,28 @@
+@import '~antd/dist/antd.less';
+
+.uploading-file__item {
+  border-bottom: .5px solid @border-color-base;
+}
+.uploading-file__info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+
+.basic-setting__item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px 0;
+}
+
+.advance-setting__list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  .ant-checkbox-wrapper {
+    margin-left: unset;
+  }
+}
