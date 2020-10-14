@@ -48,7 +48,7 @@ const Submitting = ({
           )
         })}
       </div>
-      <Divider orientation="left">Price</Divider>
+      <Divider orientation="left">Total</Divider>
       <Row gutter={[0, 12]} style={{marginTop: '10px'}} align="middle">
         <Col span="12">
           <div className="basic-setting__item" style={{justifyContent: 'flex-start'}}>

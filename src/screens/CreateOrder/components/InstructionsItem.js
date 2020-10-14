@@ -131,7 +131,7 @@ const InstructionsItem = ({
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">
                       <span className="gx-mr-1">PSD with layers</span>
-                      <Tooltip placement="topRight"
+                      <Tooltip placement="topLeft"
                                title="Price + 100% (double price)">
                         <InfoCircleOutlined/>
                       </Tooltip></div>

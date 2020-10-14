@@ -1,3 +1,8 @@
+export const TEMPLATE_TYPE = [
+  {value: 1, text: 'Real Estate'},
+  {value: 2, text: 'Retouching Order'},
+  {value: 3, text: 'Photo Editing'},
+]
 export const FILE_FORMAT = [
   {value: 1, text: 'PNG'},
   {value: 2, text: 'JPG'},
@@ -43,3 +48,11 @@ export const RUSH_SERVICE = [
   {value: 1, text: 'Up to hours (+ 50%)'},
   {value: 2, text: 'Up to 24 hours (+ 70%)'},
 ]
+
+export const ORDER_STATUS = [
+  {value: 1, text: 'Reviewing'},
+  {value: 2, text: 'In progress'},
+  {value: 3, text: 'Finished'},
+  {value: 4, text: 'Re-Open'},
+]
+

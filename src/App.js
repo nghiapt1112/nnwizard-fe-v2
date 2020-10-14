@@ -1,18 +1,20 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './styles/index.less';
 import './App.less';
-import {Switch, Route, Link} from 'react-router-dom';
+import {Link, Route, Switch} from 'react-router-dom';
 import {Layout, Menu} from 'antd';
 import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  FileOutlined,
-  UnorderedListOutlined,
   ContainerOutlined,
+  FileOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UnorderedListOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import {useState} from "react";
 import CreateOrder from "./screens/CreateOrder";
+import Template from "./screens/Template";
+import UserSetting from "./screens/UserSetting";
+import MyOrder from "./screens/MyOrder";
 
 const {Header, Sider, Content} = Layout;
 
@@ -24,16 +26,16 @@ const App = () => {
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo"/>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-          <Menu.Item key="1" icon={<FileOutlined/>}>
+          <Menu.Item key="1" icon={<FileOutlined/>} className="high-light__menu">
             <Link to="/create-order">Create Order</Link>
           </Menu.Item>
-          <Menu.Item key="2" icon={<UnorderedListOutlined />}>
+          <Menu.Item key="2" icon={<UnorderedListOutlined/>}>
             <Link to="/my-order">My Order</Link>
           </Menu.Item>
-          <Menu.Item key="3" icon={<ContainerOutlined />}>
+          <Menu.Item key="3" icon={<ContainerOutlined/>}>
             <Link to="/template">Template</Link>
           </Menu.Item>
-          <Menu.Item key="4" icon={<UserOutlined />}>
+          <Menu.Item key="4" icon={<UserOutlined/>}>
             <Link to="/user-setting">User Setting</Link>
           </Menu.Item>
         </Menu>
@@ -55,7 +57,10 @@ const App = () => {
           }}
         >
           <Switch>
-            <Route path="/create-order" component={CreateOrder} exact/>
+            <Route path="/create-order" component={CreateOrder}/>
+            <Route path="/my-order" component={MyOrder}/>
+            <Route path="/template" component={Template}/>
+            <Route path="/user-setting" component={UserSetting}/>
           </Switch>
         </Content>
       </Layout>

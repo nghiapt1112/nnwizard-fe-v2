@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Row, Col, Card, Button, Space} from "antd";
+import {Button, Card, Col, Row, Space} from "antd";
 import Uploading from "./components/Uploading";
 import StepTracking from "./components/StepsTracking";
 import Instructions from "./components/Instructions";
@@ -85,6 +85,7 @@ const CreateOrder = () => {
 
   return (
     <>
+      <h2>Create Order</h2>
       <Row gutter={[0, 16]}>
         <Col span={24}>
           <StepTracking
