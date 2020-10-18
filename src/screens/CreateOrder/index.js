@@ -6,10 +6,11 @@ import Instructions from "./components/Instructions";
 import Submitting from "./components/Submitting";
 import './styles.less';
 import {orderService, templateService} from "../../services";
-import {useHistory} from "react-router-dom";
+import {useHistory, useParams} from "react-router-dom";
 
-const CreateOrder = () => {
+const CreateOrder = ({location}) => {
   const history = useHistory();
+  let {id: orderId} = useParams();
   const [isSaving, setIsSaving] = useState(false);
   const [step, setStep] = useState(0);
   const [instructions, setInstructions] = useState([]);
@@ -25,6 +26,44 @@ const CreateOrder = () => {
     };
 
     fetchTemplates();
+  }, [])
+
+  useEffect(() => {
+    async function fetchOrderById() {
+      try {
+        const res = await orderService.getById(orderId);
+        if (res && res.images) {
+          const newInstruction = res.images.map(({
+                                                   setting,
+                                                   imgId,
+                                                   publicUrl,
+                                                   name,
+                                                   size,
+                                                   ...rest
+                                                 }) => {
+            return {
+              ...rest,
+              ...setting,
+              publicUrl,
+              file: {
+                name,
+                size,
+                url: publicUrl,
+                uploaded: true,
+              }
+            }
+          });
+          console.log(newInstruction);
+          setInstructions(newInstruction);
+        }
+      } catch (error) {
+        notification.error({
+          message: error
+        })
+      }
+    };
+
+    fetchOrderById();
   }, [])
 
   const onChangeTemplate = async (tid) => {
@@ -70,6 +109,12 @@ const CreateOrder = () => {
     tmpInstructions[index][key] = value;
     setInstructions(tmpInstructions);
   }
+  const onChangeAdvance = (index, key, value) => {
+    const tmpInstructions = [...instructions];
+    tmpInstructions[index].codes = tmpInstructions[index].codes || {};
+    tmpInstructions[index].codes[key] = value;
+    setInstructions(tmpInstructions);
+  }
   const onChangeRushService = (val) => {
   }
   const onSubmit = async () => {
@@ -93,7 +138,7 @@ const CreateOrder = () => {
       notification.success({
         message: 'Create Order Successfully'
       });
-      history.push('my-order');
+      history.push('/my-order');
     } catch (error) {
       setIsSaving(false);
       notification.error({
@@ -164,6 +209,7 @@ const CreateOrder = () => {
           onChangeTemplate={onChangeTemplate}
           onAddFiles={onAddFiles}
           onItemChange={onItemInstructionChange}
+          onChangeAdvance={onChangeAdvance}
         />
       }
       default: {

@@ -25,6 +25,7 @@ const InstructionsItem = ({
                               compression,
                               codes = {},
                               file,
+                              publicUrl
                             },
                             onChange,
                             onChangeAdvance

@@ -10,6 +10,7 @@ const Instructions = ({
                         templates = [],
                         onChangeTemplate,
                         onItemChange,
+                        onChangeAdvance,
                         onAddFiles
                       }) => {
   return (
@@ -46,7 +47,9 @@ const Instructions = ({
             <InstructionsItem
               key={index}
               instruction={instruction}
-              onChange={(key, value) => onItemChange(index, key, value)}/>
+              onChange={(key, value) => onItemChange(index, key, value)}
+              onChangeAdvance={(key, value) => onChangeAdvance(index, key, value)}
+            />
           )
         })}
       </div>

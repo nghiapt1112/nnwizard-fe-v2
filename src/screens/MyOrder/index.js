@@ -44,17 +44,18 @@ const MyOrder = () => {
   }
 
   const openEditClick = async ({id}) => {
-    try {
-      setLoadingData(true);
-      const res = await orderService.getById(id);
-      console.log(res);
-      setLoadingData(false);
-    } catch (error) {
-      setLoadingData(false);
-      notification.error({
-        message: error,
-      })
-    }
+    history.push(`/update-order/${id}`)
+    // try {
+    //   setLoadingData(true);
+    //   const res = await orderService.getById(id);
+    //   console.log(res);
+    //   setLoadingData(false);
+    // } catch (error) {
+    //   setLoadingData(false);
+    //   notification.error({
+    //     message: error,
+    //   })
+    // }
   }
   const onConfirmDelete = async ({id}) => {
     try {

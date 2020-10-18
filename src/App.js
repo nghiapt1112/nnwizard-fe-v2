@@ -10,13 +10,11 @@ import Template from "./screens/Template";
 import CreateOrder from "./screens/CreateOrder";
 import MyOrder from "./screens/MyOrder";
 import UserSetting from "./screens/UserSetting";
-import Index from "./screens/Index";
 
 const App = () => {
   return (
     <BrowserRouter>
       <Switch>
-        <Route path="/" exact component={Index}/>
         <AuthRoute path="/login" type="guest">
           <Login/>
         </AuthRoute>
@@ -32,8 +30,14 @@ const App = () => {
         <AuthRoute path="/create-order" type="private">
           <CreateOrder/>
         </AuthRoute>
+        <AuthRoute path="/update-order/:id" type="private">
+          <CreateOrder/>
+        </AuthRoute>
         <AuthRoute path="/user-setting" type="private">
           <UserSetting/>
+        </AuthRoute>
+        <AuthRoute path="/" type="private">
+          <MyOrder/>
         </AuthRoute>
       </Switch>
     </BrowserRouter>

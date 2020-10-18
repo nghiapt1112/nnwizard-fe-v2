@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Button, Form, Input, notification} from 'antd';
 import {userService} from "../../services";
+import {authenticationAction} from "../../redux/actions";
+import {useDispatch} from "react-redux";
 
 const layout = {
   labelCol: {span: 8},
@@ -15,6 +17,7 @@ const validateMessages = {
 };
 
 const UserSetting = () => {
+  const dispatch = useDispatch();
   const [isLoadingData, setLoadingData] = useState(false);
   const [profile, setProfile] = useState({});
 
@@ -52,6 +55,10 @@ const UserSetting = () => {
     }
   };
 
+  const onLogout = () => {
+    dispatch(authenticationAction.logout());
+  }
+
   return (
     <>
       <div className="page-header">
@@ -77,6 +84,14 @@ const UserSetting = () => {
         <Form.Item wrapperCol={{...layout.wrapperCol, offset: 8}}>
           <Button type="primary" htmlType="submit">
             Submit
+          </Button>
+          <Button
+            danger
+            type="link"
+            style={{float: 'right'}}
+            htmlType="button"
+            onClick={onLogout}>
+            Logout
           </Button>
         </Form.Item>
       </Form>

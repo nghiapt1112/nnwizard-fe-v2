@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {Link, Redirect, Route} from "react-router-dom";
 import {Layout, Menu} from 'antd';
 import {
@@ -10,20 +10,15 @@ import {
   UnorderedListOutlined,
   UserOutlined
 } from "@ant-design/icons";
-import {authenticationAction} from "../redux/actions";
 
 const {Header, Sider, Content} = Layout;
 
 const AuthRoute = props => {
-  const dispatch = useDispatch();
   const {loggedIn} = useSelector(state => state.authentication);
-  const {type} = props;
   const [collapsed, setCollapsed] = useState(false);
-  const logout = () => {
-    dispatch(authenticationAction.logout());
-  }
+  const {type} = props;
   if (!loggedIn && type === 'private') return <Redirect to="/login"/>
-  else if (loggedIn && type === 'guest') return <Redirect to="/home"/>
+  else if (loggedIn && type === 'guest') return <Redirect to="/my-order"/>
   return type === 'private' ? (
     <Layout className="app">
       <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -49,7 +44,6 @@ const AuthRoute = props => {
             className: 'trigger',
             onClick: () => setCollapsed(!collapsed),
           })}
-          <a onClick={logout}>Logout</a>
         </Header>
         <Content
           className="site-layout-background"
