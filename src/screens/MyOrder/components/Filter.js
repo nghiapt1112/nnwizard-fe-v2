@@ -1,6 +1,6 @@
-import React from "react";
+import React, {useState} from "react";
 import {Button, Col, DatePicker, Input, Row, Select} from 'antd';
-import {CREATE_ORDER_VALUES} from "../../../constants";
+import * as CONSTANTS from "../../../constants";
 import {SearchOutlined} from '@ant-design/icons';
 
 const {RangePicker} = DatePicker;
@@ -11,8 +11,20 @@ const Filter = ({
                   status,
                   fromDate,
                   toDate,
-                  onChange
+                  onSearchClick
                 }) => {
+  const [searchParams, setSearchParams] = useState({});
+  const onChange = (key, value) => {
+    const tmpSearchParams = {...searchParams};
+    tmpSearchParams[key] = value;
+    setSearchParams(tmpSearchParams);
+  }
+  const onDateRangeChange = (value) => {
+    const tmpSearchParams = {...searchParams};
+    tmpSearchParams['fromDate'] = value[0].unix();
+    tmpSearchParams['toDate'] = value[1].unix();
+    setSearchParams(tmpSearchParams);
+  }
   return (
     <>
       <Row gutter={[12, 0]}>
@@ -31,7 +43,7 @@ const Filter = ({
             onChange={(val) => onChange('type', val)}
             size="small"
             style={{width: '100%'}}>
-            {CREATE_ORDER_VALUES.TEMPLATE_TYPE.map((item, index) => {
+            {CONSTANTS.TEMPLATE_TYPE.map((item, index) => {
               return (
                 <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
               )
@@ -45,7 +57,7 @@ const Filter = ({
             onChange={(val) => onChange('status', val)}
             size="small"
             style={{width: '100%'}}>
-            {CREATE_ORDER_VALUES.ORDER_STATUS.map((item, index) => {
+            {CONSTANTS.ORDER_STATUS.map((item, index) => {
               return (
                 <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
               )
@@ -57,10 +69,12 @@ const Filter = ({
             placeholder={['From Date', 'To Date']}
             size="small"
             style={{width: '100%'}}
+            onChange={(val) => onDateRangeChange(val)}
           />
         </Col>
         <Col span="3">
           <Button
+            onClick={() => onSearchClick(searchParams)}
             block
             size="small"
             icon={<SearchOutlined/>}

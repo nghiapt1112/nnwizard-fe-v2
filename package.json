@@ -9,12 +9,15 @@
     "@testing-library/user-event": "^7.1.2",
     "antd": "^4.6.6",
     "craco-less": "^1.17.0",
+    "history": "^5.0.0",
     "rc-color-picker": "^1.2.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.3"
+    "react-scripts": "3.4.3",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0"
   },
   "scripts": {
     "start": "craco start",

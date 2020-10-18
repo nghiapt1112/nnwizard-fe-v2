@@ -1,67 +1,157 @@
-import React, {useState} from "react";
-import {Button, Card, Col, Row, Space} from "antd";
+import React, {useEffect, useState} from "react";
+import {Button, Card, Col, notification, Row, Space} from "antd";
 import Uploading from "./components/Uploading";
 import StepTracking from "./components/StepsTracking";
 import Instructions from "./components/Instructions";
-import './styles.less';
 import Submitting from "./components/Submitting";
+import './styles.less';
+import {orderService, templateService} from "../../services";
+import {useHistory} from "react-router-dom";
 
 const CreateOrder = () => {
+  const history = useHistory();
+  const [isSaving, setIsSaving] = useState(false);
   const [step, setStep] = useState(0);
-  const [instructions, setInstructions] = useState([
-    {
-      name: 'hello.png',
-      size: 10244440594,
-      basicPrice: 10,
-      advancePrice: 10,
-    },
-    {
-      name: 'hello.png',
-      size: 10244440594,
-      basicPrice: 10,
-      advancePrice: 10,
-    }
-  ]);
+  const [instructions, setInstructions] = useState([]);
+  const [template, setTemplate] = useState({});
+  const [templates, setTemplates] = useState([]);
+  useEffect(() => {
+    async function fetchTemplates() {
+      const res = await templateService.getAll({
+        page: 1,
+        size: 10000,
+      });
+      setTemplates(res.content);
+    };
 
-  const onAddFiles = (event) => {
-    const {files: fileSelect} = event.target;
-    const newInstructions = Array.from(fileSelect).map(file => {
+    fetchTemplates();
+  }, [])
+
+  const onChangeTemplate = async (tid) => {
+    const res = await templateService.getById(tid);
+    const tmpInstructions = instructions.map(i => {
       return {
-        name: file.name,
-        size: file.size,
+        ...res.setting,
+        file: i.file,
+      }
+    });
+    setTemplate(res);
+    setInstructions(tmpInstructions);
+  }
+  const onAddFiles = async (event) => {
+    const {files: fileSelect} = event.target;
+    const newInstructions = [];
+    for (const file of fileSelect) {
+      const {blob, base64} = await toBase64(file);
+      newInstructions.push({
+        file: {
+          name: file.name,
+          size: file.size,
+          blob,
+          url: base64,
+        },
         basicPrice: 10,
         advancePrice: 10,
-      }
-    })
+        ...template.setting,
+      })
+    }
     setInstructions([
       ...instructions,
-      ...newInstructions]);
+      ...newInstructions
+    ]);
   }
   const onDeleteFile = (index) => {
     let tmpInstructions = [...instructions];
     tmpInstructions.splice(index, 1);
     setInstructions(tmpInstructions);
   }
-
   const onItemInstructionChange = (index, key, value) => {
     const tmpInstructions = [...instructions];
     tmpInstructions[index][key] = value;
     setInstructions(tmpInstructions);
   }
-
   const onChangeRushService = (val) => {
-    console.log(val);
+  }
+  const onSubmit = async () => {
+    try {
+      setIsSaving(true);
+      // Create order
+      const payloadCreate = {
+        orderType: 'REAL_ESTATE',
+        orderName: `REAL_ESTATE${(new Date()).getTime()}`
+      }
+      const {id: orderId} = await orderService.create(payloadCreate);
+      // Upload image
+      const links = await getLinkUploadFile(orderId);
+      await uploadFiles(links);
+      // Submit Setting
+      const payloadUpdate = getSenderData(links);
+      await orderService.update(orderId, {
+        images: [...payloadUpdate]
+      });
+      setIsSaving(false);
+      notification.success({
+        message: 'Create Order Successfully'
+      });
+      history.push('my-order');
+    } catch (error) {
+      setIsSaving(false);
+      notification.error({
+        message: error
+      })
+    }
   }
 
-  const onSubmit = () => {
-    console.log('Submit');
+  const getSenderData = (links) => {
+    return links.map(link => {
+      let instruction = instructions.find(({file}) => file.name === link.oName);
+      if (!instruction) return {
+        setting: {...instruction, file: undefined}
+      };
+      const {imgId, preSignedURL, publicUrl} = link;
+      return {
+        setting: {
+          ...instruction,
+          file: undefined,
+        },
+        imgId,
+        preSignedURL,
+        publicUrl,
+      }
+    });
   }
+
+  const getLinkUploadFile = orderId => {
+    const payload = {
+      fileNames: instructions.map(i => i.file.name),
+      orderId,
+    }
+    return orderService.generateLinkUploadFile(payload);
+  }
+
+  const uploadFiles = (links) => {
+    const uploadProcess = links
+      .map(({preSignedURL, oName}) => {
+        const instruction = instructions.find(({file}) => file.name === oName);
+        if (!instruction) return null;
+        const {file: {blob, url}} = instruction;
+        return orderService.uploadFile(preSignedURL, blob, url);
+      })
+      .filter(promise => promise)
+    return Promise.all(uploadProcess);
+  }
+  const toBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve({base64: reader.result, blob: file});
+    reader.onerror = error => reject(error);
+  });
 
   const _renderStep = () => {
     switch (step) {
       case 0: {
         return <Uploading
-          files={instructions}
+          instructions={instructions}
           onAddFiles={onAddFiles}
           onDeleteFile={onDeleteFile}
         />
@@ -69,6 +159,9 @@ const CreateOrder = () => {
       case 1: {
         return <Instructions
           data={instructions}
+          tid={template ? template.tid : null}
+          templates={templates}
+          onChangeTemplate={onChangeTemplate}
           onAddFiles={onAddFiles}
           onItemChange={onItemInstructionChange}
         />
@@ -113,6 +206,7 @@ const CreateOrder = () => {
               <Button
                 type="primary"
                 onClick={onSubmit}
+                loading={isSaving}
               >Submit</Button>
             )}
           </Space>

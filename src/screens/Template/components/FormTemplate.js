@@ -2,7 +2,7 @@ import React from 'react';
 import 'rc-color-picker/assets/index.css';
 import ColorPicker from 'rc-color-picker';
 import {Checkbox, Col, Divider, Input, Row, Select, Switch, Tooltip} from 'antd';
-import {CREATE_ORDER_VALUES} from "../../../constants";
+import * as CONSTANTS from "../../../constants";
 import {InfoCircleOutlined} from '@ant-design/icons';
 
 const FormTemplate = ({
@@ -24,7 +24,10 @@ const FormTemplate = ({
                           postFix,
                           dpi,
                           compression,
-                        }, onChange
+                          codes = {},
+                        },
+                        onChange,
+                        onChangeAdvance
                       }) => {
   return (
     <div className="gx-mb-3">
@@ -47,10 +50,10 @@ const FormTemplate = ({
             <div className="basic-setting__control">
               <Select
                 value={type}
-                onChange={(val) => onChange('type', val)}
+                onChange={(val) => onChange('requestType', val)}
                 size="small"
                 style={{width: 180}}>
-                {CREATE_ORDER_VALUES.TEMPLATE_TYPE.map((item, index) => {
+                {CONSTANTS.TEMPLATE_TYPE.map((item, index) => {
                   return (
                     <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
                   )
@@ -72,7 +75,7 @@ const FormTemplate = ({
                 mode="multiple"
                 size="small"
                 style={{width: 150}}>
-                {CREATE_ORDER_VALUES.FILE_FORMAT.map((item, index) => {
+                {CONSTANTS.FILE_FORMAT.map((item, index) => {
                   return (
                     <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
                   )
@@ -98,7 +101,7 @@ const FormTemplate = ({
                 onChange={(val) => onChange('size', val)}
                 size="small"
                 style={{width: 150}}>
-                {CREATE_ORDER_VALUES.SIZE.map((item, index) => {
+                {CONSTANTS.SIZE.map((item, index) => {
                   return (
                     <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
                   )
@@ -114,7 +117,7 @@ const FormTemplate = ({
                 onChange={(val) => onChange('aspectRatio', val)}
                 size="small"
                 style={{width: 150}}>
-                {CREATE_ORDER_VALUES.ASPECT_RATIO.map((item, index) => {
+                {CONSTANTS.ASPECT_RATIO.map((item, index) => {
                   return (
                     <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
                   )
@@ -130,7 +133,7 @@ const FormTemplate = ({
                 onChange={(val) => onChange('minMaxSize', val)}
                 size="small"
                 style={{width: 150}}>
-                {CREATE_ORDER_VALUES.MIN_MAX_SIZE.map((item, index) => {
+                {CONSTANTS.MIN_MAX_SIZE.map((item, index) => {
                   return (
                     <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
                   )
@@ -169,6 +172,7 @@ const FormTemplate = ({
             <div className="basic-setting__label">Left</div>
             <div className="basic-setting__control">
               <Input
+                disabled={!margin}
                 value={margin_left}
                 onChange={({target: {value}}) => onChange('margin_left', value)}
                 size="small"
@@ -180,6 +184,7 @@ const FormTemplate = ({
             <div className="basic-setting__label">Right</div>
             <div className="basic-setting__control">
               <Input
+                disabled={!margin}
                 value={margin_right}
                 onChange={({target: {value}}) => onChange('margin_right', value)}
                 size="small"
@@ -191,6 +196,7 @@ const FormTemplate = ({
             <div className="basic-setting__label">Top</div>
             <div className="basic-setting__control">
               <Input
+                disabled={!margin}
                 value={margin_top}
                 onChange={({target: {value}}) => onChange('margin_top', value)}
                 size="small"
@@ -202,6 +208,7 @@ const FormTemplate = ({
             <div className="basic-setting__label">Bottom</div>
             <div className="basic-setting__control">
               <Input
+                disabled={!margin}
                 value={margin_bottom}
                 onChange={({target: {value}}) => onChange('margin_bottom', value)}
                 size="small"
@@ -241,7 +248,7 @@ const FormTemplate = ({
                 onChange={(value) => onChange('dpi', value)}
                 size="small"
                 style={{width: 150}}>
-                {CREATE_ORDER_VALUES.DPI.map((item, index) => {
+                {CONSTANTS.DPI.map((item, index) => {
                   return (
                     <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
                   )
@@ -257,7 +264,7 @@ const FormTemplate = ({
                 onChange={(value) => onChange('compression', value)}
                 size="small"
                 style={{width: 150}}>
-                {CREATE_ORDER_VALUES.COMPRESSION.map((item, index) => {
+                {CONSTANTS.COMPRESSION.map((item, index) => {
                   return (
                     <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
                   )
@@ -271,8 +278,14 @@ const FormTemplate = ({
         </Col>
         <Col span="24">
           <div className="advance-setting__list">
-            {CREATE_ORDER_VALUES.CODES.map((setting, index) => <Checkbox
-              key={index}>{setting.text}</Checkbox>)}
+            {CONSTANTS.CODES.map((setting, index) =>
+              <Checkbox
+                checked={codes[setting.value]}
+                onChange={({target: {checked}}) => onChangeAdvance(setting.value, checked)}
+                key={index}
+              >
+                {setting.text}
+              </Checkbox>)}
           </div>
         </Col>
       </Row>

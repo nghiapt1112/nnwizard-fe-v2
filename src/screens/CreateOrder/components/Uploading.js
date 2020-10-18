@@ -4,7 +4,7 @@ import UploadingItem from "./UploadingItem";
 import UploadButton from "../../../components/UploadButton";
 
 const Uploading = ({
-                     files = [],
+                     instructions = [],
                      onAddFiles,
                      onDeleteFile,
                    }) => {
@@ -19,11 +19,11 @@ const Uploading = ({
       </Row>
       <Divider orientation="left">Photos Uploading</Divider>
       <div className="uploading__list-file">
-        {files.map((file, index) => {
+        {instructions.map((instruction, index) => {
           return (
             <UploadingItem
               key={index}
-              file={file}
+              file={instruction.file}
               onDeleteFile={() => onDeleteFile(index)}
             />
           )
