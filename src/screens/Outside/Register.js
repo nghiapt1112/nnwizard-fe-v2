@@ -1,16 +1,18 @@
-import React from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect} from "react";
 import {Button, Form, Input} from 'antd';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
 import './styles.less';
+import {useDispatch} from "react-redux";
+import {authenticationAction} from "../../redux/actions";
 
 const Register = () => {
-  // const dispatch = useDispatch();
-  //
-  // // reset login status
-  // useEffect(() => {
-  //   dispatch(authenticationAction.logout());
-  // }, []);
-  //
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(authenticationAction.logout());
+  }, []);
+
   const onFinish = values => {
     // const {email, password} = values;
     // dispatch(authenticationAction.register(email, password));
@@ -27,7 +29,10 @@ const Register = () => {
           name="email"
           rules={[{required: true, message: 'Please input your Email!'}]}
         >
-          <Input prefix={<UserOutlined className="site-form-item-icon"/>} placeholder="Email"/>
+          <Input
+            autoComplete="off"
+            prefix={<UserOutlined className="site-form-item-icon"/>}
+            placeholder="Email"/>
         </Form.Item>
         <Form.Item
           name="password"
@@ -36,6 +41,7 @@ const Register = () => {
           <Input
             prefix={<LockOutlined className="site-form-item-icon"/>}
             type="password"
+            autoComplete="new-password"
             placeholder="Password"
           />
         </Form.Item>

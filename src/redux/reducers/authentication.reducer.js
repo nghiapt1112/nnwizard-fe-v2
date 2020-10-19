@@ -1,21 +1,23 @@
 import {authenticationConstants} from '../_constants';
+import LocalStorageService from '../../services/LocalStorageService';
+const localStorageService = LocalStorageService.getService();
 
-let user = JSON.parse(localStorage.getItem('user'));
-const initialState = user ? {
+const exp = localStorageService.getExpiresIn();
+if (exp * 1000 < Date.now()) localStorageService.clearToken();
+const token = localStorageService.getAccessToken();
+
+const initialState = token ? {
   loggedIn: true,
-  user
 } : {};
 
 export function authentication(state = initialState, action) {
   switch (action.type) {
     case authenticationConstants.LOGIN_SUCCESS:
-      localStorage.setItem('user', JSON.stringify(action.payload));
       return {
         loggedIn: true,
-        user: action.payload
       };
     case authenticationConstants.LOGOUT:
-      localStorage.removeItem('user');
+      localStorageService.clearToken();
       return {};
     default:
       return state

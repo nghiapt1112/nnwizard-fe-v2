@@ -1,5 +1,8 @@
-import config from '../config';
-import {authHeader, history} from '../helpers';
+import axios from 'axios';
+import api from "./api";
+import config from "../config";
+import LocalStorageService from './LocalStorageService';
+const localStorageService = LocalStorageService.getService();
 
 export const userService = {
   login,
@@ -10,19 +13,9 @@ export const userService = {
 };
 
 function login(userName, password) {
-  const requestOptions = {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({userName, password})
-  };
-
-  return fetch(`${config.apiUrl}/login`, requestOptions)
-    .then(handleResponse)
-    .then(user => {
-      // store user details and jwt token in local storage to keep user logged in between page refreshes
-      localStorage.setItem('user', JSON.stringify(user));
-
-      return user;
+  return axios.post(`${config.apiUrl}/login`, {userName, password})
+    .then(res => {
+      localStorageService.setToken(res.data);
     });
 }
 
@@ -32,48 +25,13 @@ function logout() {
 }
 
 function getProfile() {
-  const requestOptions = {
-    method: 'GET',
-    headers: authHeader()
-  };
-
-  return fetch(`${config.apiUrl}/user/profile`, requestOptions).then(handleResponse);
+  return api.get(`/user/profile`);
 }
 
 function register(email, password) {
-  const requestOptions = {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({email, password})
-  };
-
-  return fetch(`${config.apiUrl}/sys/register`, requestOptions).then(handleResponse);
+  return api.post(`${config.apiUrl}/sys/register`, {email, password});
 }
 
 function updateProfile(user) {
-  const requestOptions = {
-    method: 'PUT',
-    headers: {...authHeader(), 'Content-Type': 'application/json'},
-    body: JSON.stringify(user)
-  };
-
-  return fetch(`${config.apiUrl}/user/profile`, requestOptions).then(handleResponse);
-}
-
-function handleResponse(response) {
-  return response.text().then(text => {
-    const data = text && JSON.parse(text);
-    if (!response.ok) {
-      if (response.status === 401) {
-        // auto logout if 401 response returned from api
-        logout();
-        history.push('/login');
-      }
-
-      const error = (data && data.message) || response.statusText;
-      return Promise.reject(error);
-    }
-
-    return data;
-  });
+  return api.put(`/user/profile`, user);
 }

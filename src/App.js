@@ -1,5 +1,5 @@
 import React from 'react';
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import {BrowserRouter, Switch} from 'react-router-dom';
 import './styles/index.less';
 import './App.less';
 import AuthRoute from "./roots/AuthRoute";

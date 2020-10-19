@@ -10,20 +10,20 @@ const layout = {
 };
 
 const validateMessages = {
+  // eslint-disable-next-line no-template-curly-in-string
   required: '${label} is required!',
   types: {
+    // eslint-disable-next-line no-template-curly-in-string
     email: '${label} is not validate email!',
   },
 };
 
 const UserSetting = () => {
   const dispatch = useDispatch();
-  const [isLoadingData, setLoadingData] = useState(false);
   const [profile, setProfile] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoadingData(true);
       const res = await userService.getProfile();
       const formValues = Object.keys(res).map(key => {
         return {
@@ -31,7 +31,6 @@ const UserSetting = () => {
           value: res[key]
         }
       })
-      setLoadingData(false);
       setProfile(formValues);
     }
 
@@ -79,7 +78,10 @@ const UserSetting = () => {
           <Input/>
         </Form.Item>
         <Form.Item name={'password'} label="Password">
-          <Input type="password"/>
+          <Input
+            type="password"
+            autoComplete="off"
+          />
         </Form.Item>
         <Form.Item wrapperCol={{...layout.wrapperCol, offset: 8}}>
           <Button type="primary" htmlType="submit">

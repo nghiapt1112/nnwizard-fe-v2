@@ -5,10 +5,9 @@ export const authenticationAction = {
   logout,
 };
 
-function loginSuccess(payload) {
+function loginSuccess() {
   return {
-    type: authenticationConstants.LOGIN_SUCCESS,
-    payload
+    type: authenticationConstants.LOGIN_SUCCESS
   }
 }
 

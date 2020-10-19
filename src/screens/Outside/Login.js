@@ -1,4 +1,5 @@
-import React, {useState} from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from "react";
 import {useHistory} from 'react-router-dom';
 import {Button, Checkbox, Form, Input, notification} from 'antd';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
@@ -12,14 +13,23 @@ const Login = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
+  useEffect(() => {
+    const logout = () => {
+      dispatch(authenticationAction.logout());
+    }
+    logout();
+  }, []);
+
+
   const onFinish = async (values) => {
     setLoading(true);
     try {
       const {userName, password} = values;
-      const res = await userService.login(userName, password);
-      dispatch(authenticationAction.loginSuccess(res));
+      await userService.login(userName, password);
+      dispatch(authenticationAction.loginSuccess());
       history.push('/my-order');
     } catch (error) {
+      console.log(error);
       notification.error({
         message: 'Login',
         description: error
@@ -41,7 +51,11 @@ const Login = () => {
           name="userName"
           rules={[{required: true, message: 'Please input your Username!'}]}
         >
-          <Input prefix={<UserOutlined className="site-form-item-icon"/>} placeholder="Username"/>
+          <Input
+            prefix={<UserOutlined className="site-form-item-icon"/>}
+            placeholder="Username"
+            autoComplete="username"
+          />
         </Form.Item>
         <Form.Item
           name="password"
@@ -51,6 +65,7 @@ const Login = () => {
             prefix={<LockOutlined className="site-form-item-icon"/>}
             type="password"
             placeholder="Password"
+            autoComplete={'current-password'}
           />
         </Form.Item>
         <Form.Item>
@@ -58,9 +73,9 @@ const Login = () => {
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
 
-          <a className="login-form-forgot" href="">
-            Forgot password
-          </a>
+          {/*<a className="login-form-forgot" href="">*/}
+          {/*  Forgot password*/}
+          {/*</a>*/}
         </Form.Item>
 
         <Form.Item>

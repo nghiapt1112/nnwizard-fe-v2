@@ -22,15 +22,20 @@ const MyOrder = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoadingData(true);
-      const res = await orderService.getAll(searchParams);
-      setLoadingData(false);
-      const {content, totalElements, number} = res;
-      setData(content);
-      setPagination({
-        total: totalElements,
-        current: number + 1,
-      })
+      try {
+        setLoadingData(true);
+        const res = await orderService.getAll(searchParams);
+        setLoadingData(false);
+        const {content, totalElements, number} = res;
+        setData(content);
+        setPagination({
+          total: totalElements,
+          current: number + 1,
+        })
+      } catch (error) {
+        setLoadingData(false);
+        console.log(error);
+      }
     }
 
     fetchData();
@@ -45,17 +50,6 @@ const MyOrder = () => {
 
   const openEditClick = async ({id}) => {
     history.push(`/update-order/${id}`)
-    // try {
-    //   setLoadingData(true);
-    //   const res = await orderService.getById(id);
-    //   console.log(res);
-    //   setLoadingData(false);
-    // } catch (error) {
-    //   setLoadingData(false);
-    //   notification.error({
-    //     message: error,
-    //   })
-    // }
   }
   const onConfirmDelete = async ({id}) => {
     try {

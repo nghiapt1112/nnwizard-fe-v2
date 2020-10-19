@@ -8,7 +8,7 @@ import './styles.less';
 import {orderService, templateService} from "../../services";
 import {useHistory, useParams} from "react-router-dom";
 
-const CreateOrder = ({location}) => {
+const CreateOrder = () => {
   const history = useHistory();
   let {id: orderId} = useParams();
   const [isSaving, setIsSaving] = useState(false);
@@ -29,6 +29,8 @@ const CreateOrder = ({location}) => {
   }, [])
 
   useEffect(() => {
+    if (!orderId) return;
+
     async function fetchOrderById() {
       try {
         const res = await orderService.getById(orderId);
@@ -53,7 +55,6 @@ const CreateOrder = ({location}) => {
               }
             }
           });
-          console.log(newInstruction);
           setInstructions(newInstruction);
         }
       } catch (error) {
@@ -64,7 +65,7 @@ const CreateOrder = ({location}) => {
     };
 
     fetchOrderById();
-  }, [])
+  }, [orderId])
 
   const onChangeTemplate = async (tid) => {
     const res = await templateService.getById(tid);
@@ -177,7 +178,7 @@ const CreateOrder = ({location}) => {
   const uploadFiles = (links) => {
     const uploadProcess = links
       .map(({preSignedURL, oName}) => {
-        const instruction = instructions.find(({file}) => file.name === oName);
+        const instruction = instructions.find(({file}) => file.name === oName && !file.uploaded);
         if (!instruction) return null;
         const {file: {blob, url}} = instruction;
         return orderService.uploadFile(preSignedURL, blob, url);
@@ -224,7 +225,7 @@ const CreateOrder = ({location}) => {
 
   return (
     <>
-      <h2>Create Order</h2>
+      <h2>{orderId ? 'Update Order' : 'Create Order'}</h2>
       <Row gutter={[0, 16]}>
         <Col span={24}>
           <StepTracking
