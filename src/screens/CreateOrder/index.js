@@ -7,6 +7,8 @@ import Submitting from "./components/Submitting";
 import './styles.less';
 import {orderService, templateService} from "../../services";
 import {useHistory, useParams} from "react-router-dom";
+import {settingService} from "../../services/setting.service";
+import * as CONSTANTS from "../../constants";
 
 const CreateOrder = () => {
   const history = useHistory();
@@ -16,6 +18,7 @@ const CreateOrder = () => {
   const [instructions, setInstructions] = useState([]);
   const [template, setTemplate] = useState({});
   const [templates, setTemplates] = useState([]);
+  const [setting, setSetting] = useState([]);
   useEffect(() => {
     async function fetchTemplates() {
       const res = await templateService.getAll({
@@ -29,32 +32,56 @@ const CreateOrder = () => {
   }, [])
 
   useEffect(() => {
+    // async function fetchSettings() {
+    //   const res = await settingService.getAll({
+    //     page: 1,
+    //     size: 10000,
+    //     types: ['advance'],
+    //     orderTypes: ['REAL_ESTATE'],
+    //   });
+    //   setSetting(res.content);
+    // };
+    // fetchSettings();
+    setSetting([{
+      code: 'SMALL_OBJECT',
+      price: 10
+    },{
+      code: 'WINDOW_ENHANCEMENT',
+      price: 20
+    }]);
+  }, [])
+
+  useEffect(() => {
     if (!orderId) return;
 
     async function fetchOrderById() {
       try {
         const res = await orderService.getById(orderId);
         if (res && res.images) {
-          const newInstruction = res.images.map(({
-                                                   setting,
-                                                   imgId,
-                                                   publicUrl,
-                                                   name,
-                                                   size,
-                                                   ...rest
-                                                 }) => {
-            return {
-              ...rest,
-              ...setting,
-              publicUrl,
-              file: {
-                name,
-                size,
-                url: publicUrl,
-                uploaded: true,
+          const newInstruction = res.images
+            .map(({
+                    setting,
+                    name,
+                    fileSize: size,
+                    imgId,
+                    preSignedURL,
+                    publicUrl,
+                    ...rest
+                  }) => {
+              return {
+                ...rest,
+                ...setting,
+                file: {
+                  name,
+                  size,
+                  url: publicUrl,
+                  uploaded: true,
+                  imgId,
+                  preSignedURL,
+                  publicUrl,
+                }
               }
-            }
-          });
+            });
           setInstructions(newInstruction);
         }
       } catch (error) {
@@ -114,6 +141,8 @@ const CreateOrder = () => {
     const tmpInstructions = [...instructions];
     tmpInstructions[index].codes = tmpInstructions[index].codes || {};
     tmpInstructions[index].codes[key] = value;
+    tmpInstructions[index].price = tmpInstructions[index].price || 0;
+    tmpInstructions[index].price = tmpInstructions[index].price + (value ? 10 : -10);
     setInstructions(tmpInstructions);
   }
   const onChangeRushService = (val) => {
@@ -121,18 +150,22 @@ const CreateOrder = () => {
   const onSubmit = async () => {
     try {
       setIsSaving(true);
-      // Create order
-      const payloadCreate = {
-        orderType: 'REAL_ESTATE',
-        orderName: `REAL_ESTATE${(new Date()).getTime()}`
+      let updateOrderID = orderId;
+      if (!orderId) {
+        // Create order
+        const payloadCreate = {
+          orderType: 'REAL_ESTATE',
+          orderName: `REAL_ESTATE${(new Date()).getTime()}`
+        }
+        const {id} = await orderService.create(payloadCreate);
+        updateOrderID = id;
       }
-      const {id: orderId} = await orderService.create(payloadCreate);
       // Upload image
-      const links = await getLinkUploadFile(orderId);
-      await uploadFiles(links);
+      const links = await getLinkUploadFile(updateOrderID);
+      links && await uploadFiles(links);
       // Submit Setting
       const payloadUpdate = getSenderData(links);
-      await orderService.update(orderId, {
+      await orderService.update(updateOrderID, {
         images: [...payloadUpdate]
       });
       setIsSaving(false);
@@ -149,12 +182,9 @@ const CreateOrder = () => {
   }
 
   const getSenderData = (links) => {
-    return links.map(link => {
-      let instruction = instructions.find(({file}) => file.name === link.oName);
-      if (!instruction) return {
-        setting: {...instruction, file: undefined}
-      };
-      const {imgId, preSignedURL, publicUrl} = link;
+    return instructions.map(instruction => {
+      let link = links && links.find(({oName}) => oName === instruction.file.name);
+      const {imgId, preSignedURL, publicUrl} = link ? link : instruction.file;
       return {
         setting: {
           ...instruction,
@@ -168,11 +198,16 @@ const CreateOrder = () => {
   }
 
   const getLinkUploadFile = orderId => {
-    const payload = {
-      fileNames: instructions.map(i => i.file.name),
-      orderId,
+    const fileNames = instructions
+      .filter(i => !i.file.uploaded)
+      .map(i => i.file.name);
+    if (fileNames.length) {
+      return orderService.generateLinkUploadFile({
+        fileNames,
+        orderId,
+      });
     }
-    return orderService.generateLinkUploadFile(payload);
+    return false;
   }
 
   const uploadFiles = (links) => {
@@ -183,7 +218,7 @@ const CreateOrder = () => {
         const {file: {blob, url}} = instruction;
         return orderService.uploadFile(preSignedURL, blob, url);
       })
-      .filter(promise => promise)
+      .filter(promise => promise);
     return Promise.all(uploadProcess);
   }
   const toBase64 = (file) => new Promise((resolve, reject) => {

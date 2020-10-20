@@ -24,8 +24,8 @@ const InstructionsItem = ({
                               dpi,
                               compression,
                               codes = {},
+                              price,
                               file,
-                              publicUrl
                             },
                             onChange,
                             onChangeAdvance
@@ -53,7 +53,9 @@ const InstructionsItem = ({
       <Row>
         <Col span="24">
           <Collapse>
-            <Collapse.Panel header="Basic Setting" key="1">
+            <Collapse.Panel header={
+              <span>Basic Setting <strong>0$</strong></span>
+            } key="1">
               <Row gutter="24">
                 <Col flex="1">
                   <div className="basic-setting__item">
@@ -265,7 +267,9 @@ const InstructionsItem = ({
                 </Col>
               </Row>
             </Collapse.Panel>
-            <Collapse.Panel header="Advance Setting" key="2">
+            <Collapse.Panel header={
+              <span>Advance Setting <strong>{price || 0}$</strong></span>
+            } key="2">
               <div className="advance-setting__list">
                 {CONSTANTS.CODES.map((setting, index) =>
                   <Checkbox

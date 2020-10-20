@@ -31,32 +31,36 @@ api.interceptors.request.use(
 api.interceptors.response.use((response) => {
   return response.data
 }, function (error) {
-  const originalRequest = error.config;
-  if (error.response.status === 401 && originalRequest.url === `${config.apiUrl}/login`) {
-    window.location.href = '/login';
-    return Promise.reject(error);
-  }
+ try {
+   const originalRequest = error.config;
+   if (error.response.status === 401 && originalRequest.url === `${config.apiUrl}/login`) {
+     window.location.href = '/login';
+     return Promise.reject(error);
+   }
 
-  if (error.response.status === 401 && !originalRequest._retry) {
-    originalRequest._retry = true;
-    const refreshToken = localStorageService.getRefreshToken();
-    return axios.post(`${config.apiUrl}/refresh?refreshToken=${refreshToken}`)
-      .then(res => {
-        if (res.status === 200) {
-          localStorageService.setToken(res.data);
-          api.defaults.headers.common['Authorization'] = 'Bearer ' + localStorageService.getAccessToken();
-          return api(originalRequest);
-        }
-      })
-      .catch(error => {
-        localStorageService.clearToken();
-        window.location.href = '/login';
-        return Promise.reject(error);
-      })
-  }
-  const {response: {data, statusText}} = error;
-  const erMessage = ((data && data.message) || (data.messages && data.messages[0])) || statusText;
-  return Promise.reject(erMessage);
+   if (error.response.status === 401 && !originalRequest._retry) {
+     originalRequest._retry = true;
+     const refreshToken = localStorageService.getRefreshToken();
+     return axios.post(`${config.apiUrl}/refresh?refreshToken=${refreshToken}`)
+       .then(res => {
+         if (res.status === 200) {
+           localStorageService.setToken(res.data);
+           api.defaults.headers.common['Authorization'] = 'Bearer ' + localStorageService.getAccessToken();
+           return api(originalRequest);
+         }
+       })
+       .catch(error => {
+         localStorageService.clearToken();
+         window.location.href = '/login';
+         return Promise.reject(error);
+       })
+   }
+   const {response: {data, statusText}} = error;
+   const erMessage = ((data && data.message) || (data.messages && data.messages[0])) || statusText;
+   return Promise.reject(erMessage);
+ } catch (error) {
+   return Promise.reject('ERROR');
+ }
 });
 
 
