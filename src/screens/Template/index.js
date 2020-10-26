@@ -24,14 +24,18 @@ const Template = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoadingData(true);
-      const res = await templateService.getAll(searchParams);
-      setLoadingData(false);
-      const {content, totalElements, number} = res;
-      setData(content);
-      setPagination({
-        total: totalElements,
-        current: number + 1,
-      })
+      try {
+        const res = await templateService.getAll(searchParams);
+        setLoadingData(false);
+        const {content, totalElements, number} = res;
+        setData(content);
+        setPagination({
+          total: totalElements,
+          current: number + 1,
+        })
+      } finally {
+        setLoadingData(false);
+      }
     }
 
     fetchData();
