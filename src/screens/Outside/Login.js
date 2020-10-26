@@ -29,10 +29,11 @@ const Login = () => {
       dispatch(authenticationAction.loginSuccess());
       history.push('/my-order');
     } catch (error) {
-      console.log(error);
+      const {response: {data, statusText}} = error;
+      const erMessage = ((data && data.message) || (data.messages && data.messages[0])) || statusText;
       notification.error({
         message: 'Login',
-        description: error
+        description: erMessage
       });
     } finally {
       setLoading(false);
