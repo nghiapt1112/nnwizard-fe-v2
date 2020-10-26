@@ -24,8 +24,8 @@ const InstructionsItem = ({
                               dpi,
                               compression,
                               codes = {},
-                              price,
                               file,
+                              advancePrice,
                             },
                             onChange,
                             onChangeAdvance
@@ -268,7 +268,7 @@ const InstructionsItem = ({
               </Row>
             </Collapse.Panel>
             <Collapse.Panel header={
-              <span>Advance Setting <strong>{price || 0}$</strong></span>
+              <span>Advance Setting <strong>{advancePrice || 0}$</strong></span>
             } key="2">
               <div className="advance-setting__list">
                 {CONSTANTS.CODES.map((setting, index) =>

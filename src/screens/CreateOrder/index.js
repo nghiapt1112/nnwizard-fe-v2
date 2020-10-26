@@ -8,7 +8,7 @@ import './styles.less';
 import {orderService, templateService} from "../../services";
 import {useHistory, useParams} from "react-router-dom";
 import {settingService} from "../../services/setting.service";
-import * as CONSTANTS from "../../constants";
+import {calculatorPrice} from "./priceHelper";
 
 const CreateOrder = () => {
   const history = useHistory();
@@ -18,7 +18,8 @@ const CreateOrder = () => {
   const [instructions, setInstructions] = useState([]);
   const [template, setTemplate] = useState({});
   const [templates, setTemplates] = useState([]);
-  const [setting, setSetting] = useState([]);
+  const [settingPrices, setSettingPrices] = useState([]);
+
   useEffect(() => {
     async function fetchTemplates() {
       const res = await templateService.getAll({
@@ -32,23 +33,18 @@ const CreateOrder = () => {
   }, [])
 
   useEffect(() => {
-    // async function fetchSettings() {
-    //   const res = await settingService.getAll({
-    //     page: 1,
-    //     size: 10000,
-    //     types: ['advance'],
-    //     orderTypes: ['REAL_ESTATE'],
-    //   });
-    //   setSetting(res.content);
-    // };
-    // fetchSettings();
-    setSetting([{
-      code: 'SMALL_OBJECT',
-      price: 10
-    },{
-      code: 'WINDOW_ENHANCEMENT',
-      price: 20
-    }]);
+    async function fetchSettings() {
+      const res = await settingService.getAll({
+        page: 1,
+        size: 10000,
+        types: ['ADVANCE'],
+        requestType: ['REAL_ESTATE'],
+      });
+      const data = res || [];
+      setSettingPrices(data.reduce((a, b) => (a[b.code] = b.price, a), {}));
+    }
+
+    fetchSettings();
   }, [])
 
   useEffect(() => {
@@ -71,6 +67,7 @@ const CreateOrder = () => {
               return {
                 ...rest,
                 ...setting,
+                advancePrice: calculatorPrice(settingPrices, setting.codes),
                 file: {
                   name,
                   size,
@@ -90,9 +87,10 @@ const CreateOrder = () => {
         })
       }
     };
-
+    console.count('Callme');
+    if (!settingPrices) return;
     fetchOrderById();
-  }, [orderId])
+  }, [orderId, settingPrices])
 
   const onChangeTemplate = async (tid) => {
     const res = await templateService.getById(tid);
@@ -100,6 +98,7 @@ const CreateOrder = () => {
       return {
         ...res.setting,
         file: i.file,
+        advancePrice: calculatorPrice(settingPrices, res.setting.codes),
       }
     });
     setTemplate(res);
@@ -117,8 +116,8 @@ const CreateOrder = () => {
           blob,
           url: base64,
         },
-        basicPrice: 10,
-        advancePrice: 10,
+        basicPrice: 0,
+        advancePrice: 0,
         ...template.setting,
       })
     }
@@ -141,8 +140,7 @@ const CreateOrder = () => {
     const tmpInstructions = [...instructions];
     tmpInstructions[index].codes = tmpInstructions[index].codes || {};
     tmpInstructions[index].codes[key] = value;
-    tmpInstructions[index].price = tmpInstructions[index].price || 0;
-    tmpInstructions[index].price = tmpInstructions[index].price + (value ? 10 : -10);
+    tmpInstructions[index].advancePrice = calculatorPrice(settingPrices, tmpInstructions[index].codes);
     setInstructions(tmpInstructions);
   }
   const onChangeRushService = (val) => {

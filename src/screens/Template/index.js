@@ -171,7 +171,7 @@ const Template = () => {
         </Col>
         <Modal
           centered
-          title="Edit Template"
+          title={formModalData.tid? 'Edit Template' : 'Add Template'}
           visible={modalVisible}
           onOk={handleModalOk}
           onCancel={() => setModalVisible(false)}
