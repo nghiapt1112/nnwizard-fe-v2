@@ -10,6 +10,7 @@ import Template from "./screens/Template";
 import CreateOrder from "./screens/CreateOrder";
 import MyOrder from "./screens/MyOrder";
 import UserSetting from "./screens/UserSetting";
+import MasterData from "./screens/MasterData";
 
 const App = () => {
   return (
@@ -35,6 +36,9 @@ const App = () => {
         </AuthRoute>
         <AuthRoute path="/user-setting" type="private">
           <UserSetting/>
+        </AuthRoute>
+        <AuthRoute path="/m-data" type="private">
+          <MasterData/>
         </AuthRoute>
         <AuthRoute path="/" type="private">
           <MyOrder/>

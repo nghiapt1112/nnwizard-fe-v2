@@ -53,7 +53,7 @@ const FormTemplate = ({
                 onChange={(val) => onChange('requestType', val)}
                 size="small"
                 style={{width: 180}}>
-                {CONSTANTS.TEMPLATE_TYPE.map((item, index) => {
+                {CONSTANTS.ORDER_REQUEST_TYPE.map((item, index) => {
                   return (
                     <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
                   )

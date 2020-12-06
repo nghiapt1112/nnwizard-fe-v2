@@ -56,6 +56,11 @@ const AuthRoute = props => {
               activeClassName="selected"
               to="/user-setting">User Setting</NavLink>
           </Menu.Item>
+          <Menu.Item key="5" icon={<ContainerOutlined/>}>
+            <NavLink
+                activeClassName="selected"
+                to="/m-data">Master Data</NavLink>
+          </Menu.Item>
         </Menu>
       </Sider>
       <Layout className="site-layout">

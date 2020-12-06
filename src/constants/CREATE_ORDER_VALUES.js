@@ -1,11 +1,22 @@
-export const TEMPLATE_TYPE = [
-  {value: '1', text: 'Real Estate'},
-  {value: '2', text: 'Retouching Order'},
-  {value: '3', text: 'Photo Editing'},
+// Order request type
+export const ORDER_REQUEST_TYPE = [
+  {value: 'RETOUCHING', text: 'Retouching'},
+  {value: 'PRODUCT', text: 'Product'},
+  {value: 'REAL_ESTATE', text: 'Real Estate'},
+  {value: 'FORM', text: 'FORM'},
+  {value: 'NEW_BORN', text: 'New Born'},
 ]
+
 export const FILE_FORMAT = [
   {value: '1', text: 'PNG'},
   {value: '2', text: 'JPG'},
+]
+
+export const DATA_TYPE = [
+  {value: 'BASIC', text: 'BASIC'},
+  {value: 'ADVANCE', text: 'ADVANCE'},
+  {value: 'SYSTEM', text: 'SYSTEM'},
+  {value: 'FORM', text: 'FORM'}
 ]
 export const SIZE = [
   {value: '1', text: 'SIZE-1'},
