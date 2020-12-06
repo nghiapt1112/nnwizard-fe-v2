@@ -55,6 +55,10 @@ api.interceptors.response.use((response) => {
          return Promise.reject(error);
        })
    }
+
+   if (error.response.status === 403) {
+       return Promise.reject("Forbidden");
+   }
    const {response: {data, statusText}} = error;
    const erMessage = ((data && data.message) || (data.messages && data.messages[0])) || statusText;
    return Promise.reject(erMessage);

@@ -6,11 +6,14 @@ import AuthRoute from "./roots/AuthRoute";
 import Login from "./screens/Outside/Login";
 import Register from "./screens/Outside/Register";
 
+import OrderChooser from "./screens/OrderChooser";
 import Template from "./screens/Template";
 import CreateOrder from "./screens/CreateOrder";
 import MyOrder from "./screens/MyOrder";
 import UserSetting from "./screens/UserSetting";
 import MasterData from "./screens/AdminMasterData";
+import UserManagement from "./screens/AdminUserManagement";
+
 
 const App = () => {
   return (
@@ -28,9 +31,15 @@ const App = () => {
         <AuthRoute path="/template" type="private">
           <Template/>
         </AuthRoute>
+        {/*ORDER*/}
+        <AuthRoute path="/c-orders" type="private">
+           <OrderChooser/>
+        </AuthRoute>
         <AuthRoute path="/create-order" type="private">
           <CreateOrder/>
         </AuthRoute>
+
+        {/*END-Create-Order*/}
         <AuthRoute path="/update-order/:id" type="private">
           <CreateOrder/>
         </AuthRoute>
@@ -39,6 +48,9 @@ const App = () => {
         </AuthRoute>
         <AuthRoute path="/m-data" type="private">
           <MasterData/>
+        </AuthRoute>
+        <AuthRoute path="/m-user" type="private">
+          <UserManagement/>
         </AuthRoute>
         <AuthRoute path="/" type="private">
           <MyOrder/>

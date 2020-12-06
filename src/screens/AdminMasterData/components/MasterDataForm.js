@@ -3,7 +3,7 @@ import 'rc-color-picker/assets/index.css';
 import {Col, Input, Row, Select} from 'antd';
 import * as CONSTANTS from "../../../constants";
 
-const FormComponent = ({
+const MasterDataForm = ({
                           data: {
                               code,
                               dataType,
@@ -76,4 +76,4 @@ const FormComponent = ({
     )
 }
 
-export default FormComponent;
+export default MasterDataForm;

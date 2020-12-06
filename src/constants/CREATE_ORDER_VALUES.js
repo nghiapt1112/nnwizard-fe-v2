@@ -1,12 +1,19 @@
 // Order request type
 export const ORDER_REQUEST_TYPE = [
+  {value: 'GENERAL', text: 'General'},
   {value: 'RETOUCHING', text: 'Retouching'},
   {value: 'PRODUCT', text: 'Product'},
   {value: 'REAL_ESTATE', text: 'Real Estate'},
-  {value: 'FORM', text: 'FORM'},
   {value: 'NEW_BORN', text: 'New Born'},
 ]
 
+export const USER_STATUS = [
+  {value: 'ENABLED', text: 'ENABLED'},
+  {value: 'DISABLED', text: 'DISABLED'},
+  {value: 'REVIEWING', text: 'REVIEWING'},
+  {value: 'BANNED', text: 'BANNED'},
+
+]
 export const FILE_FORMAT = [
   {value: '1', text: 'PNG'},
   {value: '2', text: 'JPG'},
@@ -18,6 +25,7 @@ export const DATA_TYPE = [
   {value: 'SYSTEM', text: 'SYSTEM'},
   {value: 'FORM', text: 'FORM'}
 ]
+
 export const SIZE = [
   {value: '1', text: 'SIZE-1'},
   {value: '2', text: 'SIZE-2'},

@@ -1,9 +1,9 @@
 export const PAGINATION = {
   PAGE_START: 1,
-  PAGE_SIZE: 20,
+  PAGE_SIZE: 1500,
 }
 
 export const ANT_TABLE_PAGINATION_DEFAULT = {
-  defaultCurrent: PAGINATION.PAGE_START,
-  defaultPageSize: PAGINATION.PAGE_SIZE,
+  current: PAGINATION.PAGE_START,
+  pageSize: PAGINATION.PAGE_SIZE,
 }

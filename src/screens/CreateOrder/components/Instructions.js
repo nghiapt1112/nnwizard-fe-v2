@@ -7,6 +7,7 @@ import UploadButton from "../../../components/UploadButton";
 const Instructions = ({
                         data = [],
                         tid,
+                        advanceSetting,
                         templates = [],
                         onChangeTemplate,
                         onItemChange,
@@ -46,6 +47,7 @@ const Instructions = ({
           return (
             <InstructionsItem
               key={index}
+              advanceSetting={advanceSetting}
               instruction={instruction}
               onChange={(key, value) => onItemChange(index, key, value)}
               onChangeAdvance={(key, value) => onChangeAdvance(index, key, value)}

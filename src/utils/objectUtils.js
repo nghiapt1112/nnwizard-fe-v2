@@ -1,0 +1,1 @@
+export const isEqual = (o1, o2) => o1 === o2;

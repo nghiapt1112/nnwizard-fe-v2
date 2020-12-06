@@ -18,7 +18,8 @@ const CreateOrder = () => {
   const [instructions, setInstructions] = useState([]);
   const [template, setTemplate] = useState({});
   const [templates, setTemplates] = useState([]);
-  const [settingPrices, setSettingPrices] = useState([]);
+  const [advanceSetting, setAdvanceSetting] = useState([]);
+  const [priceSetting, setSettingPrices] = useState([]);
 
   useEffect(() => {
     async function fetchTemplates() {
@@ -37,11 +38,22 @@ const CreateOrder = () => {
       const res = await settingService.getAll({
         page: 1,
         size: 10000,
-        types: ['ADVANCE'],
-        requestType: ['REAL_ESTATE'],
+        types: ['BASIC', 'ADVANCE'], // lay ca basic va advance , tuy theo tung loai xu ly anh.
+        requestType: ['GENERAL'], // loai xu ly anh dang la GENERAL
       });
-      const data = res || [];
-      setSettingPrices(data.reduce((a, b) => (a[b.code] = b.price, a), {}));
+      setSettingPrices(res.content.reduce((acc, curr) => (acc[curr.code] = curr.price, acc), {}));
+
+      setAdvanceSetting(res.content
+        .filter(el=> el.dataType === 'ADVANCE')
+        .map(el => {
+      return {
+        value: el.code,
+        text: el.value || el.code,
+        price: el.price
+      }
+    }));
+      console.log(advanceSetting);
+
     }
 
     fetchSettings();
@@ -67,7 +79,7 @@ const CreateOrder = () => {
               return {
                 ...rest,
                 ...setting,
-                advancePrice: calculatorPrice(settingPrices, setting.codes),
+                advancePrice: calculatorPrice(priceSetting, setting.codes),
                 file: {
                   name,
                   size,
@@ -88,9 +100,9 @@ const CreateOrder = () => {
       }
     };
     console.count('Callme');
-    if (!settingPrices) return;
+    if (!priceSetting) return;
     fetchOrderById();
-  }, [orderId, settingPrices])
+  }, [orderId, priceSetting])
 
   const onChangeTemplate = async (tid) => {
     const res = await templateService.getById(tid);
@@ -98,12 +110,13 @@ const CreateOrder = () => {
       return {
         ...res.setting,
         file: i.file,
-        advancePrice: calculatorPrice(settingPrices, res.setting.codes),
+        advancePrice: calculatorPrice(priceSetting, res.setting.codes),
       }
     });
     setTemplate(res);
     setInstructions(tmpInstructions);
   }
+
   const onAddFiles = async (event) => {
     const {files: fileSelect} = event.target;
     const newInstructions = [];
@@ -140,11 +153,15 @@ const CreateOrder = () => {
     const tmpInstructions = [...instructions];
     tmpInstructions[index].codes = tmpInstructions[index].codes || {};
     tmpInstructions[index].codes[key] = value;
-    tmpInstructions[index].advancePrice = calculatorPrice(settingPrices, tmpInstructions[index].codes);
+    console.log('setting price:', priceSetting)
+    console.log('index', tmpInstructions[index].codes);
+    tmpInstructions[index].advancePrice = calculatorPrice(priceSetting, tmpInstructions[index].codes);
+    console.log('advancePrice', tmpInstructions[index].advancePrice);
     setInstructions(tmpInstructions);
   }
   const onChangeRushService = (val) => {
   }
+
   const onSubmit = async () => {
     try {
       setIsSaving(true);
@@ -238,6 +255,7 @@ const CreateOrder = () => {
       case 1: {
         return <Instructions
           data={instructions}
+          advanceSetting={advanceSetting}
           tid={template ? template.tid : null}
           templates={templates}
           onChangeTemplate={onChangeTemplate}

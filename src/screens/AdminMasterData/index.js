@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Modal, notification, Popconfirm, Row, Space, Table} from "antd";
-import MasterDataForm from "./components/FormComponent";
+import MasterDataForm from "./components/MasterDataForm";
 import {PlusOutlined} from "@ant-design/icons";
 import {masterDataService} from "../../services";
 import './styles.less';
 import {ANT_TABLE_PAGINATION_DEFAULT, PAGINATION} from "../../constants";
 
-const Template = () => {
+const MasterData = () => {
     const [isLoadingData, setLoadingData] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [addCount, setAddCount] = useState(0);
@@ -18,6 +18,7 @@ const Template = () => {
     });
     const [pagination, setPagination] = useState({
         current: 0,
+        pageSize: 10,
         total: 0,
     });
 
@@ -27,9 +28,11 @@ const Template = () => {
             const res = await masterDataService.getAll(searchParams);
             setLoadingData(false);
             const {content, totalElements, number} = res;
+            content.forEach(el=> el.title = (el.value || el.code))
             setData(content);
             setPagination({
                 total: totalElements,
+                pageSize: totalElements,
                 current: number + 1,
             })
         }
@@ -130,6 +133,11 @@ const Template = () => {
             width: '20%',
         },
         {
+            title: 'Title',
+            dataIndex: 'title',
+            width: '20%',
+        },
+        {
             title: 'Data Type',
             dataIndex: 'dataType',
             width: '20%',
@@ -175,7 +183,7 @@ const Template = () => {
                     icon={<PlusOutlined/>}
                 >Create new config</Button>
             </div>
-            <Row gutter={[0, 16]}>
+            <Row gutter={[0, 8]}>
                 <Col span={24}>
                     <Table
                         rowKey="id"
@@ -208,4 +216,4 @@ const Template = () => {
     )
 }
 
-export default Template;
+export default MasterData;

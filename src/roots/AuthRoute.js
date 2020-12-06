@@ -17,6 +17,7 @@ const {SubMenu} = Menu;
 const {Header, Sider, Content} = Layout;
 
 const getActiveMenu = pathname => {
+  console.log(pathname)
   if (pathname.startsWith('/update-order')) {
     return '/my-order';
   } else {
@@ -38,11 +39,12 @@ const AuthRoute = props => {
           theme="dark"
           mode="inline"
           selectedKeys={[getActiveMenu(location.pathname)]}
+          defaultOpenKeys={['sub2']}
         >
-          <Menu.Item key="/create-order" icon={<FileOutlined/>}>
+          <Menu.Item key="/c-orders" icon={<FileOutlined/>}>
             <NavLink
               activeClassName="selected"
-              to="/create-order">Create Order</NavLink>
+              to="/c-orders">Create Order</NavLink>
           </Menu.Item>
           <Menu.Item key="/my-order" icon={<UnorderedListOutlined/>}>
             <NavLink
@@ -62,11 +64,12 @@ const AuthRoute = props => {
 
 
           <SubMenu key="sub2" icon={<AppstoreOutlined />} title="Admin">
-            <Menu.Item key="5" icon={<UserOutlined/>}>
+            <Menu.Item key="/m-user" icon={<ContainerOutlined/>}>
               <NavLink
                   activeClassName="selected"
-                  to="/m-data">User Management</NavLink>
-            <Menu.Item key="5" icon={<ContainerOutlined/>}>
+                  to="/m-user">User Management</NavLink>
+            </Menu.Item>
+            <Menu.Item key="/m-data" icon={<ContainerOutlined/>}>
               <NavLink
                   activeClassName="selected"
                   to="/m-data">Master Data</NavLink>
@@ -76,6 +79,7 @@ const AuthRoute = props => {
               <Menu.Item key="12">Option 12</Menu.Item>
             </SubMenu>
           </SubMenu>
+
 
         </Menu>
       </Sider>

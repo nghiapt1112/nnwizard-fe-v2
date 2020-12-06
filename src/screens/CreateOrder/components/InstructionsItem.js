@@ -6,6 +6,7 @@ import * as CONSTANTS from "../../../constants";
 import {InfoCircleOutlined} from '@ant-design/icons';
 
 const InstructionsItem = ({
+                            advanceSetting,
                             instruction: {
                               description,
                               fileFormat,
@@ -271,7 +272,7 @@ const InstructionsItem = ({
               <span>Advance Setting <strong>{advancePrice || 0}$</strong></span>
             } key="2">
               <div className="advance-setting__list">
-                {CONSTANTS.CODES.map((setting, index) =>
+                {advanceSetting.map((setting, index) =>
                   <Checkbox
                     checked={codes[setting.value]}
                     onChange={({target: {checked}}) => onChangeAdvance(setting.value, checked)}

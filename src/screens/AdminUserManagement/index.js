@@ -1,17 +1,19 @@
 import React, {useEffect, useState} from "react";
 import {Button, Col, Modal, notification, Popconfirm, Row, Space, Table} from "antd";
-import MasterDataForm from "./components/FormComponent";
+import AdminCreateUserForm from "./components/FormComponent";
 import {PlusOutlined} from "@ant-design/icons";
-import {masterDataService} from "../../services";
+import {adminRoleService, adminUserService, masterDataService} from "../../services";
 import './styles.less';
 import {ANT_TABLE_PAGINATION_DEFAULT, PAGINATION} from "../../constants";
 
-const Template = () => {
+const UserManagement = () => {
     const [isLoadingData, setLoadingData] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [addCount, setAddCount] = useState(0);
     const [formModalData, setFormModalData] = useState({});
+    const [roles, setRoles] = useState([]);
     const [data, setData] = useState([]);
+    const [enabledEmail, setEnabledEmail] = useState(true);
     const [searchParams, setSearchParams] = useState({
         page: PAGINATION.PAGE_START,
         size: PAGINATION.PAGE_SIZE,
@@ -24,14 +26,23 @@ const Template = () => {
     useEffect(() => {
         const fetchData = async () => {
             setLoadingData(true);
-            const res = await masterDataService.getAll(searchParams);
-            setLoadingData(false);
-            const {content, totalElements, number} = res;
-            setData(content);
-            setPagination({
-                total: totalElements,
-                current: number + 1,
-            })
+            try {
+                const res = await adminUserService.findAllUsers(searchParams);
+                const rolesRes = await adminRoleService.findAllRoles();
+                setLoadingData(false);
+                const {content, totalElements, number} = res;
+                content.forEach(el => el.roles = el.roles.join(","))
+                setRoles([...rolesRes]);
+                setData(content);
+                setPagination({
+                    total: totalElements,
+                    current: number + 1,
+                })
+            } catch (error) {
+                notification.error({
+                    message: error
+                })
+            }
         }
 
         fetchData();
@@ -45,34 +56,49 @@ const Template = () => {
     }
     const onConfirmDelete = async ({id}) => {
         try {
-          await masterDataService.delete({ids: [id]});
-          setAddCount(addCount + 1);
-          notification.success({
-            message: 'Delete the configuration  Successfully'
-          })
+            await masterDataService.delete({ids: [id]});
+            setAddCount(addCount + 1);
+            notification.success({
+                message: 'Delete User Successfully'
+            })
         } catch (error) {
-          notification.error({
-            message: error
-          })
+            notification.error({
+                message: error
+            })
         }
     }
     const openAddModal = () => {
-        setFormModalData({});
+        setFormModalData({roles: roles, userStatus: 'ENABLED', uploadLimit: 10});
         setModalVisible(true);
     }
-    const openEditModal = async ({id}) => {
+
+    const mapRoleNameToId = (rolesNames) => {
+        if (!rolesNames) {
+            return [];
+        }
+        return roles.filter(el => rolesNames.includes(el.authority)).map(el => el.roleId);
+    }
+
+    const openEditModal = async ({userId}) => {
         try {
             setLoadingData(true);
-            const res = await masterDataService.findById(id);
+            const res = await adminUserService.findDetail(userId);
             setLoadingData(false);
+            const userRoleIds = mapRoleNameToId(res.roles)
+
             setFormModalData({
-                id: res.id,
-                code: res.code,
-                dataType: res.dataType,
-                price: res.price,
-                requestType: res.requestType,
-                value: res.value
+                userId: res.userId,
+                email: res.email,
+                signImg: res.signImg,
+                fullName: res.fullName,
+                roles: roles,
+                roleIds: userRoleIds,
+                expirationTime: res.expirationTime,
+                uploadLimit: res.uploadLimit,
+                type: res.type,
+                userStatus: res.userStatus,
             });
+            setEnabledEmail(false);
             setModalVisible(true);
         } catch (error) {
             setLoadingData(false);
@@ -95,22 +121,22 @@ const Template = () => {
     }
     const handleModalOk = async () => {
         try {
-            const {id, code, dataType, requestType, price, ...rest} = formModalData;
-            console.log(formModalData);
+            const {email, fullName, password, roleIds, userId, userStatus, uploadLimit, roles, ...rest} = formModalData;
             const payload = {
-                id,
-                code,
-                dataType,
-                requestType,
-                price,
-                setting: {...rest}
+                fullName, password, roleIds, userId, userStatus, uploadLimit
             }
-            const isAddNew = !id;
-            isAddNew ? await masterDataService.create(payload) : await masterDataService.update(id, payload);
+            const isAddNew = !userId;
+            if (isAddNew) {
+                setEnabledEmail(true);
+                await adminUserService.create({...payload, email});
+            } else {
+                setEnabledEmail(false);
+                await adminUserService.update(userId, payload);
+            }
             setModalVisible(false);
             setAddCount(addCount + 1);
             notification.success({
-                message: `${isAddNew ? 'Add' : 'Update'} Configuration Successfully`,
+                message: `${isAddNew ? 'Add' : 'Update'} User Successfully`,
             })
         } catch (error) {
             notification.error({
@@ -121,32 +147,32 @@ const Template = () => {
     const columns = [
         {
             title: 'id',
-            dataIndex: 'id',
+            dataIndex: 'userId',
             width: '10%',
         },
         {
-            title: 'Code',
-            dataIndex: 'code',
+            title: 'Full Name',
+            dataIndex: 'fullName',
             width: '20%',
         },
         {
-            title: 'Data Type',
-            dataIndex: 'dataType',
+            title: 'Email',
+            dataIndex: 'email',
             width: '20%',
         },
         {
-            title: 'Request Type',
-            dataIndex: 'requestType',
+            title: 'Status',
+            dataIndex: 'userStatus',
             width: '20%',
         },
         {
-            title: 'Price',
-            dataIndex: 'price',
+            title: 'Roles',
+            dataIndex: 'roles',
             width: '10%',
         },
         {
             title: 'Action',
-            dataIndex: 'id',
+            dataIndex: 'userId',
             width: '20%',
             align: 'center',
             render: (_, record) => (
@@ -168,17 +194,17 @@ const Template = () => {
     return (
         <>
             <div className="page-header">
-                <h2>Master Data</h2>
+                <h2>User Management</h2>
                 <Button
                     onClick={openAddModal}
                     type="primary"
                     icon={<PlusOutlined/>}
-                >Create new config</Button>
+                >Create new User</Button>
             </div>
             <Row gutter={[0, 16]}>
                 <Col span={24}>
                     <Table
-                        rowKey="id"
+                        rowKey="userId"
                         loading={isLoadingData}
                         columns={columns}
                         dataSource={data}
@@ -194,13 +220,17 @@ const Template = () => {
                     title="Edit Template"
                     visible={modalVisible}
                     onOk={handleModalOk}
-                    onCancel={() => setModalVisible(false)}
+                    onCancel={() => {
+                        setModalVisible(false);
+                        setEnabledEmail(true);
+                    }}
                     width={980}
                 >
-                    <MasterDataForm
+                    <AdminCreateUserForm
                         data={formModalData}
                         onChange={onChangeBasic}
                         onChangeAdvance={onChangeAdvance}
+                        enabledEmail={enabledEmail}
                     />
                 </Modal>
             </Row>
@@ -208,4 +238,4 @@ const Template = () => {
     )
 }
 
-export default Template;
+export default UserManagement;

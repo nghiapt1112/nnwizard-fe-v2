@@ -5,38 +5,81 @@ import * as CONSTANTS from "../../../constants";
 
 const FormComponent = ({
                           data: {
-                              code,
-                              dataType,
-                              requestType,
-                              price,
-                          },
+                              email,
+                              fullName,
+                              password,
+                              roleIds,
+                              userId,
+                              userStatus,
+                              uploadLimit,
+                              roles
+                          }, enabledEmail,
                           onChange,
                           onChangeAdvance
                       }) => {
+
     return (
         <div className="gx-mb-3">
             <Row gutter={[12, 12]}>
-                <Col span="10">
+                <Col span="24">
                     <div className="basic-setting__item">
-                        <div className="basic-setting__label">Code</div>
+                        <div className="basic-setting__label">Email</div>
                         <div className="basic-setting__control">
                             <Input
-                                value={code}
-                                onChange={({target: {value}}) => onChange('code', value)}
+                                disabled={!enabledEmail}
+                                value={email}
+                                onChange={({target: {value}}) => onChange('email', value)}
                                 size="small"
-                                style={{width: 150}}/>
+                                style={{width: 350}}/>
                         </div>
                     </div>
                     <div className="basic-setting__item">
-                        <div className="basic-setting__label">Data Type</div>
+                        <div className="basic-setting__label">Full Name</div>
+                        <div className="basic-setting__control">
+                            <Input
+                                value={fullName}
+                                onChange={({target: {value}}) => onChange('fullName', value)}
+                                size="small"
+                                style={{width: 350}}/>
+                        </div>
+                    </div>
+                    <div className="basic-setting__item">
+                        <div className="basic-setting__label">Password</div>
+                        <div className="basic-setting__control">
+                            <Input
+                                value={password}
+                                onChange={({target: {value}}) => onChange('password', value)}
+                                size="small"
+                                type="password"
+                                style={{width: 350}}/>
+                        </div>
+                    </div>
+                    <div className="basic-setting__item">
+                        <div className="basic-setting__label">Roles</div>
                         <div className="basic-setting__control">
                             <Select
-                                value={dataType}
-                                onChange={(sel) => onChange('dataType', sel)}
+                                value={roleIds}
+                                onChange={(sel) => onChange('roleIds', sel)}
                                 size="small"
-                                // mode="multiple"
-                                style={{width: 150}}>
-                                {CONSTANTS.DATA_TYPE.map((item, index) => {
+                                mode="multiple"
+                                style={{width: 350}}>
+                                {roles.map((item, index) => {
+                                    return (
+                                        <Select.Option key={index} value={item.roleId}>{item.authority}</Select.Option>
+                                    )
+                                })}
+                            </Select>
+                        </div>
+                    </div>
+                    <div className="basic-setting__item">
+                        <div className="basic-setting__label">UserStatus</div>
+                        <div className="basic-setting__control">
+                            <Select
+                                value={userStatus}
+                                onChange={(val) => onChange('userStatus', val)}
+                                size="small"
+                                style={{width: 350}}>
+                                {CONSTANTS.USER_STATUS.map((item, index) => {
                                     return (
                                         <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
                                     )
@@ -45,29 +88,15 @@ const FormComponent = ({
                         </div>
                     </div>
                     <div className="basic-setting__item">
-                        <div className="basic-setting__label">Request Type</div>
-                        <div className="basic-setting__control">
-                            <Select
-                                value={requestType}
-                                onChange={(val) => onChange('requestType', val)}
-                                size="small"
-                                style={{width: 150}}>
-                                {CONSTANTS.ORDER_REQUEST_TYPE.map((item, index) => {
-                                    return (
-                                        <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
-                                    )
-                                })}
-                            </Select>
-                        </div>
-                    </div>
-                    <div className="basic-setting__item">
-                        <div className="basic-setting__label">Price</div>
+                        <div className="basic-setting__label">Upload Limit</div>
                         <div className="basic-setting__control">
                             <Input
-                                value={price}
-                                onChange={({target: {value}}) => onChange('price', value)}
+                                onChange={({target: {value}}) => onChange('uploadLimit', value)}
+                                value={uploadLimit}
                                 size="small"
-                                style={{width: 150}}/>
+                                // onBlur={onBlur}
+                                placeholder="Input a number"
+                                style={{width: 350}}/>
                         </div>
                     </div>
                 </Col>
