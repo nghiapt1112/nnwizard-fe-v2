@@ -8,8 +8,11 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UnorderedListOutlined,
-  UserOutlined
+  UserOutlined,
+  AppstoreOutlined
 } from "@ant-design/icons";
+
+const {SubMenu} = Menu;
 
 const {Header, Sider, Content} = Layout;
 
@@ -56,11 +59,24 @@ const AuthRoute = props => {
               activeClassName="selected"
               to="/user-setting">User Setting</NavLink>
           </Menu.Item>
-          <Menu.Item key="5" icon={<ContainerOutlined/>}>
-            <NavLink
-                activeClassName="selected"
-                to="/m-data">Master Data</NavLink>
-          </Menu.Item>
+
+
+          <SubMenu key="sub2" icon={<AppstoreOutlined />} title="Admin">
+            <Menu.Item key="5" icon={<UserOutlined/>}>
+              <NavLink
+                  activeClassName="selected"
+                  to="/m-data">User Management</NavLink>
+            <Menu.Item key="5" icon={<ContainerOutlined/>}>
+              <NavLink
+                  activeClassName="selected"
+                  to="/m-data">Master Data</NavLink>
+            </Menu.Item>
+            <SubMenu key="sub3" title="Submenu">
+              <Menu.Item key="11">Option 11</Menu.Item>
+              <Menu.Item key="12">Option 12</Menu.Item>
+            </SubMenu>
+          </SubMenu>
+
         </Menu>
       </Sider>
       <Layout className="site-layout">

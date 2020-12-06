@@ -10,7 +10,7 @@ import Template from "./screens/Template";
 import CreateOrder from "./screens/CreateOrder";
 import MyOrder from "./screens/MyOrder";
 import UserSetting from "./screens/UserSetting";
-import MasterData from "./screens/MasterData";
+import MasterData from "./screens/AdminMasterData";
 
 const App = () => {
   return (
