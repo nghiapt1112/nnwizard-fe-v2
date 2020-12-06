@@ -1,21 +1,41 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect} from "react";
-import {Button, Form, Input} from 'antd';
+import React, {useEffect, useState} from "react";
+import {Button, Form, Input, notification} from 'antd';
 import {LockOutlined, UserOutlined} from '@ant-design/icons';
 import './styles.less';
 import {useDispatch} from "react-redux";
 import {authenticationAction} from "../../redux/actions";
+import {userService} from "../../services";
+import {useHistory} from "react-router-dom";
 
 const Register = () => {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
     dispatch(authenticationAction.logout());
   }, []);
 
-  const onFinish = values => {
-    // const {email, password} = values;
-    // dispatch(authenticationAction.register(email, password));
+  const onFinish = async (values) => {
+    setLoading(true);
+    try {
+      const {email, password} = values;
+      await userService.register(email, password);
+      history.push('/login');
+      notification.success({
+        message: 'Register successfully'
+      })
+    } catch (error) {
+      const {response: {data, statusText}} = error;
+      const erMessage = ((data && data.message) || (data.messages && data.messages[0])) || statusText;
+      notification.error({
+        message: 'Register',
+        description: erMessage
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,7 +76,7 @@ const Register = () => {
         {/*  />*/}
         {/*</Form.Item>*/}
         <Form.Item>
-          <Button type="primary" htmlType="submit" className="login-form-button">
+          <Button loading={loading} type="primary" htmlType="submit" className="login-form-button">
             Register
           </Button>
           You might already have an account, Please <a href="/login">login</a>

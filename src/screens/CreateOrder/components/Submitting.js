@@ -72,7 +72,7 @@ const Submitting = ({
         <Col span="12">
           <Space>
             <Typography.Text strong>Total:
-              ${instructions.reduce((accumulator, current) => accumulator + current.basicPrice + current.advancePrice, 0)}</Typography.Text>
+              ${instructions.reduce((accumulator, current) => accumulator + (current.basicPrice || 0) + (current.advancePrice || 0), 0)}</Typography.Text>
           </Space>
         </Col>
       </Row>
