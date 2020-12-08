@@ -65,6 +65,7 @@ const CreateOrder = () => {
     async function fetchOrderById() {
       try {
         const res = await orderService.getById(orderId);
+        console.log('order detail', res);
         if (res && res.images) {
           const newInstruction = res.images
             .map(({

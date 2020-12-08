@@ -28,7 +28,6 @@ const MasterData = () => {
             const res = await masterDataService.getAll(searchParams);
             setLoadingData(false);
             const {content, totalElements, number} = res;
-            content.forEach(el=> el.title = (el.value || el.code))
             setData(content);
             setPagination({
                 total: totalElements,
@@ -74,6 +73,7 @@ const MasterData = () => {
                 dataType: res.dataType,
                 price: res.price,
                 requestType: res.requestType,
+                formTitle: res.formTitle || res.code,
                 value: res.value
             });
             setModalVisible(true);
@@ -98,7 +98,7 @@ const MasterData = () => {
     }
     const handleModalOk = async () => {
         try {
-            const {id, code, dataType, requestType, price, ...rest} = formModalData;
+            const {id, code, dataType, requestType, price, formTitle, ...rest} = formModalData;
             console.log(formModalData);
             const payload = {
                 id,
@@ -106,6 +106,7 @@ const MasterData = () => {
                 dataType,
                 requestType,
                 price,
+                formTitle,
                 setting: {...rest}
             }
             const isAddNew = !id;
@@ -134,7 +135,7 @@ const MasterData = () => {
         },
         {
             title: 'Title',
-            dataIndex: 'title',
+            dataIndex: 'formTitle',
             width: '20%',
         },
         {

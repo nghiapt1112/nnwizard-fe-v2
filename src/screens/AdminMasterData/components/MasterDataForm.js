@@ -9,6 +9,7 @@ const MasterDataForm = ({
                               dataType,
                               requestType,
                               price,
+                              formTitle
                           },
                           onChange,
                           onChangeAdvance
@@ -23,6 +24,16 @@ const MasterDataForm = ({
                             <Input
                                 value={code}
                                 onChange={({target: {value}}) => onChange('code', value)}
+                                size="small"
+                                style={{width: 150}}/>
+                        </div>
+                    </div>
+                    <div className="basic-setting__item">
+                        <div className="basic-setting__label">FormTitle</div>
+                        <div className="basic-setting__control">
+                            <Input
+                                value={formTitle}
+                                onChange={({target: {value}}) => onChange('formTitle', value)}
                                 size="small"
                                 style={{width: 150}}/>
                         </div>
