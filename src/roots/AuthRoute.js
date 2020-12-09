@@ -74,10 +74,10 @@ const AuthRoute = props => {
                   activeClassName="selected"
                   to="/m-data">Master Data</NavLink>
             </Menu.Item>
-            <SubMenu key="sub3" title="Submenu">
-              <Menu.Item key="11">Option 11</Menu.Item>
-              <Menu.Item key="12">Option 12</Menu.Item>
-            </SubMenu>
+            {/*<SubMenu key="sub3" title="Submenu">*/}
+            {/*  <Menu.Item key="11">Option 11</Menu.Item>*/}
+            {/*  <Menu.Item key="12">Option 12</Menu.Item>*/}
+            {/*</SubMenu>*/}
           </SubMenu>
 
 

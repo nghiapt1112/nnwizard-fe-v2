@@ -2,11 +2,12 @@ import React from 'react';
 import 'rc-color-picker/assets/index.css';
 import {Button, Col, Divider, Image, Row, Select, Space, Typography} from 'antd';
 import {PlusOutlined} from '@ant-design/icons';
-import * as CONSTANTS from "../../../constants";
 
 const Submitting = ({
                       instructions,
                       rushService,
+                      rushServiceFormValue,
+                      totalPrice,
                       onChangeRushService,
                     }) => {
   return (
@@ -52,27 +53,27 @@ const Submitting = ({
       <Row gutter={[0, 12]} style={{marginTop: '10px'}} align="middle">
         <Col span="12">
           <div className="basic-setting__item" style={{justifyContent: 'flex-start'}}>
-            <div className="basic-setting__label">Rush service</div>
-            <div className="basic-setting__control" style={{marginLeft: '10px'}}>
-              <Select
-                value={rushService}
-                onChange={(val) => onChangeRushService(val)}
-                defaultValue={CONSTANTS.RUSH_SERVICE[0].value}
-                size="small"
-                style={{width: 200}}>
-                {CONSTANTS.RUSH_SERVICE.map((item, index) => {
-                  return (
-                    <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
-                  )
-                })}
-              </Select>
-            </div>
+            {/*<div className="basic-setting__label">Rush service</div>*/}
+            {/*<div className="basic-setting__control" style={{marginLeft: '10px'}}>*/}
+            {/*  <Select*/}
+            {/*    value={rushService}*/}
+            {/*    onChange={(val) => onChangeRushService(val)}*/}
+            {/*    defaultValue={0}*/}
+            {/*    size="small"*/}
+            {/*    style={{width: 200}}>*/}
+            {/*    {(rushServiceFormValue || []).map((item, index) => {*/}
+            {/*      return (*/}
+            {/*        <Select.Option key={index} value={index}>{item.text}</Select.Option>*/}
+            {/*      )*/}
+            {/*    })}*/}
+            {/*  </Select>*/}
+            {/*</div>*/}
           </div>
         </Col>
         <Col span="12">
           <Space>
             <Typography.Text strong>Total:
-              ${instructions.reduce((accumulator, current) => accumulator + (current.basicPrice || 0) + (current.advancePrice || 0), 0)}</Typography.Text>
+                {totalPrice || -1}</Typography.Text>
           </Space>
         </Col>
       </Row>
