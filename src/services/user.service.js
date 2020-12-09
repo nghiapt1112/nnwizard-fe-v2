@@ -1,6 +1,6 @@
 import axios from 'axios';
-import api from "./api";
-import config from "../config";
+import api from './api';
+import config from '../config';
 import LocalStorageService from './LocalStorageService';
 const localStorageService = LocalStorageService.getService();
 
@@ -13,8 +13,9 @@ export const userService = {
 };
 
 function login(userName, password) {
-  return axios.post(`${config.apiUrl}/login`, {userName, password})
-    .then(res => {
+  return axios
+    .post(`${config.apiUrl}/login`, { userName, password })
+    .then((res) => {
       localStorageService.setToken(res.data);
     });
 }
@@ -29,7 +30,7 @@ function getProfile() {
 }
 
 function register(email, password) {
-  return api.post(`${config.apiUrl}/sys/register`, {email, password});
+  return api.post(`${config.apiUrl}/sys/register`, { email, password });
 }
 
 function updateProfile(user) {

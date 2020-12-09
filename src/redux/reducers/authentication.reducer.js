@@ -1,4 +1,4 @@
-import {authenticationConstants} from '../_constants';
+import { authenticationConstants } from '../_constants';
 import LocalStorageService from '../../services/LocalStorageService';
 const localStorageService = LocalStorageService.getService();
 
@@ -6,9 +6,11 @@ const exp = localStorageService.getExpiresIn();
 if (exp * 1000 < Date.now()) localStorageService.clearToken();
 const token = localStorageService.getAccessToken();
 
-const initialState = token ? {
-  loggedIn: true,
-} : {};
+const initialState = token
+  ? {
+      loggedIn: true,
+    }
+  : {};
 
 export function authentication(state = initialState, action) {
   switch (action.type) {
@@ -20,6 +22,6 @@ export function authentication(state = initialState, action) {
       localStorageService.clearToken();
       return {};
     default:
-      return state
+      return state;
   }
 }

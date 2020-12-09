@@ -1,5 +1,3 @@
-import * as converts from "./converts";
+import * as converts from './converts';
 
-export {
-  converts
-}
+export { converts };

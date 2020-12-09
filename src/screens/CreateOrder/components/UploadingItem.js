@@ -1,15 +1,17 @@
-import React from "react";
-import {converts} from "../../../utils";
-import {Button, Col, Image, Row, Space, Typography} from 'antd';
-import {WarningOutlined} from '@ant-design/icons';
+import React from 'react';
+import { converts } from '../../../utils';
+import { Button, Col, Image, Row, Space, Typography } from 'antd';
+import { WarningOutlined } from '@ant-design/icons';
 
-const UploadingItem = ({
-                         file,
-                         onDeleteFile,
-                       }) => {
+const UploadingItem = ({ file, onDeleteFile }) => {
   return (
     <>
-      <Row gutter={[0, 12]} justify="space-around" align="middle" className='b-b'>
+      <Row
+        gutter={[0, 12]}
+        justify="space-around"
+        align="middle"
+        className="b-b"
+      >
         <Col span="12">
           <Space size="large">
             <Image
@@ -24,17 +26,18 @@ const UploadingItem = ({
         <Col span="12" className="uploading-file__info">
           <Space size="large">
             <span>{converts.bytesToMegaBytes(file.size).toFixed(2)} MB</span>
-            {converts.bytesToMegaBytes(file.size) < 1 ?
-              <Typography.Text type="warning"><WarningOutlined/> Low resolution detected </Typography.Text> : null}
+            {converts.bytesToMegaBytes(file.size) < 1 ? (
+              <Typography.Text type="warning">
+                <WarningOutlined /> Low resolution detected{' '}
+              </Typography.Text>
+            ) : null}
           </Space>
-          <Button
-            danger
-            type="text"
-            onClick={onDeleteFile}
-          >Delete</Button>
+          <Button danger type="text" onClick={onDeleteFile}>
+            Delete
+          </Button>
         </Col>
       </Row>
     </>
-  )
-}
+  );
+};
 export default UploadingItem;

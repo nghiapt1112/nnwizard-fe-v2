@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from "react";
-import {Button, Form, Input, notification} from 'antd';
-import {userService} from "../../services";
-import {authenticationAction} from "../../redux/actions";
-import {useDispatch} from "react-redux";
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Input, notification } from 'antd';
+import { userService } from '../../services';
+import { authenticationAction } from '../../redux/actions';
+import { useDispatch } from 'react-redux';
 
 const layout = {
-  labelCol: {span: 8},
-  wrapperCol: {span: 8},
+  labelCol: { span: 8 },
+  wrapperCol: { span: 8 },
 };
 
 const validateMessages = {
@@ -25,14 +25,14 @@ const UserSetting = () => {
   useEffect(() => {
     const fetchData = async () => {
       const res = await userService.getProfile();
-      const formValues = Object.keys(res).map(key => {
+      const formValues = Object.keys(res).map((key) => {
         return {
           name: key,
-          value: res[key]
-        }
-      })
+          value: res[key],
+        };
+      });
       setProfile(formValues);
-    }
+    };
 
     fetchData();
   }, []);
@@ -46,53 +46,53 @@ const UserSetting = () => {
       await userService.updateProfile(payload);
       notification.success({
         message: `Update Successfully`,
-      })
+      });
     } catch (error) {
       notification.error({
         message: error,
-      })
+      });
     }
   };
 
   const onLogout = () => {
     dispatch(authenticationAction.logout());
-  }
+  };
 
   return (
     <>
       <div className="page-header">
         <h2>User Setting</h2>
       </div>
-      <Form {...layout}
-            fields={profile}
-            name="nest-messages"
-            onFinish={onFinish}
-            validateMessages={validateMessages}>
+      <Form
+        {...layout}
+        fields={profile}
+        name="nest-messages"
+        onFinish={onFinish}
+        validateMessages={validateMessages}
+      >
         <Form.Item name={'userId'} label="User Id">
-          <Input disabled={true}/>
+          <Input disabled={true} />
         </Form.Item>
-        <Form.Item name={'email'} label="Email" rules={[{type: 'email'}]}>
-          <Input disabled={true}/>
+        <Form.Item name={'email'} label="Email" rules={[{ type: 'email' }]}>
+          <Input disabled={true} />
         </Form.Item>
         <Form.Item name={'fullName'} label="Full Name">
-          <Input/>
+          <Input />
         </Form.Item>
         <Form.Item name={'password'} label="Password">
-          <Input
-            type="password"
-            autoComplete="off"
-          />
+          <Input type="password" autoComplete="off" />
         </Form.Item>
-        <Form.Item wrapperCol={{...layout.wrapperCol, offset: 8}}>
+        <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
           <Button type="primary" htmlType="submit">
             Submit
           </Button>
           <Button
             danger
             type="link"
-            style={{float: 'right'}}
+            style={{ float: 'right' }}
             htmlType="button"
-            onClick={onLogout}>
+            onClick={onLogout}
+          >
             Logout
           </Button>
         </Form.Item>

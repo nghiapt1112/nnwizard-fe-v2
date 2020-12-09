@@ -1,20 +1,14 @@
-import React from "react";
-import {Col, Divider, Row} from 'antd';
-import UploadingItem from "./UploadingItem";
-import UploadButton from "../../../components/UploadButton";
+import React from 'react';
+import { Col, Divider, Row } from 'antd';
+import UploadingItem from './UploadingItem';
+import UploadButton from '../../../components/UploadButton';
 
-const Uploading = ({
-                     instructions = [],
-                     onAddFiles,
-                     onDeleteFile,
-                   }) => {
+const Uploading = ({ instructions = [], onAddFiles, onDeleteFile }) => {
   return (
     <>
       <Row gutter={[0, 12]}>
         <Col span="24">
-          <UploadButton
-            onChange={onAddFiles}
-          />
+          <UploadButton onChange={onAddFiles} />
         </Col>
       </Row>
       <Divider orientation="left">Photos Uploading</Divider>
@@ -26,10 +20,10 @@ const Uploading = ({
               file={instruction.file}
               onDeleteFile={() => onDeleteFile(index)}
             />
-          )
+          );
         })}
       </div>
     </>
-  )
-}
+  );
+};
 export default Uploading;

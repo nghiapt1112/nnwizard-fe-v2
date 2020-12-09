@@ -1,1 +1,1 @@
-export * from "./TableActions/index"
+export * from './TableActions/index';

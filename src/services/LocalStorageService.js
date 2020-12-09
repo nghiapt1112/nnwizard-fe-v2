@@ -4,9 +4,9 @@ const LocalStorageService = (function () {
   function _getService() {
     if (!_service) {
       _service = this;
-      return _service
+      return _service;
     }
-    return _service
+    return _service;
   }
 
   function _setToken(tokenObj) {
@@ -39,7 +39,7 @@ const LocalStorageService = (function () {
     getAccessToken: _getAccessToken,
     getRefreshToken: _getRefreshToken,
     getExpiresIn: _getExpiresIn,
-    clearToken: _clearToken
-  }
+    clearToken: _clearToken,
+  };
 })();
 export default LocalStorageService;

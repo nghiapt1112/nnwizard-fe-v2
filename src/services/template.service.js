@@ -1,11 +1,11 @@
-import api from "./api";
+import api from './api';
 
 export const templateService = {
   getAll,
   getById,
   create,
   update,
-  delete: _delete
+  delete: _delete,
 };
 
 function getAll(params) {

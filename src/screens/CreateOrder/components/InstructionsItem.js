@@ -1,39 +1,54 @@
 import React from 'react';
 import 'rc-color-picker/assets/index.css';
 import ColorPicker from 'rc-color-picker';
-import {Checkbox, Col, Collapse, Image, Input, Row, Select, Switch, Tooltip} from 'antd';
-import * as CONSTANTS from "../../../constants";
-import {InfoCircleOutlined} from '@ant-design/icons';
+import {
+  Checkbox,
+  Col,
+  Collapse,
+  Image,
+  Input,
+  Row,
+  Select,
+  Switch,
+  Tooltip,
+} from 'antd';
+import * as CONSTANTS from '../../../constants';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 const InstructionsItem = ({
-                            advanceSetting,
-                            instruction: {
-                              description,
-                              fileFormat,
-                              background,
-                              size,
-                              aspectRatio,
-                              minMaxSize,
-                              psdWithLayers,
-                              margin,
-                              margin_left,
-                              margin_right,
-                              margin_top,
-                              margin_bottom,
-                              preFix,
-                              postFix,
-                              dpi,
-                              compression,
-                              codes = {},
-                              file,
-                              advancePrice,
-                            },
-                            onChange,
-                            onChangeAdvance
-                          }) => {
+  advanceSetting,
+  instruction: {
+    description,
+    fileFormat,
+    background,
+    size,
+    aspectRatio,
+    minMaxSize,
+    psdWithLayers,
+    margin,
+    margin_left,
+    margin_right,
+    margin_top,
+    margin_bottom,
+    preFix,
+    postFix,
+    dpi,
+    compression,
+    codes = {},
+    file,
+    advancePrice,
+  },
+  onChange,
+  onChangeAdvance,
+}) => {
   return (
     <div className="gx-mb-3">
-      <Row gutter={[12, 12]} justify="space-around" align="middle" className="gx-mb-0">
+      <Row
+        gutter={[12, 12]}
+        justify="space-around"
+        align="middle"
+        className="gx-mb-0"
+      >
         <Col flex={'150px'}>
           <Image
             width={142}
@@ -45,7 +60,7 @@ const InstructionsItem = ({
         <Col flex={'auto'}>
           <Input.TextArea
             value={description}
-            onChange={({target: {value}}) => onChange('description', value)}
+            onChange={({ target: { value } }) => onChange('description', value)}
             placeholder="Please provide instructions ..."
             rows="6"
           />
@@ -54,9 +69,14 @@ const InstructionsItem = ({
       <Row>
         <Col span="24">
           <Collapse>
-            <Collapse.Panel header={
-              <span>Basic Setting <strong>0$</strong></span>
-            } key="1">
+            <Collapse.Panel
+              header={
+                <span>
+                  Basic Setting <strong>0$</strong>
+                </span>
+              }
+              key="1"
+            >
               <Row gutter="24">
                 <Col flex="1">
                   <div className="basic-setting__item">
@@ -67,11 +87,14 @@ const InstructionsItem = ({
                         onChange={(val) => onChange('fileFormat', val)}
                         mode="multiple"
                         size="small"
-                        style={{width: 150}}>
+                        style={{ width: 150 }}
+                      >
                         {CONSTANTS.FILE_FORMAT.map((item, index) => {
                           return (
-                            <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
-                          )
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
                         })}
                       </Select>
                     </div>
@@ -81,9 +104,10 @@ const InstructionsItem = ({
                     <div className="basic-setting__control">
                       <ColorPicker
                         color={background || '#fff'}
-                        onChange={({color}) => onChange('background', color)}
+                        onChange={({ color }) => onChange('background', color)}
                         className="basic-setting__color-picker"
-                        placement="bottomRight"/>
+                        placement="bottomRight"
+                      />
                     </div>
                   </div>
                   <div className="basic-setting__item">
@@ -93,11 +117,14 @@ const InstructionsItem = ({
                         value={size}
                         onChange={(val) => onChange('size', val)}
                         size="small"
-                        style={{width: 150}}>
+                        style={{ width: 150 }}
+                      >
                         {CONSTANTS.SIZE.map((item, index) => {
                           return (
-                            <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
-                          )
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
                         })}
                       </Select>
                     </div>
@@ -109,11 +136,14 @@ const InstructionsItem = ({
                         value={aspectRatio}
                         onChange={(val) => onChange('aspectRatio', val)}
                         size="small"
-                        style={{width: 150}}>
+                        style={{ width: 150 }}
+                      >
                         {CONSTANTS.ASPECT_RATIO.map((item, index) => {
                           return (
-                            <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
-                          )
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
                         })}
                       </Select>
                     </div>
@@ -125,11 +155,14 @@ const InstructionsItem = ({
                         value={minMaxSize}
                         onChange={(val) => onChange('minMaxSize', val)}
                         size="small"
-                        style={{width: 150}}>
+                        style={{ width: 150 }}
+                      >
                         {CONSTANTS.MIN_MAX_SIZE.map((item, index) => {
                           return (
-                            <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
-                          )
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
                         })}
                       </Select>
                     </div>
@@ -139,16 +172,21 @@ const InstructionsItem = ({
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">
                       <span className="gx-mr-1">PSD with layers</span>
-                      <Tooltip placement="topLeft"
-                               title="Price + 100% (double price)">
-                        <InfoCircleOutlined/>
-                      </Tooltip></div>
+                      <Tooltip
+                        placement="topLeft"
+                        title="Price + 100% (double price)"
+                      >
+                        <InfoCircleOutlined />
+                      </Tooltip>
+                    </div>
                     <div className="basic-setting__control">
                       <Checkbox
                         checked={psdWithLayers}
-                        onChange={({target: {checked}}) => onChange('psdWithLayers', checked)}
+                        onChange={({ target: { checked } }) =>
+                          onChange('psdWithLayers', checked)
+                        }
                         size="small"
-                      ></Checkbox>
+                      />
                     </div>
                   </div>
                   <div className="basic-setting__item">
@@ -158,7 +196,8 @@ const InstructionsItem = ({
                         checked={margin}
                         onChange={(val) => onChange('margin', val)}
                         size="small"
-                        defaultChecked/>
+                        defaultChecked
+                      />
                     </div>
                   </div>
                   <div className="basic-setting__item">
@@ -167,10 +206,13 @@ const InstructionsItem = ({
                       <Input
                         disabled={!margin}
                         value={margin_left}
-                        onChange={({target: {value}}) => onChange('margin_left', value)}
+                        onChange={({ target: { value } }) =>
+                          onChange('margin_left', value)
+                        }
                         size="small"
                         suffix="%"
-                        style={{width: 70}}/>
+                        style={{ width: 70 }}
+                      />
                     </div>
                   </div>
                   <div className="basic-setting__item">
@@ -179,10 +221,13 @@ const InstructionsItem = ({
                       <Input
                         disabled={!margin}
                         value={margin_right}
-                        onChange={({target: {value}}) => onChange('margin_right', value)}
+                        onChange={({ target: { value } }) =>
+                          onChange('margin_right', value)
+                        }
                         size="small"
                         suffix="%"
-                        style={{width: 70}}/>
+                        style={{ width: 70 }}
+                      />
                     </div>
                   </div>
                   <div className="basic-setting__item">
@@ -191,10 +236,13 @@ const InstructionsItem = ({
                       <Input
                         disabled={!margin}
                         value={margin_top}
-                        onChange={({target: {value}}) => onChange('margin_top', value)}
+                        onChange={({ target: { value } }) =>
+                          onChange('margin_top', value)
+                        }
                         size="small"
                         suffix="%"
-                        style={{width: 70}}/>
+                        style={{ width: 70 }}
+                      />
                     </div>
                   </div>
                   <div className="basic-setting__item">
@@ -203,10 +251,13 @@ const InstructionsItem = ({
                       <Input
                         disabled={!margin}
                         value={margin_bottom}
-                        onChange={({target: {value}}) => onChange('margin_bottom', value)}
+                        onChange={({ target: { value } }) =>
+                          onChange('margin_bottom', value)
+                        }
                         size="small"
                         suffix="%"
-                        style={{width: 70}}/>
+                        style={{ width: 70 }}
+                      />
                     </div>
                   </div>
                 </Col>
@@ -216,10 +267,13 @@ const InstructionsItem = ({
                     <div className="basic-setting__control">
                       <Input
                         value={preFix}
-                        onChange={({target: {value}}) => onChange('preFix', value)}
+                        onChange={({ target: { value } }) =>
+                          onChange('preFix', value)
+                        }
                         size="small"
                         placeholder="prefix_filename.jpg"
-                        style={{width: 150}}/>
+                        style={{ width: 150 }}
+                      />
                     </div>
                   </div>
                   <div className="basic-setting__item">
@@ -227,10 +281,13 @@ const InstructionsItem = ({
                     <div className="basic-setting__control">
                       <Input
                         value={postFix}
-                        onChange={({target: {value}}) => onChange('postFix', value)}
+                        onChange={({ target: { value } }) =>
+                          onChange('postFix', value)
+                        }
                         size="small"
                         placeholder="filename_postfix.jp"
-                        style={{width: 150}}/>
+                        style={{ width: 150 }}
+                      />
                     </div>
                   </div>
                   <div className="basic-setting__item">
@@ -240,11 +297,14 @@ const InstructionsItem = ({
                         value={dpi}
                         onChange={(value) => onChange('dpi', value)}
                         size="small"
-                        style={{width: 150}}>
+                        style={{ width: 150 }}
+                      >
                         {CONSTANTS.DPI.map((item, index) => {
                           return (
-                            <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
-                          )
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
                         })}
                       </Select>
                     </div>
@@ -256,11 +316,14 @@ const InstructionsItem = ({
                         value={compression}
                         onChange={(value) => onChange('compression', value)}
                         size="small"
-                        style={{width: 150}}>
+                        style={{ width: 150 }}
+                      >
                         {CONSTANTS.COMPRESSION.map((item, index) => {
                           return (
-                            <Select.Option key={index} value={item.value}>{item.text}</Select.Option>
-                          )
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
                         })}
                       </Select>
                     </div>
@@ -268,25 +331,33 @@ const InstructionsItem = ({
                 </Col>
               </Row>
             </Collapse.Panel>
-            <Collapse.Panel header={
-              <span>Advance Setting <strong>{advancePrice || 0}$</strong></span>
-            } key="2">
+            <Collapse.Panel
+              header={
+                <span>
+                  Advance Setting <strong>{advancePrice || 0}$</strong>
+                </span>
+              }
+              key="2"
+            >
               <div className="advance-setting__list">
-                {advanceSetting.map((setting, index) =>
+                {advanceSetting.map((setting, index) => (
                   <Checkbox
                     checked={codes[setting.value]}
-                    onChange={({target: {checked}}) => onChangeAdvance(setting.value, checked)}
+                    onChange={({ target: { checked } }) =>
+                      onChangeAdvance(setting.value, checked)
+                    }
                     key={index}
                   >
                     {setting.text}
-                  </Checkbox>)}
+                  </Checkbox>
+                ))}
               </div>
             </Collapse.Panel>
           </Collapse>
         </Col>
       </Row>
     </div>
-  )
-}
+  );
+};
 
 export default InstructionsItem;

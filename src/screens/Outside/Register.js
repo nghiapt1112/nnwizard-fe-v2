@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from "react";
-import {Button, Form, Input, notification} from 'antd';
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, Input, notification } from 'antd';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import './styles.less';
-import {useDispatch} from "react-redux";
-import {authenticationAction} from "../../redux/actions";
-import {userService} from "../../services";
-import {useHistory} from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { authenticationAction } from '../../redux/actions';
+import { userService } from '../../services';
+import { useHistory } from 'react-router-dom';
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -20,18 +20,23 @@ const Register = () => {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const {email, password} = values;
+      const { email, password } = values;
       await userService.register(email, password);
       history.push('/login');
       notification.success({
-        message: 'Register successfully'
-      })
+        message: 'Register successfully',
+      });
     } catch (error) {
-      const {response: {data, statusText}} = error;
-      const erMessage = ((data && data.message) || (data.messages && data.messages[0])) || statusText;
+      const {
+        response: { data, statusText },
+      } = error;
+      const erMessage =
+        (data && data.message) ||
+        (data.messages && data.messages[0]) ||
+        statusText;
       notification.error({
         message: 'Register',
-        description: erMessage
+        description: erMessage,
       });
     } finally {
       setLoading(false);
@@ -40,26 +45,23 @@ const Register = () => {
 
   return (
     <div className="login-page">
-      <Form
-        name="normal_login"
-        className="login-form"
-        onFinish={onFinish}
-      >
+      <Form name="normal_login" className="login-form" onFinish={onFinish}>
         <Form.Item
           name="email"
-          rules={[{required: true, message: 'Please input your Email!'}]}
+          rules={[{ required: true, message: 'Please input your Email!' }]}
         >
           <Input
             autoComplete="off"
-            prefix={<UserOutlined className="site-form-item-icon"/>}
-            placeholder="Email"/>
+            prefix={<UserOutlined className="site-form-item-icon" />}
+            placeholder="Email"
+          />
         </Form.Item>
         <Form.Item
           name="password"
-          rules={[{required: true, message: 'Please input your Password!'}]}
+          rules={[{ required: true, message: 'Please input your Password!' }]}
         >
           <Input
-            prefix={<LockOutlined className="site-form-item-icon"/>}
+            prefix={<LockOutlined className="site-form-item-icon" />}
             type="password"
             autoComplete="new-password"
             placeholder="Password"
@@ -76,7 +78,12 @@ const Register = () => {
         {/*  />*/}
         {/*</Form.Item>*/}
         <Form.Item>
-          <Button loading={loading} type="primary" htmlType="submit" className="login-form-button">
+          <Button
+            loading={loading}
+            type="primary"
+            htmlType="submit"
+            className="login-form-button"
+          >
             Register
           </Button>
           You might already have an account, Please <a href="/login">login</a>

@@ -1,16 +1,16 @@
 import React from 'react';
-import {Steps} from 'antd';
+import { Steps } from 'antd';
 
-const {Step} = Steps;
+const { Step } = Steps;
 
-const StepTracking = ({currentStep}) => {
+const StepTracking = ({ currentStep }) => {
   return (
     <Steps size="small" current={currentStep}>
-      <Step title="Uploading"/>
-      <Step title="Instructions"/>
-      <Step title="Submitting"/>
+      <Step title="Uploading" />
+      <Step title="Instructions" />
+      <Step title="Submitting" />
     </Steps>
-  )
-}
+  );
+};
 
 export default StepTracking;

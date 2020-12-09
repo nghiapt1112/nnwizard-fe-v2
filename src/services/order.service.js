@@ -1,5 +1,5 @@
 import axios from 'axios';
-import api from "./api";
+import api from './api';
 
 export const orderService = {
   getAll,
@@ -8,7 +8,7 @@ export const orderService = {
   update,
   generateLinkUploadFile,
   uploadFile,
-  delete: _delete
+  delete: _delete,
 };
 
 function getAll(params) {
@@ -24,7 +24,7 @@ function create(order) {
 }
 
 function update(orderId, order) {
-  return api.put(`/order/real-estate-setting/${orderId}`,order);
+  return api.put(`/order/real-estate-setting/${orderId}`, order);
 }
 
 function generateLinkUploadFile(payload) {
@@ -36,8 +36,8 @@ function uploadFile(preSignedURL, blob, data) {
     method: 'PUT',
     headers: {
       'Content-Type': base64MimeType(data),
-      'Access-Control-Allow-Origin': '*'
-    }
+      'Access-Control-Allow-Origin': '*',
+    },
   });
 }
 

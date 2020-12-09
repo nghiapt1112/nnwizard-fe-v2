@@ -1,18 +1,15 @@
-import React, {useRef} from "react";
-import {Button} from 'antd';
-import {PlusOutlined} from '@ant-design/icons';
+import React, { useRef } from 'react';
+import { Button } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 
-const UploadButton = ({
-                        title = 'Upload Files ...',
-                        onChange,
-                      }) => {
+const UploadButton = ({ title = 'Upload Files ...', onChange }) => {
   const inputFiles = useRef(null);
   return (
     <>
       <Button
         onClick={() => inputFiles.current.click()}
         type="primary"
-        icon={<PlusOutlined/>}
+        icon={<PlusOutlined />}
       >
         {title}
       </Button>
@@ -22,8 +19,9 @@ const UploadButton = ({
         onChange={onChange}
         ref={inputFiles}
         type="file"
-        style={{display: 'none'}}/>
+        style={{ display: 'none' }}
+      />
     </>
-  )
-}
+  );
+};
 export default UploadButton;

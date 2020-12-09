@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from "react";
-import {useHistory} from 'react-router-dom';
-import {Button, Checkbox, Form, Input, notification} from 'antd';
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { Button, Checkbox, Form, Input, notification } from 'antd';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import './styles.less';
-import {useDispatch} from 'react-redux';
-import {userService} from "../../services";
-import {authenticationAction} from "../../redux/actions";
+import { useDispatch } from 'react-redux';
+import { userService } from '../../services';
+import { authenticationAction } from '../../redux/actions';
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -16,24 +16,28 @@ const Login = () => {
   useEffect(() => {
     const logout = () => {
       dispatch(authenticationAction.logout());
-    }
+    };
     logout();
   }, []);
-
 
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const {userName, password} = values;
+      const { userName, password } = values;
       await userService.login(userName, password);
       dispatch(authenticationAction.loginSuccess());
       history.push('/my-order');
     } catch (error) {
-      const {response: {data, statusText}} = error;
-      const erMessage = ((data && data.message) || (data.messages && data.messages[0])) || statusText;
+      const {
+        response: { data, statusText },
+      } = error;
+      const erMessage =
+        (data && data.message) ||
+        (data.messages && data.messages[0]) ||
+        statusText;
       notification.error({
         message: 'Login',
-        description: erMessage
+        description: erMessage,
       });
     } finally {
       setLoading(false);
@@ -45,25 +49,25 @@ const Login = () => {
       <Form
         name="normal_login"
         className="login-form"
-        initialValues={{remember: true}}
+        initialValues={{ remember: true }}
         onFinish={onFinish}
       >
         <Form.Item
           name="userName"
-          rules={[{required: true, message: 'Please input your Username!'}]}
+          rules={[{ required: true, message: 'Please input your Username!' }]}
         >
           <Input
-            prefix={<UserOutlined className="site-form-item-icon"/>}
+            prefix={<UserOutlined className="site-form-item-icon" />}
             placeholder="Username"
             autoComplete="username"
           />
         </Form.Item>
         <Form.Item
           name="password"
-          rules={[{required: true, message: 'Please input your Password!'}]}
+          rules={[{ required: true, message: 'Please input your Password!' }]}
         >
           <Input
-            prefix={<LockOutlined className="site-form-item-icon"/>}
+            prefix={<LockOutlined className="site-form-item-icon" />}
             type="password"
             placeholder="Password"
             autoComplete={'current-password'}
@@ -84,7 +88,8 @@ const Login = () => {
             loading={loading}
             type="primary"
             htmlType="submit"
-            className="login-form-button">
+            className="login-form-button"
+          >
             Log in
           </Button>
           Or <a href="/register">register now!</a>

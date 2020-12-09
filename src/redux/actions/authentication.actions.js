@@ -1,4 +1,4 @@
-import {authenticationConstants} from "../_constants";
+import { authenticationConstants } from '../_constants';
 
 export const authenticationAction = {
   loginSuccess,
@@ -7,12 +7,12 @@ export const authenticationAction = {
 
 function loginSuccess() {
   return {
-    type: authenticationConstants.LOGIN_SUCCESS
-  }
+    type: authenticationConstants.LOGIN_SUCCESS,
+  };
 }
 
 function logout() {
   return {
     type: authenticationConstants.LOGOUT,
-  }
+  };
 }
