@@ -9,6 +9,7 @@ export const orderService = {
   generateLinkUploadFile,
   uploadFile,
   delete: _delete,
+  assignDevs,
 };
 
 function getAll(params) {
@@ -60,4 +61,8 @@ function base64MimeType(encoded) {
   }
 
   return result;
+}
+
+function assignDevs(orderId, devIds) {
+  return api.put(`/order/assign/${orderId}`, { devIds: devIds });
 }

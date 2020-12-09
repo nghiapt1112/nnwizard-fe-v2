@@ -12,14 +12,14 @@ import {
 import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import Filter from './components/Filter';
-import * as CONSTANTS from '../../constants';
 import { ANT_TABLE_PAGINATION_DEFAULT, PAGINATION } from '../../constants';
-import { orderService } from '../../services';
+import { adminUserService, orderService } from '../../services';
 
 const MyOrder = () => {
   const history = useHistory();
   const [isLoadingData, setLoadingData] = useState(false);
   const [addCount, setAddCount] = useState(0);
+  const [dataChanged, setDataChange] = useState(0);
   const [data, setData] = useState([]);
   const [users, setUsers] = useState([]);
   const [searchParams, setSearchParams] = useState({
@@ -35,14 +35,26 @@ const MyOrder = () => {
     const fetchUser = async () => {
       try {
         setLoadingData(true);
+        const res = await adminUserService.findAllUsers();
+        const { content } = res;
+        const listUser = content.map(({ userId, fullName, ...rest }) => {
+          return {
+            value: userId,
+            text: fullName,
+          };
+        });
+        setUsers([{ value: 0, text: '--- choose assignee ---' }, ...listUser]);
+        setLoadingData(false);
       } catch (error) {
         setLoadingData(false);
-        console.log(error);
+        notification.error({
+          message: error,
+        });
       }
     };
 
     fetchUser();
-  }, [searchParams, addCount]);
+  }, [searchParams, addCount, dataChanged]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,12 +70,14 @@ const MyOrder = () => {
         });
       } catch (error) {
         setLoadingData(false);
-        console.log(error);
+        notification.error({
+          message: error,
+        });
       }
     };
 
     fetchData();
-  }, [searchParams, addCount]);
+  }, [searchParams, addCount, dataChanged]);
 
   const onSearchClick = (params) => {
     setSearchParams({
@@ -75,6 +89,23 @@ const MyOrder = () => {
   const openEditClick = async ({ id }) => {
     history.push(`/update-order/${id}`);
   };
+
+  const onAssigneeChange = async (id, userId) => {
+    try {
+      await orderService.assignDevs(id, [...[], userId]);
+      setDataChange(dataChanged + 1);
+      notification.success({
+        message: `Assign to ${users.find(
+          (el) => el.userId === userId
+        )} Successfully`,
+      });
+    } catch (e) {
+      notification.error({
+        message: e,
+      });
+    }
+  };
+
   const onConfirmDelete = async ({ id }) => {
     try {
       await orderService.delete(id);
@@ -138,11 +169,12 @@ const MyOrder = () => {
           </Popconfirm>
           <Select
             placeholder="By Type"
-            value={'GENERAL'}
+            onChange={(value) => onAssigneeChange(record.id, value)}
+            value={record.assignees[0]}
             size="small"
             style={{ width: '100%' }}
           >
-            {CONSTANTS.ORDER_REQUEST_TYPE.map((item, index) => {
+            {users.map((item, index) => {
               return (
                 <Select.Option key={index} value={item.value}>
                   {item.text}
