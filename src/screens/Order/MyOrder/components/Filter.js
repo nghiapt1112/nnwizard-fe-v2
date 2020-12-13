@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Col, DatePicker, Input, Row, Select } from 'antd';
-import * as CONSTANTS from '../../../constants';
+import * as CONSTANTS from '../../../../constants';
 import { SearchOutlined } from '@ant-design/icons';
 
 const { RangePicker } = DatePicker;

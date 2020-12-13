@@ -1,7 +1,7 @@
 import React from 'react';
 import 'rc-color-picker/assets/index.css';
 import { Col, Input, Row, Select } from 'antd';
-import * as CONSTANTS from '../../../constants';
+import * as CONSTANTS from '../../../../constants';
 
 const FormComponent = ({
   data: {

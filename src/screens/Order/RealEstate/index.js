@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, notification, Row, Space } from 'antd';
-import Uploading from './components/Uploading';
-import StepTracking from './components/StepsTracking';
-import Instructions from './components/Instructions';
-import Submitting from './components/Submitting';
-import './styles.less';
-import { orderService, templateService } from '../../services';
 import { useHistory, useParams } from 'react-router-dom';
-import { settingService } from '../../services/setting.service';
-import { calculatorPrice } from './priceHelper';
-import { toBase64 } from '../../utils/converts';
-import * as CONSTANTS from '../../constants';
-import { isStringEqual } from '../../utils/objectUtils';
+import { orderService, S3Service, templateService } from '../../../services';
+import { settingService } from '../../../services/setting.service';
+import * as CONSTANTS from '../../../constants';
+import { isEmpty, isEqual, isStringEqual } from '../../../utils/objectUtils';
+import { calculatorPrice } from '../priceHelper';
+import { Button, Card, Col, notification, Row, Space } from 'antd';
+import { toBase64 } from '../../../utils/converts';
+import Uploading from '../GeneralOrder/components/Uploading';
+import Instructions from '../GeneralOrder/components/Instructions';
+import Submitting from '../GeneralOrder/components/Submitting';
+import StepTracking from '../GeneralOrder/components/StepsTracking';
 
-const CreateOrder = () => {
+const CreateOrderRealEstate = () => {
   const history = useHistory();
   let { id: orderId } = useParams();
   const [isSaving, setIsSaving] = useState(false);
   const [step, setStep] = useState(0);
   const [instructions, setInstructions] = useState([]);
+  const [prevInstructions, setPrevInstructions] = useState([]);
   const [template, setTemplate] = useState({});
   const [templates, setTemplates] = useState([]);
   const [advanceSetting, setAdvanceSetting] = useState([]);
@@ -35,7 +35,10 @@ const CreateOrder = () => {
         page: 1,
         size: 10000,
       });
-      setTemplates(res.content);
+      setTemplates([
+        { tid: 0, name: 'Please select template' },
+        ...res.content,
+      ]);
     }
 
     fetchTemplates();
@@ -102,7 +105,8 @@ const CreateOrder = () => {
         if (res) {
           setOrderSetting(res.orderSetting);
         }
-        if (res && res.images) {
+        if (res && !isEmpty(res.images)) {
+          console.log('Goi vao trong images not empty');
           const newInstruction = res.images.map(
             ({
               fileSize,
@@ -116,7 +120,10 @@ const CreateOrder = () => {
               return {
                 ...rest,
                 ...setting,
-                advancePrice: calculatorPrice(priceSetting, setting.codes),
+                advancePrice: calculatorPrice(
+                  priceSetting,
+                  setting.codes || []
+                ),
                 file: {
                   name: oName,
                   size: fileSize,
@@ -124,11 +131,12 @@ const CreateOrder = () => {
                   uploaded: true,
                   imgId,
                   preSignedURL,
-                  publicUrl,
                 },
               };
             }
           );
+          console.log(newInstruction[0].file?.url);
+          setPrevInstructions(newInstruction);
           setInstructions(newInstruction);
         }
       } catch (error) {
@@ -144,6 +152,12 @@ const CreateOrder = () => {
   }, [orderId, priceSetting]);
 
   const onChangeTemplate = async (tid) => {
+    // not select template
+    if (isEqual(tid, 0)) {
+      setInstructions([...prevInstructions]);
+      setTemplate(templates[0]);
+      return;
+    }
     const res = await templateService.getById(tid);
     const tmpInstructions = instructions.map((i) => {
       return {
@@ -162,6 +176,7 @@ const CreateOrder = () => {
     for (const file of fileSelect) {
       const { blob, base64 } = await toBase64(file);
       newInstructions.push({
+        rawFile: file,
         file: {
           name: file.name,
           size: file.size,
@@ -250,8 +265,8 @@ const CreateOrder = () => {
       if (!orderId) {
         // Create order
         const payloadCreate = {
-          orderType: 'REAL_ESTATE',
-          orderName: `REAL_ESTATE${new Date().getTime()}`,
+          orderType: 'GENERAL',
+          orderName: `GENERAL${new Date().getTime()}`,
         };
         const { id } = await orderService.create(payloadCreate);
         updateOrderID = id;
@@ -261,9 +276,6 @@ const CreateOrder = () => {
       links && (await uploadFiles(links));
       // Submit Setting
       const payloadUpdate = getSenderData(links);
-      // console.log('rushForm', rushServiceFormValue);
-      // console.log('rushServiceSelected', rushServiceSelected);
-      // console.log('rushDataPut' , rushServiceFormValue[rushServiceSelected].value)
 
       const rushVal = {};
       rushVal[rushServiceFormValue[rushServiceSelected].value] = true;
@@ -304,16 +316,20 @@ const CreateOrder = () => {
   };
 
   const getLinkUploadFile = (orderId) => {
-    const fileNames = instructions
-      .filter((i) => !i.file.uploaded)
-      .map((i) => i.file.name);
-    if (fileNames.length) {
-      return orderService.generateLinkUploadFile({
-        fileNames,
-        orderId,
-      });
+    const newFiles = instructions.filter((i) => !i.file.uploaded);
+    if (isEmpty(newFiles)) {
+      return false;
     }
-    return false;
+    let files = newFiles.map((el) => {
+      return {
+        fileSize: el.file.size,
+        oName: el.file.name,
+      };
+    });
+    return orderService.generateLinkUploadFile({
+      orderId,
+      files,
+    });
   };
 
   const uploadFiles = (links) => {
@@ -323,10 +339,7 @@ const CreateOrder = () => {
           ({ file }) => file.name === oName && !file.uploaded
         );
         if (!instruction) return null;
-        const {
-          file: { blob, url },
-        } = instruction;
-        return orderService.uploadFile(preSignedURL, blob, url);
+        return S3Service.upload(preSignedURL, instruction.rawFile);
       })
       .filter((promise) => promise);
     return Promise.all(uploadProcess);
@@ -373,7 +386,9 @@ const CreateOrder = () => {
 
   return (
     <>
-      <h2>{orderId ? 'Update Order' : 'Create Order'}</h2>
+      <h2>
+        {orderId ? 'Update A Real Estate Order' : 'Create A Real Estate Order'}
+      </h2>
       <Row gutter={[0, 16]}>
         <Col span={24}>
           <StepTracking currentStep={step} />
@@ -407,4 +422,5 @@ const CreateOrder = () => {
     </>
   );
 };
-export default CreateOrder;
+
+export default CreateOrderRealEstate;

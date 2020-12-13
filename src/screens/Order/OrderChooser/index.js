@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, List } from 'antd';
-import * as CONSTANTS from '../../constants';
+import * as CONSTANTS from '../../../constants';
 import { useHistory } from 'react-router-dom';
 
 const { Meta } = Card;
@@ -9,19 +9,10 @@ const OrderChooser = () => {
   const onClick = (item, index) => {
     switch (item) {
       case 'GENERAL':
-        history.push('/create-order');
-        break;
-      case 'RETOUCHING':
-        console.log('RETOUCHING');
-        break;
-      case 'PRODUCT':
-        console.log('PRODUCT');
+        history.push('/co-general');
         break;
       case 'REAL_ESTATE':
-        console.log('REAL_ESTATE');
-        break;
-      case 'NEW_BORN':
-        console.log('NEW_BORN');
+        history.push('/co-re');
         break;
       default:
         console.log('khong parse dc ');

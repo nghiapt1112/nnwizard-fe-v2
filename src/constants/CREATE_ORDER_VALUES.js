@@ -1,10 +1,7 @@
 // Order request type
 export const ORDER_REQUEST_TYPE = [
   { value: 'GENERAL', text: 'General' },
-  { value: 'RETOUCHING', text: 'Retouching' },
-  { value: 'PRODUCT', text: 'Product' },
   { value: 'REAL_ESTATE', text: 'Real Estate' },
-  { value: 'NEW_BORN', text: 'New Born' },
 ];
 
 export const USER_STATUS = [

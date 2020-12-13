@@ -43,8 +43,8 @@ function uploadFile(preSignedURL, blob, data) {
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
-function _delete(id) {
-  return api.delete(`/order/${id}`);
+function _delete(params) {
+  return api.delete(`/order/${new URLSearchParams(params)}`);
 }
 
 function base64MimeType(encoded) {

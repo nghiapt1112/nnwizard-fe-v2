@@ -14,6 +14,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { templateService } from '../../services';
 import './styles.less';
 import { ANT_TABLE_PAGINATION_DEFAULT, PAGINATION } from '../../constants';
+import { settingService } from '../../services/setting.service';
 
 const Template = () => {
   const [isLoadingData, setLoadingData] = useState(false);
@@ -21,6 +22,7 @@ const Template = () => {
   const [addCount, setAddCount] = useState(0);
   const [formModalData, setFormModalData] = useState({});
   const [data, setData] = useState([]);
+  const [advanceSetting, setAdvanceSetting] = useState([]);
   const [searchParams, setSearchParams] = useState({
     page: PAGINATION.PAGE_START,
     size: PAGINATION.PAGE_SIZE,
@@ -29,6 +31,31 @@ const Template = () => {
     current: 0,
     total: 0,
   });
+
+  useEffect(() => {
+    async function fetchSettings() {
+      const res = await settingService.getAll({
+        page: 1,
+        size: 10000,
+        types: ['BASIC', 'ADVANCE'], // lay ca basic va advance , tuy theo tung loai xu ly anh.
+        requestType: ['GENERAL'], // loai xu ly anh dang la GENERAL
+      });
+      setAdvanceSetting(getAdvanceSettingFormValue(res));
+    }
+
+    function getAdvanceSettingFormValue(res) {
+      return res.content
+        .filter((el) => el.dataType === 'ADVANCE')
+        .map((el) => {
+          return {
+            value: el.code,
+            text: el.formTitle || el.code,
+            price: el.price,
+          };
+        });
+    }
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -202,6 +229,7 @@ const Template = () => {
           width={980}
         >
           <FormTemplate
+            advanceSetting={advanceSetting}
             data={formModalData}
             onChange={onChangeBasic}
             onChangeAdvance={onChangeAdvance}

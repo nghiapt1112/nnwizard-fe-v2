@@ -2,7 +2,7 @@ import React from 'react';
 import 'rc-color-picker/assets/index.css';
 import { Col, Divider, Row, Select } from 'antd';
 import InstructionsItem from './InstructionsItem';
-import UploadButton from '../../../components/UploadButton';
+import UploadButton from '../../../../components/UploadButton';
 
 const Instructions = ({
   data = [],
@@ -26,6 +26,7 @@ const Instructions = ({
             <div className="basic-setting__control">
               <Select
                 value={tid}
+                defaultValue={0}
                 onChange={(val) => onChangeTemplate(val)}
                 size="small"
                 style={{ width: 250 }}

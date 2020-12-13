@@ -1,7 +1,7 @@
 import React from 'react';
 import { Col, Divider, Row } from 'antd';
 import UploadingItem from './UploadingItem';
-import UploadButton from '../../../components/UploadButton';
+import UploadButton from '../../../../components/UploadButton';
 
 const Uploading = ({ instructions = [], onAddFiles, onDeleteFile }) => {
   return (

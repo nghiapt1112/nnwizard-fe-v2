@@ -15,6 +15,7 @@ import * as CONSTANTS from '../../../constants';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 const FormTemplate = ({
+  advanceSetting,
   data: {
     name,
     type,
@@ -327,7 +328,7 @@ const FormTemplate = ({
         </Col>
         <Col span="24">
           <div className="advance-setting__list">
-            {CONSTANTS.CODES.map((setting, index) => (
+            {advanceSetting.map((setting, index) => (
               <Checkbox
                 checked={codes[setting.value]}
                 onChange={({ target: { checked } }) =>

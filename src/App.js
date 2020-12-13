@@ -6,13 +6,14 @@ import AuthRoute from './roots/AuthRoute';
 import Login from './screens/Outside/Login';
 import Register from './screens/Outside/Register';
 
-import OrderChooser from './screens/OrderChooser';
+import OrderChooser from './screens/Order/OrderChooser';
 import Template from './screens/Template';
-import CreateOrder from './screens/CreateOrder';
-import MyOrder from './screens/MyOrder';
+import CreateGeneralOrder from './screens/Order/GeneralOrder';
+import CreateOrderRealEstate from './screens/Order/RealEstate';
+import MyOrder from './screens/Order/MyOrder';
 import UserSetting from './screens/UserSetting';
-import MasterData from './screens/AdminMasterData';
-import UserManagement from './screens/AdminUserManagement';
+import MasterData from './screens/Admin/MasterData';
+import UserManagement from './screens/Admin/UserManagement';
 
 const App = () => {
   return (
@@ -34,13 +35,16 @@ const App = () => {
         <AuthRoute path="/c-orders" type="private">
           <OrderChooser />
         </AuthRoute>
-        <AuthRoute path="/create-order" type="private">
-          <CreateOrder />
+        <AuthRoute path="/co-general" type="private">
+          <CreateGeneralOrder />
+        </AuthRoute>
+        <AuthRoute path="/co-re" type="private">
+          <CreateOrderRealEstate />
         </AuthRoute>
 
-        {/*END-Create-Order*/}
+        {/*END-co-general*/}
         <AuthRoute path="/update-order/:id" type="private">
-          <CreateOrder />
+          <CreateGeneralOrder />
         </AuthRoute>
         <AuthRoute path="/user-setting" type="private">
           <UserSetting />

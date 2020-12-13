@@ -9,53 +9,40 @@ import {
   Space,
   Table,
 } from 'antd';
-import AdminCreateUserForm from './components/FormComponent';
+import MasterDataForm from './components/MasterDataForm';
 import { PlusOutlined } from '@ant-design/icons';
-import {
-  adminRoleService,
-  adminUserService,
-  masterDataService,
-} from '../../services';
+import { masterDataService } from '../../../services';
 import './styles.less';
-import { ANT_TABLE_PAGINATION_DEFAULT, PAGINATION } from '../../constants';
+import { ANT_TABLE_PAGINATION_DEFAULT, PAGINATION } from '../../../constants';
 
-const UserManagement = () => {
+const MasterData = () => {
   const [isLoadingData, setLoadingData] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [addCount, setAddCount] = useState(0);
   const [formModalData, setFormModalData] = useState({});
-  const [roles, setRoles] = useState([]);
   const [data, setData] = useState([]);
-  const [enabledEmail, setEnabledEmail] = useState(true);
   const [searchParams, setSearchParams] = useState({
     page: PAGINATION.PAGE_START,
     size: PAGINATION.PAGE_SIZE,
   });
   const [pagination, setPagination] = useState({
     current: 0,
+    pageSize: 10,
     total: 0,
   });
 
   useEffect(() => {
     const fetchData = async () => {
       setLoadingData(true);
-      try {
-        const res = await adminUserService.findAllUsers(searchParams);
-        const rolesRes = await adminRoleService.findAllRoles();
-        setLoadingData(false);
-        const { content, totalElements, number } = res;
-        content.forEach((el) => (el.roles = el.roles.join(',')));
-        setRoles([...rolesRes]);
-        setData(content);
-        setPagination({
-          total: totalElements,
-          current: number + 1,
-        });
-      } catch (error) {
-        notification.error({
-          message: error,
-        });
-      }
+      const res = await masterDataService.getAll(searchParams);
+      setLoadingData(false);
+      const { content, totalElements, number } = res;
+      setData(content);
+      setPagination({
+        total: totalElements,
+        pageSize: totalElements,
+        current: number + 1,
+      });
     };
 
     fetchData();
@@ -72,7 +59,7 @@ const UserManagement = () => {
       await masterDataService.delete({ ids: [id] });
       setAddCount(addCount + 1);
       notification.success({
-        message: 'Delete User Successfully',
+        message: 'Delete the configuration  Successfully',
       });
     } catch (error) {
       notification.error({
@@ -81,39 +68,45 @@ const UserManagement = () => {
     }
   };
   const openAddModal = () => {
-    setFormModalData({ roles: roles, userStatus: 'ENABLED', uploadLimit: 10 });
+    setFormModalData({});
     setModalVisible(true);
   };
 
-  const mapRoleNameToId = (rolesNames) => {
-    if (!rolesNames) {
-      return [];
-    }
-    return roles
-      .filter((el) => rolesNames.includes(el.authority))
-      .map((el) => el.roleId);
-  };
-
-  const openEditModal = async ({ userId }) => {
+  const openCloneModal = async (res) => {
     try {
       setLoadingData(true);
-      const res = await adminUserService.findDetail(userId);
-      setLoadingData(false);
-      const userRoleIds = mapRoleNameToId(res.roles);
-
       setFormModalData({
-        userId: res.userId,
-        email: res.email,
-        signImg: res.signImg,
-        fullName: res.fullName,
-        roles: roles,
-        roleIds: userRoleIds,
-        expirationTime: res.expirationTime,
-        uploadLimit: res.uploadLimit,
-        type: res.type,
-        userStatus: res.userStatus,
+        code: res.code,
+        dataType: res.dataType,
+        price: res.price,
+        requestType: res.requestType,
+        formTitle: res.formTitle || res.code,
+        value: res.value,
       });
-      setEnabledEmail(false);
+      setModalVisible(true);
+      setLoadingData(false);
+    } catch (error) {
+      setLoadingData(false);
+      notification.error({
+        message: error,
+      });
+    }
+  };
+
+  const openEditModal = async ({ id }) => {
+    try {
+      setLoadingData(true);
+      const res = await masterDataService.findById(id);
+      setLoadingData(false);
+      setFormModalData({
+        id: res.id,
+        code: res.code,
+        dataType: res.dataType,
+        price: res.price,
+        requestType: res.requestType,
+        formTitle: res.formTitle || res.code,
+        value: res.value,
+      });
       setModalVisible(true);
     } catch (error) {
       setLoadingData(false);
@@ -137,36 +130,32 @@ const UserManagement = () => {
   const handleModalOk = async () => {
     try {
       const {
-        email,
-        fullName,
-        password,
-        roleIds,
-        userId,
-        userStatus,
-        uploadLimit,
-        roles,
+        id,
+        code,
+        dataType,
+        requestType,
+        price,
+        formTitle,
         ...rest
       } = formModalData;
+      console.log(formModalData);
       const payload = {
-        fullName,
-        password,
-        roleIds,
-        userId,
-        userStatus,
-        uploadLimit,
+        id,
+        code,
+        dataType,
+        requestType,
+        price,
+        formTitle,
+        setting: { ...rest },
       };
-      const isAddNew = !userId;
-      if (isAddNew) {
-        setEnabledEmail(true);
-        await adminUserService.create({ ...payload, email });
-      } else {
-        setEnabledEmail(false);
-        await adminUserService.update(userId, payload);
-      }
+      const isAddNew = !id;
+      isAddNew
+        ? await masterDataService.create(payload)
+        : await masterDataService.update(id, payload);
       setModalVisible(false);
       setAddCount(addCount + 1);
       notification.success({
-        message: `${isAddNew ? 'Add' : 'Update'} User Successfully`,
+        message: `${isAddNew ? 'Add' : 'Update'} Configuration Successfully`,
       });
     } catch (error) {
       notification.error({
@@ -177,32 +166,37 @@ const UserManagement = () => {
   const columns = [
     {
       title: 'id',
-      dataIndex: 'userId',
+      dataIndex: 'id',
       width: '10%',
     },
     {
-      title: 'Full Name',
-      dataIndex: 'fullName',
+      title: 'Code',
+      dataIndex: 'code',
       width: '20%',
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
+      title: 'Title',
+      dataIndex: 'formTitle',
       width: '20%',
     },
     {
-      title: 'Status',
-      dataIndex: 'userStatus',
+      title: 'Data Type',
+      dataIndex: 'dataType',
       width: '20%',
     },
     {
-      title: 'Roles',
-      dataIndex: 'roles',
+      title: 'Request Type',
+      dataIndex: 'requestType',
+      width: '20%',
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
       width: '10%',
     },
     {
       title: 'Action',
-      dataIndex: 'userId',
+      dataIndex: 'id',
       width: '20%',
       align: 'center',
       render: (_, record) => (
@@ -213,6 +207,13 @@ const UserManagement = () => {
             onClick={() => openEditModal(record)}
           >
             Edit
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => openCloneModal(record)}
+          >
+            Clone
           </Button>
           <Popconfirm
             title="Are you sure delete this template?"
@@ -231,15 +232,15 @@ const UserManagement = () => {
   return (
     <>
       <div className="page-header">
-        <h2>User Management</h2>
+        <h2>Master Data</h2>
         <Button onClick={openAddModal} type="primary" icon={<PlusOutlined />}>
-          Create new User
+          Create new config
         </Button>
       </div>
-      <Row gutter={[0, 16]}>
+      <Row gutter={[0, 8]}>
         <Col span={24}>
           <Table
-            rowKey="userId"
+            rowKey="id"
             loading={isLoadingData}
             columns={columns}
             dataSource={data}
@@ -255,17 +256,13 @@ const UserManagement = () => {
           title="Edit Template"
           visible={modalVisible}
           onOk={handleModalOk}
-          onCancel={() => {
-            setModalVisible(false);
-            setEnabledEmail(true);
-          }}
+          onCancel={() => setModalVisible(false)}
           width={980}
         >
-          <AdminCreateUserForm
+          <MasterDataForm
             data={formModalData}
             onChange={onChangeBasic}
             onChangeAdvance={onChangeAdvance}
-            enabledEmail={enabledEmail}
           />
         </Modal>
       </Row>
@@ -273,4 +270,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;
+export default MasterData;

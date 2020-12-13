@@ -12,7 +12,7 @@ import {
   Switch,
   Tooltip,
 } from 'antd';
-import * as CONSTANTS from '../../../constants';
+import * as CONSTANTS from '../../../../constants';
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 const InstructionsItem = ({

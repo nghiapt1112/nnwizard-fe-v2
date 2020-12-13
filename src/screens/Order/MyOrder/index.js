@@ -12,8 +12,8 @@ import {
 import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import Filter from './components/Filter';
-import { ANT_TABLE_PAGINATION_DEFAULT, PAGINATION } from '../../constants';
-import { adminUserService, orderService } from '../../services';
+import { ANT_TABLE_PAGINATION_DEFAULT, PAGINATION } from '../../../constants';
+import { adminUserService, orderService } from '../../../services';
 
 const MyOrder = () => {
   const history = useHistory();
@@ -30,6 +30,12 @@ const MyOrder = () => {
     current: 0,
     total: 0,
   });
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [hasSelected, setHasSelected] = useState(false);
+
+  useEffect(() => {
+    setHasSelected(selectedRowKeys.length > 0);
+  }, [selectedRowKeys]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -79,6 +85,16 @@ const MyOrder = () => {
     fetchData();
   }, [searchParams, addCount, dataChanged]);
 
+  const onSelectChange = (selectedRowKeys) => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys);
+    setSelectedRowKeys(selectedRowKeys);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+
   const onSearchClick = (params) => {
     setSearchParams({
       ...searchParams,
@@ -106,9 +122,10 @@ const MyOrder = () => {
     }
   };
 
-  const onConfirmDelete = async ({ id }) => {
+  const onConfirmDelete = async () => {
+    console.log(selectedRowKeys);
     try {
-      await orderService.delete(id);
+      await orderService.delete({ ids: selectedRowKeys });
       setAddCount(addCount + 1);
       notification.success({
         message: 'Delete Order Successfully',
@@ -127,15 +144,24 @@ const MyOrder = () => {
     });
   };
 
+  const onRowSelect = (selectedRowKeys) => {
+    console.log('selected row:', selectedRowKeys);
+  };
+
   const columns = [
     {
       title: 'Order Name',
       dataIndex: 'name',
       width: '40%',
+      render: (_, record) => (
+        <Button type="link" size="small" onClick={() => openEditClick(record)}>
+          {record.name}
+        </Button>
+      ),
     },
     {
       title: 'Type',
-      dataIndex: 'tid',
+      dataIndex: 'orderType',
       width: '20%',
     },
     {
@@ -150,23 +176,6 @@ const MyOrder = () => {
       align: 'center',
       render: (_, record) => (
         <Space size="middle">
-          <Button
-            type="link"
-            size="small"
-            onClick={() => openEditClick(record)}
-          >
-            Edit
-          </Button>
-          <Popconfirm
-            title="Are you sure delete this order?"
-            onConfirm={() => onConfirmDelete(record)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button type="link" danger size="small">
-              Delete
-            </Button>
-          </Popconfirm>
           <Select
             placeholder="By Type"
             onChange={(value) => onAssigneeChange(record.id, value)}
@@ -191,7 +200,7 @@ const MyOrder = () => {
       <div className="page-header">
         <h2>My Order</h2>
         <Button
-          onClick={() => history.push('/create-order')}
+          onClick={() => history.push('/c-orders')}
           type="primary"
           icon={<PlusOutlined />}
         >
@@ -199,6 +208,28 @@ const MyOrder = () => {
         </Button>
       </div>
       <Filter onSearchClick={onSearchClick} />
+      {hasSelected && (
+        <Row gutter={[0, 16]} className="gx-mt-1">
+          <Col span={3}>
+            <span style={{ marginLeft: 8 }}>
+              {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
+            </span>
+          </Col>
+          <Col>
+            <Popconfirm
+              title="Are you sure delete orders?"
+              onConfirm={() => onConfirmDelete}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button type="link" danger size="small" block>
+                Delete
+              </Button>
+            </Popconfirm>
+          </Col>
+        </Row>
+      )}
+
       <Row gutter={[0, 16]} className="gx-mt-1">
         <Col span={24}>
           <Table
@@ -210,7 +241,9 @@ const MyOrder = () => {
               ...ANT_TABLE_PAGINATION_DEFAULT,
               ...pagination,
             }}
+            rowSelection={rowSelection}
             onChange={onTableChange}
+            onSelect={onRowSelect}
           />
         </Col>
       </Row>
