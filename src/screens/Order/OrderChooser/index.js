@@ -14,8 +14,10 @@ const OrderChooser = () => {
       case 'REAL_ESTATE':
         history.push('/co-re');
         break;
+      case 'SPECIFICATION':
+        history.push('/co-specification');
+        break;
       default:
-        console.log('khong parse dc ');
     }
   };
 

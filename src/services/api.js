@@ -6,10 +6,10 @@ const localStorageService = LocalStorageService.getService();
 
 const api = axios.create({
   baseURL: config.apiUrl,
-  timeout: 1000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  // timeout: 1000,
+  // headers: {
+  //   'Content-Type': 'application/json',
+  // },
 });
 
 // Add a request interceptor

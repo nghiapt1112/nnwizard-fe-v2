@@ -10,6 +10,7 @@ import OrderChooser from './screens/Order/OrderChooser';
 import Template from './screens/Template';
 import CreateGeneralOrder from './screens/Order/GeneralOrder';
 import CreateOrderRealEstate from './screens/Order/RealEstate';
+import CreateSpecificationOrder from './screens/Order/SpecificationOrder';
 import MyOrder from './screens/Order/MyOrder';
 import UserSetting from './screens/UserSetting';
 import MasterData from './screens/Admin/MasterData';
@@ -40,6 +41,9 @@ const App = () => {
         </AuthRoute>
         <AuthRoute path="/co-re" type="private">
           <CreateOrderRealEstate />
+        </AuthRoute>
+        <AuthRoute path="/co-specification" type="private">
+          <CreateSpecificationOrder />
         </AuthRoute>
 
         {/*END-co-general*/}

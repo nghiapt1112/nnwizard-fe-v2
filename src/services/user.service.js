@@ -2,6 +2,7 @@ import axios from 'axios';
 import api from './api';
 import config from '../config';
 import LocalStorageService from './LocalStorageService';
+
 const localStorageService = LocalStorageService.getService();
 
 export const userService = {

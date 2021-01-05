@@ -1,43 +1,29 @@
 import React from 'react';
 import 'rc-color-picker/assets/index.css';
 import ColorPicker from 'rc-color-picker';
-import {
-  Checkbox,
-  Col,
-  Divider,
-  Input,
-  Row,
-  Select,
-  Switch,
-  Tooltip,
-} from 'antd';
+import { Col, Divider, Input, Row, Select, Switch } from 'antd';
 import * as CONSTANTS from '../../../constants';
 import { TEMPLATE_TYPE } from '../../../constants';
-import { InfoCircleOutlined } from '@ant-design/icons';
 
-const FormTemplate = ({
-  advanceSetting,
+const SpecificationTemplate = ({
   data: {
     name,
+    preFix,
+    postFix,
     fileFormat,
     background,
     size,
-    aspectRatio,
-    minMaxSize,
-    psdWithLayers,
-    margin,
-    margin_left,
-    margin_right,
-    margin_top,
-    margin_bottom,
-    preFix,
-    postFix,
+    modelCropping,
+    maxOutputFileSize,
     dpi,
+    colorProfile,
+    metaData,
     compression,
-    codes = {},
+    jpgQuality,
+    progressive,
+    normalizeRotation,
   },
   onChange,
-  onChangeAdvance,
 }) => {
   return (
     <div className="gx-mb-3">
@@ -60,7 +46,7 @@ const FormTemplate = ({
             <div className="basic-setting__label">Template Type</div>
             <div className="basic-setting__control">
               <Select
-                value={TEMPLATE_TYPE.GENERAL}
+                value={TEMPLATE_TYPE.SPECIFICATION}
                 onChange={(val) => onChange('requestType', val)}
                 size="small"
                 style={{ width: 180 }}
@@ -81,6 +67,30 @@ const FormTemplate = ({
           <Divider orientation="left">Basic Setting</Divider>
         </Col>
         <Col flex="1">
+          <div className="basic-setting__item">
+            <div className="basic-setting__label">Prefix</div>
+            <div className="basic-setting__control">
+              <Input
+                value={preFix}
+                onChange={({ target: { value } }) => onChange('preFix', value)}
+                size="small"
+                placeholder="prefix_filename.jpg"
+                style={{ width: 150 }}
+              />
+            </div>
+          </div>
+          <div className="basic-setting__item">
+            <div className="basic-setting__label">Postfix</div>
+            <div className="basic-setting__control">
+              <Input
+                value={postFix}
+                onChange={({ target: { value } }) => onChange('postFix', value)}
+                size="small"
+                placeholder="filename_postfix.jp"
+                style={{ width: 150 }}
+              />
+            </div>
+          </div>
           <div className="basic-setting__item">
             <div className="basic-setting__label">File format</div>
             <div className="basic-setting__control">
@@ -132,30 +142,28 @@ const FormTemplate = ({
             </div>
           </div>
           <div className="basic-setting__item">
-            <div className="basic-setting__label">Aspect Ratio</div>
+            <div className="basic-setting__label">
+              <span className="gx-mr-1">Model cropping</span>
+            </div>
             <div className="basic-setting__control">
-              <Select
-                value={aspectRatio}
-                onChange={(val) => onChange('aspectRatio', val)}
+              <Switch
+                checked={modelCropping}
+                onChange={(val) => onChange('modelCropping', val)}
                 size="small"
-                style={{ width: 150 }}
-              >
-                {CONSTANTS.ASPECT_RATIO.map((item, index) => {
-                  return (
-                    <Select.Option key={index} value={item.value}>
-                      {item.text}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
+                defaultChecked
+                checkedChildren="Yes"
+                unCheckedChildren="No"
+              />
             </div>
           </div>
+        </Col>
+        <Col flex="1">
           <div className="basic-setting__item">
-            <div className="basic-setting__label">Min-Max size</div>
+            <div className="basic-setting__label">Max output file size</div>
             <div className="basic-setting__control">
               <Select
-                value={minMaxSize}
-                onChange={(val) => onChange('minMaxSize', val)}
+                value={maxOutputFileSize}
+                onChange={(val) => onChange('maxOutputFileSize', val)}
                 size="small"
                 style={{ width: 150 }}
               >
@@ -169,131 +177,42 @@ const FormTemplate = ({
               </Select>
             </div>
           </div>
-        </Col>
-        <Col flex="1">
-          <div className="basic-setting__item">
-            <div className="basic-setting__label">
-              <span className="gx-mr-1">PSD with layers</span>
-              <Tooltip placement="topLeft" title="Price + 100% (double price)">
-                <InfoCircleOutlined />
-              </Tooltip>
-            </div>
-            <div className="basic-setting__control">
-              <Switch
-                checked={psdWithLayers}
-                onChange={(val) => onChange('psdWithLayers', val)}
-                size="small"
-                defaultChecked
-                checkedChildren="Yes"
-                unCheckedChildren="No"
-              />
-            </div>
-          </div>
-          <div className="basic-setting__item">
-            <div className="basic-setting__label">Margin</div>
-            <div className="basic-setting__control">
-              <Switch
-                checked={margin}
-                onChange={(val) => onChange('margin', val)}
-                size="small"
-                defaultChecked
-                checkedChildren="Yes"
-                unCheckedChildren="No"
-              />
-            </div>
-          </div>
-          <div className="basic-setting__item">
-            <div className="basic-setting__label">Left</div>
-            <div className="basic-setting__control">
-              <Input
-                disabled={!margin}
-                value={margin_left}
-                onChange={({ target: { value } }) =>
-                  onChange('margin_left', value)
-                }
-                size="small"
-                suffix="%"
-                style={{ width: 70 }}
-              />
-            </div>
-          </div>
-          <div className="basic-setting__item">
-            <div className="basic-setting__label">Right</div>
-            <div className="basic-setting__control">
-              <Input
-                disabled={!margin}
-                value={margin_right}
-                onChange={({ target: { value } }) =>
-                  onChange('margin_right', value)
-                }
-                size="small"
-                suffix="%"
-                style={{ width: 70 }}
-              />
-            </div>
-          </div>
-          <div className="basic-setting__item">
-            <div className="basic-setting__label">Top</div>
-            <div className="basic-setting__control">
-              <Input
-                disabled={!margin}
-                value={margin_top}
-                onChange={({ target: { value } }) =>
-                  onChange('margin_top', value)
-                }
-                size="small"
-                suffix="%"
-                style={{ width: 70 }}
-              />
-            </div>
-          </div>
-          <div className="basic-setting__item">
-            <div className="basic-setting__label">Bottom</div>
-            <div className="basic-setting__control">
-              <Input
-                disabled={!margin}
-                value={margin_bottom}
-                onChange={({ target: { value } }) =>
-                  onChange('margin_bottom', value)
-                }
-                size="small"
-                suffix="%"
-                style={{ width: 70 }}
-              />
-            </div>
-          </div>
-        </Col>
-        <Col flex="1">
-          <div className="basic-setting__item">
-            <div className="basic-setting__label">Prefix</div>
-            <div className="basic-setting__control">
-              <Input
-                value={preFix}
-                onChange={({ target: { value } }) => onChange('preFix', value)}
-                size="small"
-                placeholder="prefix_filename.jpg"
-                style={{ width: 150 }}
-              />
-            </div>
-          </div>
-          <div className="basic-setting__item">
-            <div className="basic-setting__label">Postfix</div>
-            <div className="basic-setting__control">
-              <Input
-                value={postFix}
-                onChange={({ target: { value } }) => onChange('postFix', value)}
-                size="small"
-                placeholder="filename_postfix.jp"
-                style={{ width: 150 }}
-              />
-            </div>
-          </div>
           <div className="basic-setting__item">
             <div className="basic-setting__label">DPI</div>
             <div className="basic-setting__control">
               <Select
                 value={dpi}
                 onChange={(value) => onChange('dpi', value)}
+                size="small"
+                style={{ width: 150 }}
+              >
+                {CONSTANTS.DPI.map((item, index) => {
+                  return (
+                    <Select.Option key={index} value={item.value}>
+                      {item.text}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </div>
+          </div>
+          <div className="basic-setting__item">
+            <div className="basic-setting__label">Color profile</div>
+            <div className="basic-setting__control">
+              <ColorPicker
+                color={colorProfile || '#fff'}
+                onChange={({ color }) => onChange('colorProfile', color)}
+                className="basic-setting__color-picker"
+                placement="bottomRight"
+              />
+            </div>
+          </div>
+          <div className="basic-setting__item">
+            <div className="basic-setting__label">Meta data</div>
+            <div className="basic-setting__control">
+              <Select
+                value={metaData}
+                onChange={(value) => onChange('metaData', value)}
                 size="small"
                 style={{ width: 150 }}
               >
@@ -326,23 +245,54 @@ const FormTemplate = ({
               </Select>
             </div>
           </div>
-        </Col>
-        <Col span="24">
-          <Divider orientation="left">Advance Setting</Divider>
-        </Col>
-        <Col span="24">
-          <div className="advance-setting__list">
-            {advanceSetting.map((setting, index) => (
-              <Checkbox
-                checked={codes[setting.value]}
-                onChange={({ target: { checked } }) =>
-                  onChangeAdvance(setting.value, checked)
-                }
-                key={index}
+          <div className="basic-setting__item">
+            <div className="basic-setting__label">JPG quality</div>
+            <div className="basic-setting__control">
+              <Select
+                value={jpgQuality}
+                onChange={(value) => onChange('jpgQuality', value)}
+                size="small"
+                style={{ width: 150 }}
               >
-                {setting.text}
-              </Checkbox>
-            ))}
+                {CONSTANTS.COMPRESSION.map((item, index) => {
+                  return (
+                    <Select.Option key={index} value={item.value}>
+                      {item.text}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </div>
+          </div>
+          <div className="basic-setting__item">
+            <div className="basic-setting__label">
+              <span className="gx-mr-1">Progressive</span>
+            </div>
+            <div className="basic-setting__control">
+              <Switch
+                checked={progressive}
+                onChange={(val) => onChange('progressive', val)}
+                size="small"
+                defaultChecked
+                checkedChildren="Yes"
+                unCheckedChildren="No"
+              />
+            </div>
+          </div>
+          <div className="basic-setting__item">
+            <div className="basic-setting__label">
+              <span className="gx-mr-1">Normalize rotation</span>
+            </div>
+            <div className="basic-setting__control">
+              <Switch
+                checked={normalizeRotation}
+                onChange={(val) => onChange('normalizeRotation', val)}
+                size="small"
+                defaultChecked
+                checkedChildren="Yes"
+                unCheckedChildren="No"
+              />
+            </div>
           </div>
         </Col>
       </Row>
@@ -350,4 +300,4 @@ const FormTemplate = ({
   );
 };
 
-export default FormTemplate;
+export default SpecificationTemplate;

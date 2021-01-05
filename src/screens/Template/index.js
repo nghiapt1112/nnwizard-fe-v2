@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {
   Button,
   Col,
+  Dropdown,
+  Menu,
   Modal,
   notification,
   Popconfirm,
@@ -10,13 +12,19 @@ import {
   Table,
 } from 'antd';
 import FormTemplate from './components/FormTemplate';
-import { PlusOutlined } from '@ant-design/icons';
+import SpecificationTemplate from './components/SpecificationTemplate';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
 import { templateService } from '../../services';
-import './styles.less';
-import { ANT_TABLE_PAGINATION_DEFAULT, PAGINATION } from '../../constants';
+import {
+  ANT_TABLE_PAGINATION_DEFAULT,
+  PAGINATION,
+  TEMPLATE_TYPE,
+} from '../../constants';
 import { settingService } from '../../services/setting.service';
+import './styles.less';
 
 const Template = () => {
+  const [templateType, setTemplateType] = useState(TEMPLATE_TYPE.GENERAL);
   const [isLoadingData, setLoadingData] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [addCount, setAddCount] = useState(0);
@@ -54,6 +62,7 @@ const Template = () => {
           };
         });
     }
+
     fetchSettings();
   }, []);
 
@@ -96,7 +105,8 @@ const Template = () => {
       });
     }
   };
-  const openAddModal = () => {
+  const openAddModal = ({ key }) => {
+    setTemplateType(key);
     setFormModalData({});
     setModalVisible(true);
   };
@@ -198,13 +208,68 @@ const Template = () => {
       ),
     },
   ];
+  const generatorTemplate = (
+    advanceSetting,
+    formModalData,
+    onChangeBasic,
+    onChangeAdvance
+  ) => {
+    switch (templateType) {
+      case TEMPLATE_TYPE.REAL_ESTATE:
+        return (
+          <FormTemplate
+            advanceSetting={advanceSetting}
+            data={formModalData}
+            onChange={onChangeBasic}
+            onChangeAdvance={onChangeAdvance}
+          />
+        );
+      case TEMPLATE_TYPE.SPECIFICATION:
+        return (
+          <SpecificationTemplate
+            data={formModalData}
+            onChange={onChangeBasic}
+          />
+        );
+      default:
+        return (
+          <FormTemplate
+            advanceSetting={advanceSetting}
+            data={formModalData}
+            onChange={onChangeBasic}
+            onChangeAdvance={onChangeAdvance}
+          />
+        );
+    }
+  };
   return (
     <>
       <div className="page-header">
         <h2>Template</h2>
-        <Button onClick={openAddModal} type="primary" icon={<PlusOutlined />}>
-          Add Template
-        </Button>
+        <Dropdown
+          overlay={() => {
+            return (
+              <Menu onClick={openAddModal}>
+                <Menu.Item
+                  key={TEMPLATE_TYPE.REAL_ESTATE}
+                  icon={<PlusOutlined />}
+                >
+                  Real Estate
+                </Menu.Item>
+                <Menu.Item
+                  key={TEMPLATE_TYPE.SPECIFICATION}
+                  icon={<PlusOutlined />}
+                >
+                  Specification
+                </Menu.Item>
+              </Menu>
+            );
+          }}
+        >
+          <Button type="primary">
+            Add Template <DownOutlined />
+          </Button>
+        </Dropdown>
       </div>
       <Row gutter={[0, 16]}>
         <Col span={24}>
@@ -228,12 +293,12 @@ const Template = () => {
           onCancel={() => setModalVisible(false)}
           width={980}
         >
-          <FormTemplate
-            advanceSetting={advanceSetting}
-            data={formModalData}
-            onChange={onChangeBasic}
-            onChangeAdvance={onChangeAdvance}
-          />
+          {generatorTemplate(
+            advanceSetting,
+            formModalData,
+            onChangeBasic,
+            onChangeAdvance
+          )}
         </Modal>
       </Row>
     </>

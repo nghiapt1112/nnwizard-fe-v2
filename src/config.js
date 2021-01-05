@@ -1,3 +1,3 @@
 export default {
-  apiUrl: 'http://localhost:38081',
+  apiUrl: 'http://be.dev.nnwizard.com/api',
 };

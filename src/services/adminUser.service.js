@@ -1,7 +1,4 @@
 import api from './api';
-import config from '../config';
-import LocalStorageService from './LocalStorageService';
-const localStorageService = LocalStorageService.getService();
 
 const API_PATH = '/sys/users';
 export const adminUserService = {

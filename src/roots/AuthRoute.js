@@ -3,13 +3,13 @@ import { useSelector } from 'react-redux';
 import { NavLink, Redirect, Route } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import {
+  AppstoreOutlined,
   ContainerOutlined,
   FileOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UnorderedListOutlined,
   UserOutlined,
-  AppstoreOutlined,
 } from '@ant-design/icons';
 
 const { SubMenu } = Menu;

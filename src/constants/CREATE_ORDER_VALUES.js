@@ -2,6 +2,7 @@
 export const ORDER_REQUEST_TYPE = [
   { value: 'GENERAL', text: 'General' },
   { value: 'REAL_ESTATE', text: 'Real Estate' },
+  { value: 'SPECIFICATION', text: 'Specification' },
 ];
 
 export const USER_STATUS = [

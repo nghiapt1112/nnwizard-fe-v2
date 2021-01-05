@@ -1,5 +1,6 @@
 import { authenticationConstants } from '../_constants';
 import LocalStorageService from '../../services/LocalStorageService';
+
 const localStorageService = LocalStorageService.getService();
 
 const exp = localStorageService.getExpiresIn();

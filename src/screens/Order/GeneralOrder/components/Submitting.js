@@ -1,15 +1,6 @@
 import React from 'react';
 import 'rc-color-picker/assets/index.css';
-import {
-  Button,
-  Col,
-  Divider,
-  Image,
-  Row,
-  Select,
-  Space,
-  Typography,
-} from 'antd';
+import { Button, Col, Divider, Image, Row, Space, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 const Submitting = ({
