@@ -115,14 +115,14 @@ const Template = () => {
       setLoadingData(true);
       const res = await templateService.getById(tid);
       setLoadingData(false);
-      const { setting, ...rest } = res;
+      const { basicSetting, ...rest } = res;
       const margin =
-        setting.margin_top ||
-        setting.margin_bottom ||
-        setting.margin_left ||
-        setting.margin_right;
+        basicSetting.margin_top ||
+        basicSetting.margin_bottom ||
+        basicSetting.margin_left ||
+        basicSetting.margin_right;
       setFormModalData({
-        ...setting,
+        ...basicSetting,
         ...rest,
         margin,
       });
@@ -147,12 +147,14 @@ const Template = () => {
   };
   const handleModalOk = async () => {
     try {
-      const { tid, name, requestType, ...rest } = formModalData;
+      const { tid, name, ...rest } = formModalData;
       const payload = {
         tid,
         name: name,
-        requestType: requestType,
-        setting: { ...rest },
+        // type: templateType,
+        type: 'PRODUCT',
+        basicSetting: { ...rest },
+        settingIds: [],
       };
       const isAddNew = !tid;
       isAddNew

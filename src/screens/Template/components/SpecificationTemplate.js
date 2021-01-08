@@ -21,7 +21,7 @@ const SpecificationTemplate = ({
     compression,
     jpgQuality,
     progressive,
-    normalizeRotation,
+    normalRotation,
   },
   onChange,
 }) => {
@@ -47,7 +47,7 @@ const SpecificationTemplate = ({
             <div className="basic-setting__control">
               <Select
                 value={TEMPLATE_TYPE.SPECIFICATION}
-                onChange={(val) => onChange('requestType', val)}
+                onChange={(val) => onChange('type', val)}
                 size="small"
                 style={{ width: 180 }}
                 disabled={true}
@@ -163,7 +163,7 @@ const SpecificationTemplate = ({
             <div className="basic-setting__control">
               <Select
                 value={maxOutputFileSize}
-                onChange={(val) => onChange('maxOutputFileSize', val)}
+                onChange={(val) => onChange('minMaxSize', val)}
                 size="small"
                 style={{ width: 150 }}
               >
@@ -216,7 +216,7 @@ const SpecificationTemplate = ({
                 size="small"
                 style={{ width: 150 }}
               >
-                {CONSTANTS.DPI.map((item, index) => {
+                {CONSTANTS.META_DATA.map((item, index) => {
                   return (
                     <Select.Option key={index} value={item.value}>
                       {item.text}
@@ -254,7 +254,7 @@ const SpecificationTemplate = ({
                 size="small"
                 style={{ width: 150 }}
               >
-                {CONSTANTS.COMPRESSION.map((item, index) => {
+                {CONSTANTS.JPG_QUALITY.map((item, index) => {
                   return (
                     <Select.Option key={index} value={item.value}>
                       {item.text}
@@ -285,8 +285,8 @@ const SpecificationTemplate = ({
             </div>
             <div className="basic-setting__control">
               <Switch
-                checked={normalizeRotation}
-                onChange={(val) => onChange('normalizeRotation', val)}
+                checked={normalRotation}
+                onChange={(val) => onChange('normalRotation', val)}
                 size="small"
                 defaultChecked
                 checkedChildren="Yes"
