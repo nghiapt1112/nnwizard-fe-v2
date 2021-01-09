@@ -22,8 +22,9 @@ import {
 } from '../../constants';
 import { settingService } from '../../services/setting.service';
 import './styles.less';
+import { calculatorPrice } from '../Order/priceHelper';
 
-const ADVANCE_SETTINGS = ['ADVANCE', 'ADDON', 'RETOUCHING'];
+const ADVANCE_SETTINGS = ['ADVANCE', 'ADDON', 'RETOUCHING', 'BASE_PRICE'];
 
 const Template = () => {
   const [templateType, setTemplateType] = useState(TEMPLATE_TYPE.GENERAL);
@@ -33,6 +34,8 @@ const Template = () => {
   const [formModalData, setFormModalData] = useState({});
   const [data, setData] = useState([]);
   const [advanceSetting, setAdvanceSetting] = useState([]);
+  const [priceHolder, setPriceHolder] = useState({});
+  const [price, setPrice] = useState(0);
   const [searchParams, setSearchParams] = useState({
     page: PAGINATION.PAGE_START,
     size: PAGINATION.PAGE_SIZE,
@@ -48,20 +51,26 @@ const Template = () => {
         page: 1,
         size: 10000,
         types: [...ADVANCE_SETTINGS, 'BASIC'], // lay ca basic va advance , tuy theo tung loai xu ly anh.
-        // requestType: ['GENERAL'], // loai xu ly anh dang la GENERAL
+        // orderTypes: ['GENERAL', 'REAL_ESTATE'], // loai xu ly anh dang la GENERAL + REAL_ESTATE
       });
-      setAdvanceSetting(getAdvanceSettingFormValue(res));
+      const advanceVal = getAdvanceSettingFormValue(res);
+      setAdvanceSetting(advanceVal);
+      const priceHolderVal = {};
+      advanceVal.forEach(
+        (setting) => (priceHolderVal[setting.value] = setting.price)
+      );
+      setPriceHolder(priceHolderVal);
     }
 
     function getAdvanceSettingFormValue(res) {
       return res.content
-        .filter((el) => ADVANCE_SETTINGS.includes(el.dataType))
+        .filter((el) => ADVANCE_SETTINGS.includes(el.settingType))
         .map((el) => {
           return {
             value: el.code,
             text: el.formTitle || el.code,
             price: el.price,
-            type: el.dataType,
+            type: el.settingType,
           };
         });
     }
@@ -76,6 +85,7 @@ const Template = () => {
         const res = await templateService.getAll(searchParams);
         setLoadingData(false);
         const { content, totalElements, number } = res;
+        content.filter((el) => !el.price).forEach((el) => (el.price = 0));
         setData(content);
         setPagination({
           total: totalElements,
@@ -146,16 +156,22 @@ const Template = () => {
     tmpFormModalData[key] = value;
     setFormModalData(tmpFormModalData);
   };
+
   const onChangeAdvance = (key, value) => {
     debugger;
     const tmpFormModalData = { ...formModalData };
     tmpFormModalData.codes = tmpFormModalData.codes || {};
     tmpFormModalData.settingIds = tmpFormModalData.settingIds || [];
     tmpFormModalData.codes[key] = value;
-    tmpFormModalData.settingIds.push(key);
-    console.log('CUrrent Advansetting', advanceSetting);
+    tmpFormModalData.settingIds = Object.keys(tmpFormModalData.codes).filter(
+      (key) => tmpFormModalData.codes[key]
+    );
     setFormModalData(tmpFormModalData);
+    // TODO: Tính tiền, mỗi 1 item đã có price đi kèm, giờ thì count tính tiền. :))
+    const prize = calculatorPrice(priceHolder, tmpFormModalData.settingIds);
+    console.log('calculated price', prize);
   };
+
   const handleModalOk = async () => {
     try {
       const { tid, name, ...rest } = formModalData;
@@ -188,12 +204,17 @@ const Template = () => {
     {
       title: 'Name',
       dataIndex: 'name',
-      width: '40%',
+      width: '30%',
     },
     {
       title: 'Template Type',
       dataIndex: 'tid',
-      width: '40%',
+      width: '30%',
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+      width: '20%',
     },
     {
       title: 'Action',
@@ -234,6 +255,7 @@ const Template = () => {
         return (
           <FormTemplate
             advanceSetting={advanceSetting}
+            price={price}
             data={formModalData}
             onChange={onChangeBasic}
             onChangeAdvance={onChangeAdvance}
@@ -243,6 +265,7 @@ const Template = () => {
         return (
           <SpecificationTemplate
             advanceSetting={advanceSetting}
+            price={price}
             data={formModalData}
             onChange={onChangeBasic}
             onChangeAdvance={onChangeAdvance}
@@ -252,6 +275,7 @@ const Template = () => {
         return (
           <FormTemplate
             advanceSetting={advanceSetting}
+            price={price}
             data={formModalData}
             onChange={onChangeBasic}
             onChangeAdvance={onChangeAdvance}

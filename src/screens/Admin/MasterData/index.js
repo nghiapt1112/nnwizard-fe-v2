@@ -77,7 +77,7 @@ const MasterData = () => {
       setLoadingData(true);
       setFormModalData({
         code: res.code,
-        dataType: res.dataType,
+        settingType: res.settingType,
         price: res.price,
         requestType: res.requestType,
         formTitle: res.formTitle || res.code,
@@ -101,7 +101,7 @@ const MasterData = () => {
       setFormModalData({
         id: res.id,
         code: res.code,
-        dataType: res.dataType,
+        settingType: res.settingType,
         price: res.price,
         requestType: res.requestType,
         formTitle: res.formTitle || res.code,
@@ -132,7 +132,7 @@ const MasterData = () => {
       const {
         id,
         code,
-        dataType,
+        settingType,
         requestType,
         price,
         formTitle,
@@ -142,7 +142,7 @@ const MasterData = () => {
       const payload = {
         id,
         code,
-        dataType,
+        settingType,
         requestType,
         price,
         formTitle,
@@ -181,13 +181,13 @@ const MasterData = () => {
     },
     {
       title: 'Data Type',
-      dataIndex: 'dataType',
-      width: '20%',
+      dataIndex: 'settingType',
+      width: '10%',
     },
     {
       title: 'Request Type',
       dataIndex: 'requestType',
-      width: '20%',
+      width: '10%',
     },
     {
       title: 'Price',

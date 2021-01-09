@@ -4,7 +4,7 @@ import { Col, Input, Row, Select } from 'antd';
 import * as CONSTANTS from '../../../../constants';
 
 const MasterDataForm = ({
-  data: { code, dataType, requestType, price, formTitle },
+  data: { code, settingType, requestType, price, formTitle },
   onChange,
   onChangeAdvance,
 }) => {
@@ -37,11 +37,11 @@ const MasterDataForm = ({
             </div>
           </div>
           <div className="basic-setting__item">
-            <div className="basic-setting__label">Data Type</div>
+            <div className="basic-setting__label">Setting Type</div>
             <div className="basic-setting__control">
               <Select
-                value={dataType}
-                onChange={(sel) => onChange('dataType', sel)}
+                value={settingType}
+                onChange={(sel) => onChange('settingType', sel)}
                 size="small"
                 // mode="multiple"
                 style={{ width: 150 }}

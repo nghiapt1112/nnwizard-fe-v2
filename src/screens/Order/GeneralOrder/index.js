@@ -72,7 +72,9 @@ const CreateGeneralOrder = () => {
           price: 0,
         },
         ...res.content
-          .filter((el) => el.dataType === 'ADVANCE' && el.code.includes('RUSH'))
+          .filter(
+            (el) => el.settingType === 'ADVANCE' && el.code.includes('RUSH')
+          )
           .map((el) => {
             return {
               value: el.code,
@@ -85,7 +87,7 @@ const CreateGeneralOrder = () => {
 
     function getAdvanceSettingFormValue(res) {
       return res.content
-        .filter((el) => el.dataType === 'ADVANCE')
+        .filter((el) => el.settingType === 'ADVANCE')
         .map((el) => {
           return {
             value: el.code,

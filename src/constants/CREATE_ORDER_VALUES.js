@@ -18,12 +18,14 @@ export const FILE_FORMAT = [
   { value: '2', text: 'JPG' },
 ];
 
+// Setting type
 export const DATA_TYPE = [
   { value: 'BASIC', text: 'BASIC' },
   { value: 'ADVANCE', text: 'ADVANCE' }, // deprecated
   { value: 'ADDON', text: 'ADDON' },
   { value: 'RETOUCHING', text: 'RETOUCHING' },
   { value: 'FORM', text: 'FORM' },
+  { value: 'BASE_PRICE', text: 'BASE_PRICE' },
 ];
 
 export const SIZE = [

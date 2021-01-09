@@ -7,6 +7,7 @@ import { TEMPLATE_TYPE } from '../../../constants';
 
 const SpecificationTemplate = ({
   advanceSetting,
+  price,
   data: {
     name,
     preFix,
@@ -44,7 +45,7 @@ const SpecificationTemplate = ({
             </div>
           </div>
         </Col>
-        <Col span="10">
+        <Col span="8">
           <div className="basic-setting__item">
             <div className="basic-setting__label">Template Type</div>
             <div className="basic-setting__control">
@@ -62,6 +63,14 @@ const SpecificationTemplate = ({
                   );
                 })}
               </Select>
+            </div>
+          </div>
+        </Col>
+        <Col span="6">
+          <div className="basic-setting__item">
+            <div className="basic-setting__label">Price</div>
+            <div className="basic-setting__control">
+              <Input value={price} disabled size="small" />
             </div>
           </div>
         </Col>
@@ -298,21 +307,43 @@ const SpecificationTemplate = ({
           </div>
         </Col>
         <Col span="24">
-          <Divider orientation="left">Advance Setting</Divider>
+          <Divider orientation="left">Addon Setting</Divider>
         </Col>
         <Col span="24">
           <div className="advance-setting__list">
-            {advanceSetting.map((setting, index) => (
-              <Checkbox
-                checked={codes[setting.value]}
-                onChange={({ target: { checked } }) =>
-                  onChangeAdvance(setting.value, checked)
-                }
-                key={index}
-              >
-                {setting.text}
-              </Checkbox>
-            ))}
+            {advanceSetting
+              .filter((el) => el.type === 'ADDON')
+              .map((setting, index) => (
+                <Checkbox
+                  checked={codes[setting.value]}
+                  onChange={({ target: { checked } }) =>
+                    onChangeAdvance(setting.value, checked)
+                  }
+                  key={index}
+                >
+                  {setting.text}
+                </Checkbox>
+              ))}
+          </div>
+        </Col>
+        <Col span="24">
+          <Divider orientation="left">Retouch Setting</Divider>
+        </Col>
+        <Col span="24">
+          <div className="advance-setting__list">
+            {advanceSetting
+              .filter((el) => el.type === 'RETOUCHING')
+              .map((setting, index) => (
+                <Checkbox
+                  checked={codes[setting.value]}
+                  onChange={({ target: { checked } }) =>
+                    onChangeAdvance(setting.value, checked)
+                  }
+                  key={index}
+                >
+                  {setting.text}
+                </Checkbox>
+              ))}
           </div>
         </Col>
       </Row>
