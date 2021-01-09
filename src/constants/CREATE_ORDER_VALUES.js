@@ -2,7 +2,9 @@
 export const ORDER_REQUEST_TYPE = [
   { value: 'GENERAL', text: 'General' },
   { value: 'REAL_ESTATE', text: 'Real Estate' },
-  { value: 'SPECIFICATION', text: 'Specification' },
+  { value: 'RETOUCHING', text: 'Retouching' },
+  { value: 'PRODUCT', text: 'Product' },
+  { value: 'NEW_BORN', text: 'New Born' },
 ];
 
 export const USER_STATUS = [
@@ -18,8 +20,9 @@ export const FILE_FORMAT = [
 
 export const DATA_TYPE = [
   { value: 'BASIC', text: 'BASIC' },
-  { value: 'ADVANCE', text: 'ADVANCE' },
-  { value: 'SYSTEM', text: 'SYSTEM' },
+  { value: 'ADVANCE', text: 'ADVANCE' }, // deprecated
+  { value: 'ADDON', text: 'ADDON' },
+  { value: 'RETOUCHING', text: 'RETOUCHING' },
   { value: 'FORM', text: 'FORM' },
 ];
 
@@ -40,16 +43,16 @@ export const DPI = [
   { value: '2', text: 'DPI-2' },
 ];
 export const META_DATA = [
-  { value: 1, text: 'META_DATA-1' },
-  { value: 2, text: 'META_DATA-2' },
+  { value: '1', text: 'META_DATA-1' },
+  { value: '2', text: 'META_DATA-2' },
 ];
 export const COMPRESSION = [
   { value: 1, text: 'COMPRESSION-1' },
   { value: 2, text: 'COMPRESSION-2' },
 ];
 export const JPG_QUALITY = [
-  { value: 1, text: 'JPG_QUALITY-1' },
-  { value: 2, text: 'JPG_QUALITY-2' },
+  { value: '1', text: 'JPG_QUALITY-1' },
+  { value: '2', text: 'JPG_QUALITY-2' },
 ];
 export const CODES = [
   { value: 'SMALL_OBJECT', text: 'SMALL_OBJECT' },

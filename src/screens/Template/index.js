@@ -23,6 +23,8 @@ import {
 import { settingService } from '../../services/setting.service';
 import './styles.less';
 
+const ADVANCE_SETTINGS = ['ADVANCE', 'ADDON', 'RETOUCHING'];
+
 const Template = () => {
   const [templateType, setTemplateType] = useState(TEMPLATE_TYPE.GENERAL);
   const [isLoadingData, setLoadingData] = useState(false);
@@ -45,20 +47,21 @@ const Template = () => {
       const res = await settingService.getAll({
         page: 1,
         size: 10000,
-        types: ['BASIC', 'ADVANCE'], // lay ca basic va advance , tuy theo tung loai xu ly anh.
-        requestType: ['GENERAL'], // loai xu ly anh dang la GENERAL
+        types: [...ADVANCE_SETTINGS, 'BASIC'], // lay ca basic va advance , tuy theo tung loai xu ly anh.
+        // requestType: ['GENERAL'], // loai xu ly anh dang la GENERAL
       });
       setAdvanceSetting(getAdvanceSettingFormValue(res));
     }
 
     function getAdvanceSettingFormValue(res) {
       return res.content
-        .filter((el) => el.dataType === 'ADVANCE')
+        .filter((el) => ADVANCE_SETTINGS.includes(el.dataType))
         .map((el) => {
           return {
             value: el.code,
             text: el.formTitle || el.code,
             price: el.price,
+            type: el.dataType,
           };
         });
     }
@@ -111,27 +114,31 @@ const Template = () => {
     setModalVisible(true);
   };
   const openEditModal = async ({ tid }) => {
+    setLoadingData(true);
     try {
-      setLoadingData(true);
       const res = await templateService.getById(tid);
-      setLoadingData(false);
-      const { basicSetting, ...rest } = res;
+      const { basicSetting, settingIds, ...rest } = res;
+      debugger;
       const margin =
-        basicSetting.margin_top ||
-        basicSetting.margin_bottom ||
-        basicSetting.margin_left ||
-        basicSetting.margin_right;
+        basicSetting?.margin_top ||
+        basicSetting?.margin_bottom ||
+        basicSetting?.margin_left ||
+        basicSetting?.margin_right;
+      const codes = {};
+      (settingIds || []).forEach((el) => (codes[el] = true));
       setFormModalData({
         ...basicSetting,
         ...rest,
+        codes,
         margin,
       });
       setModalVisible(true);
     } catch (error) {
-      setLoadingData(false);
       notification.error({
         message: error,
       });
+    } finally {
+      setLoadingData(false);
     }
   };
   const onChangeBasic = (key, value) => {
@@ -140,22 +147,28 @@ const Template = () => {
     setFormModalData(tmpFormModalData);
   };
   const onChangeAdvance = (key, value) => {
+    debugger;
     const tmpFormModalData = { ...formModalData };
     tmpFormModalData.codes = tmpFormModalData.codes || {};
+    tmpFormModalData.settingIds = tmpFormModalData.settingIds || [];
     tmpFormModalData.codes[key] = value;
+    tmpFormModalData.settingIds.push(key);
+    console.log('CUrrent Advansetting', advanceSetting);
     setFormModalData(tmpFormModalData);
   };
   const handleModalOk = async () => {
     try {
       const { tid, name, ...rest } = formModalData;
+      const ids = Object.keys(formModalData.codes || []);
       const payload = {
         tid,
         name: name,
         // type: templateType,
         type: 'PRODUCT',
         basicSetting: { ...rest },
-        settingIds: [],
+        settingIds: ids,
       };
+
       const isAddNew = !tid;
       isAddNew
         ? await templateService.create(payload)
@@ -226,11 +239,13 @@ const Template = () => {
             onChangeAdvance={onChangeAdvance}
           />
         );
-      case TEMPLATE_TYPE.SPECIFICATION:
+      case TEMPLATE_TYPE.GENERAL:
         return (
           <SpecificationTemplate
+            advanceSetting={advanceSetting}
             data={formModalData}
             onChange={onChangeBasic}
+            onChangeAdvance={onChangeAdvance}
           />
         );
       default:
@@ -258,10 +273,7 @@ const Template = () => {
                 >
                   Real Estate
                 </Menu.Item>
-                <Menu.Item
-                  key={TEMPLATE_TYPE.SPECIFICATION}
-                  icon={<PlusOutlined />}
-                >
+                <Menu.Item key={TEMPLATE_TYPE.GENERAL} icon={<PlusOutlined />}>
                   Specification
                 </Menu.Item>
               </Menu>

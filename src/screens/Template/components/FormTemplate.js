@@ -35,6 +35,7 @@ const FormTemplate = ({
     dpi,
     compression,
     codes = {},
+    settingIds = {},
   },
   onChange,
   onChangeAdvance,

@@ -1,11 +1,12 @@
 import React from 'react';
 import 'rc-color-picker/assets/index.css';
 import ColorPicker from 'rc-color-picker';
-import { Col, Divider, Input, Row, Select, Switch } from 'antd';
+import { Checkbox, Col, Divider, Input, Row, Select, Switch } from 'antd';
 import * as CONSTANTS from '../../../constants';
 import { TEMPLATE_TYPE } from '../../../constants';
 
 const SpecificationTemplate = ({
+  advanceSetting,
   data: {
     name,
     preFix,
@@ -22,8 +23,10 @@ const SpecificationTemplate = ({
     jpgQuality,
     progressive,
     normalRotation,
+    codes = {},
   },
   onChange,
+  onChangeAdvance,
 }) => {
   return (
     <div className="gx-mb-3">
@@ -46,11 +49,10 @@ const SpecificationTemplate = ({
             <div className="basic-setting__label">Template Type</div>
             <div className="basic-setting__control">
               <Select
-                value={TEMPLATE_TYPE.SPECIFICATION}
+                value={TEMPLATE_TYPE.REAL_ESTATE}
                 onChange={(val) => onChange('type', val)}
                 size="small"
                 style={{ width: 180 }}
-                disabled={true}
               >
                 {CONSTANTS.ORDER_REQUEST_TYPE.map((item, index) => {
                   return (
@@ -293,6 +295,24 @@ const SpecificationTemplate = ({
                 unCheckedChildren="No"
               />
             </div>
+          </div>
+        </Col>
+        <Col span="24">
+          <Divider orientation="left">Advance Setting</Divider>
+        </Col>
+        <Col span="24">
+          <div className="advance-setting__list">
+            {advanceSetting.map((setting, index) => (
+              <Checkbox
+                checked={codes[setting.value]}
+                onChange={({ target: { checked } }) =>
+                  onChangeAdvance(setting.value, checked)
+                }
+                key={index}
+              >
+                {setting.text}
+              </Checkbox>
+            ))}
           </div>
         </Col>
       </Row>
