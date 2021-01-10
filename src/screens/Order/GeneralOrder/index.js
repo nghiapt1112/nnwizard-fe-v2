@@ -124,10 +124,10 @@ const CreateGeneralOrder = () => {
               return {
                 ...rest,
                 ...setting,
-                advancePrice: calculatorPrice(
-                  priceSetting,
-                  setting.codes || []
-                ),
+                // advancePrice: calculatorPrice(
+                //   priceSetting,
+                //   setting.codes || []
+                // ),
                 file: {
                   name: oName,
                   size: fileSize,

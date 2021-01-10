@@ -71,6 +71,7 @@ const Template = () => {
             text: el.formTitle || el.code,
             price: el.price,
             type: el.settingType,
+            orderType: el.requestType,
           };
         });
     }
@@ -85,7 +86,16 @@ const Template = () => {
         const res = await templateService.getAll(searchParams);
         setLoadingData(false);
         const { content, totalElements, number } = res;
-        content.filter((el) => !el.price).forEach((el) => (el.price = 0));
+        content.forEach((el) => {
+          if (!el.price) {
+            el.price = 0;
+          }
+          if (el.inUsed) {
+            el.inUsed = 'Yes';
+          } else {
+            el.inUsed = 'No';
+          }
+        });
         setData(content);
         setPagination({
           total: totalElements,
@@ -128,7 +138,6 @@ const Template = () => {
     try {
       const res = await templateService.getById(tid);
       const { basicSetting, settingIds, ...rest } = res;
-      debugger;
       const margin =
         basicSetting?.margin_top ||
         basicSetting?.margin_bottom ||
@@ -142,6 +151,10 @@ const Template = () => {
         codes,
         margin,
       });
+      setPrice(
+        getBasePrice(advanceSetting, 'BASE_PRICE') +
+          calculatorPrice(priceHolder, settingIds)
+      );
       setModalVisible(true);
     } catch (error) {
       notification.error({
@@ -158,18 +171,26 @@ const Template = () => {
   };
 
   const onChangeAdvance = (key, value) => {
-    debugger;
     const tmpFormModalData = { ...formModalData };
     tmpFormModalData.codes = tmpFormModalData.codes || {};
-    tmpFormModalData.settingIds = tmpFormModalData.settingIds || [];
     tmpFormModalData.codes[key] = value;
-    tmpFormModalData.settingIds = Object.keys(tmpFormModalData.codes).filter(
-      (key) => tmpFormModalData.codes[key]
-    );
+    tmpFormModalData.settingIds = getSelectedSettingCodes(formModalData.code);
     setFormModalData(tmpFormModalData);
-    // TODO: Tính tiền, mỗi 1 item đã có price đi kèm, giờ thì count tính tiền. :))
-    const prize = calculatorPrice(priceHolder, tmpFormModalData.settingIds);
-    console.log('calculated price', prize);
+    setPrice(price + calculatorPrice(priceHolder, tmpFormModalData.settingIds));
+  };
+
+  const getBasePrice = (advanceSetting, settingType) => {
+    return (
+      advanceSetting.find(
+        (el) => el.type === settingType /*&& el.orderType === 'REAL_ESTATE'*/
+      )?.price || 0
+    );
+  };
+
+  const getSelectedSettingCodes = (codes) => {
+    if (codes) {
+      return Object.keys(codes).filter((key) => codes[key]);
+    }
   };
 
   const handleModalOk = async () => {
@@ -208,18 +229,23 @@ const Template = () => {
     },
     {
       title: 'Template Type',
-      dataIndex: 'tid',
-      width: '30%',
+      dataIndex: 'type',
+      width: '10%',
     },
     {
       title: 'Price',
       dataIndex: 'price',
-      width: '20%',
+      width: '10%',
+    },
+    {
+      title: 'In Used',
+      dataIndex: 'inUsed',
+      width: '10%',
     },
     {
       title: 'Action',
       dataIndex: 'tid',
-      width: '20%',
+      width: '40%',
       align: 'center',
       render: (_, record) => (
         <Space size="middle">
