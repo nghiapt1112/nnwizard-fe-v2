@@ -36,6 +36,7 @@ const Template = () => {
   const [advanceSetting, setAdvanceSetting] = useState([]);
   const [priceHolder, setPriceHolder] = useState({});
   const [price, setPrice] = useState(0);
+  const [basePrice, setBasePrice] = useState(0);
   const [searchParams, setSearchParams] = useState({
     page: PAGINATION.PAGE_START,
     size: PAGINATION.PAGE_SIZE,
@@ -151,10 +152,8 @@ const Template = () => {
         codes,
         margin,
       });
-      setPrice(
-        getBasePrice(advanceSetting, 'BASE_PRICE') +
-          calculatorPrice(priceHolder, settingIds)
-      );
+      setBasePrice(getBasePrice(advanceSetting, 'BASE_PRICE'));
+      setPrice(basePrice + calculatorPrice(priceHolder, settingIds));
       setModalVisible(true);
     } catch (error) {
       notification.error({
@@ -174,9 +173,14 @@ const Template = () => {
     const tmpFormModalData = { ...formModalData };
     tmpFormModalData.codes = tmpFormModalData.codes || {};
     tmpFormModalData.codes[key] = value;
-    tmpFormModalData.settingIds = getSelectedSettingCodes(formModalData.code);
+    debugger;
+    tmpFormModalData.settingIds = getSelectedSettingCodes(
+      tmpFormModalData.codes
+    );
     setFormModalData(tmpFormModalData);
-    setPrice(price + calculatorPrice(priceHolder, tmpFormModalData.settingIds));
+    setPrice(
+      basePrice + calculatorPrice(priceHolder, tmpFormModalData.settingIds)
+    );
   };
 
   const getBasePrice = (advanceSetting, settingType) => {
@@ -191,19 +195,20 @@ const Template = () => {
     if (codes) {
       return Object.keys(codes).filter((key) => codes[key]);
     }
+    return [];
   };
 
   const handleModalOk = async () => {
     try {
       const { tid, name, ...rest } = formModalData;
-      const ids = Object.keys(formModalData.codes || []);
+      // const ids = Object.keys(formModalData.codes || []);
       const payload = {
         tid,
         name: name,
         // type: templateType,
         type: 'PRODUCT',
         basicSetting: { ...rest },
-        settingIds: ids,
+        settingIds: formModalData.settingIds,
       };
 
       const isAddNew = !tid;
