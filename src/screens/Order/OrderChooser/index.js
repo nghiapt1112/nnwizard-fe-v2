@@ -12,7 +12,7 @@ const OrderChooser = () => {
         history.push('/co-general');
         break;
       case 'REAL_ESTATE':
-        history.push('/co-re');
+        history.push('/co-specification');
         break;
       case 'SPECIFICATION':
         history.push('/co-specification');
