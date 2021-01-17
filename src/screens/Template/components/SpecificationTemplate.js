@@ -25,6 +25,7 @@ const SpecificationTemplate = ({
     progressive,
     normalRotation,
     codes = {},
+    settingIds = [],
   },
   onChange,
   onChangeAdvance,
@@ -321,7 +322,7 @@ const SpecificationTemplate = ({
                   }
                   key={index}
                 >
-                  {setting.text}
+                  {setting.text} ${setting.price}
                 </Checkbox>
               ))}
           </div>
@@ -341,7 +342,7 @@ const SpecificationTemplate = ({
                   }
                   key={index}
                 >
-                  {setting.text}
+                  {setting.text} ${setting.price}
                 </Checkbox>
               ))}
           </div>
