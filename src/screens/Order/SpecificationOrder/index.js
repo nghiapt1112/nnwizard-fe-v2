@@ -3,7 +3,7 @@ import {
   Button,
   Col,
   Divider,
-  Image,
+  Image as ANTDImage,
   Input,
   notification,
   Row,
@@ -15,7 +15,7 @@ import ColorPicker from 'rc-color-picker';
 import { cloneDeep } from 'lodash';
 import * as CONSTANTS from '../../../constants';
 import UploadButton from '../../../components/UploadButton';
-import { toBase64 } from '../../../utils/converts';
+import { getImage, toBase64 } from '../../../utils/converts';
 import './styles.less';
 import { orderService, S3Service, templateService } from '../../../services';
 import ImageComment from '../../../components/ImageComment';
@@ -91,15 +91,37 @@ const CreateSpecificationOrder = () => {
     setOrder(tmpOrder);
     setImageSelectedIndex(index - 1);
   };
-  const onOpenModalImageComment = () => {
-    setImageSelected(order.images[imageSelectedIndex]);
+  const onOpenModalImageComment = async () => {
+    // Get image width height;
+    const imgSelected = cloneDeep(order.images[imageSelectedIndex]);
+    const dataComment =
+      imgSelected.comments && imgSelected.comments.length
+        ? JSON.parse(imgSelected.comments[0])
+        : {};
+    const image = await getImage(imgSelected.base64);
+    imgSelected.width = image.width;
+    imgSelected.height = image.height;
+    setImageSelected({
+      base64: imgSelected.base64,
+      width: image.width,
+      height: image.height,
+      fileName: imgSelected.fileName,
+      comments: dataComment.comments,
+      imageDrawData: dataComment.imageDrawData,
+    });
     setModalImageCommentVisible(true);
   };
   const onImageCommentOk = (val) => {
     const tmpOrder = cloneDeep(order);
-    tmpOrder.comments = val;
-    setOrder(tmpOrder);
-    setModalImageCommentVisible(false);
+    const imageUpdateComment = tmpOrder.images.find(
+      (image) => image.fileName === imageSelected.fileName
+    );
+    if (imageUpdateComment) {
+      imageUpdateComment.comments = [];
+      imageUpdateComment.comments[0] = JSON.stringify(val);
+      setOrder(tmpOrder);
+      setModalImageCommentVisible(false);
+    }
   };
   const uploadFiles = (links) => {
     const uploadProcess = links
@@ -138,6 +160,7 @@ const CreateSpecificationOrder = () => {
         basicSetting: {
           ...order.basicSetting,
         },
+        comments: image.comments,
         ...link,
       };
     });
@@ -150,7 +173,7 @@ const CreateSpecificationOrder = () => {
         // Create order
         const payloadCreate = {
           orderType: 'REAL_ESTATE',
-          orderName: `REAL_ESTATE_D2_${new Date().getTime()}`,
+          orderName: `REAL_ESTATE_${new Date().getTime()}`,
         };
         const { id } = await orderService.create(payloadCreate);
         updateOrderID = id;
@@ -227,7 +250,7 @@ const CreateSpecificationOrder = () => {
               <div className="img-container">
                 {imageSelectedIndex !== -1 && (
                   <div className="img-view">
-                    <Image
+                    <ANTDImage
                       src={order.images[imageSelectedIndex].base64}
                       fallback="data:image/png;base64,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"
                     />
@@ -245,7 +268,7 @@ const CreateSpecificationOrder = () => {
                   {order.images.map((img, index) => {
                     return (
                       <div className="img-item" key={index}>
-                        <Image
+                        <ANTDImage
                           className={
                             index === imageSelectedIndex ? 'active' : ''
                           }
@@ -538,6 +561,10 @@ const CreateSpecificationOrder = () => {
       </Row>
       <ImageComment
         imgSrc={imageSelected.base64}
+        imgWidth={imageSelected.width}
+        imgHeight={imageSelected.height}
+        commentsList={imageSelected.comments}
+        imageDrawData={imageSelected.imageDrawData}
         visible={modalImageCommentVisible}
         onCancel={() => setModalImageCommentVisible(false)}
         onOk={onImageCommentOk}

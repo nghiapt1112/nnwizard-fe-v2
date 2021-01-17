@@ -7,3 +7,15 @@ export const toBase64 = (file) =>
     reader.onload = () => resolve({ base64: reader.result, blob: file });
     reader.onerror = (error) => reject(error);
   });
+
+export const getImage = (url) =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = function () {
+      resolve(img);
+    };
+    img.onerror = function (e) {
+      reject(e);
+    };
+    img.src = url;
+  });

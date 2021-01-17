@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { Button, Col, Divider, Input, Modal, Row } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Input, Modal } from 'antd';
 import { CloseOutlined, PlusOutlined, UndoOutlined } from '@ant-design/icons';
 import CanvasDraw from 'react-canvas-draw';
 import { cloneDeep } from 'lodash';
@@ -7,11 +7,20 @@ import './styles.less';
 
 const { TextArea } = Input;
 
-const ImageComment = ({ visible, imgSrc, onOk, onCancel }) => {
+const ImageComment = ({
+  visible,
+  commentsList,
+  imageDrawData,
+  imgSrc,
+  imgWidth,
+  imgHeight,
+  onOk,
+  onCancel,
+}) => {
   const [currentColor, setCurrentColor] = useState(COLOR_ARRAY[0]);
-  const [comments, setComments] = useState([
-    { content: '', color: currentColor },
-  ]);
+  const [comments, setComments] = useState(
+    commentsList || [{ content: '', color: currentColor }]
+  );
   const saveableCanvas = useRef(null);
   const onAddComment = () => {
     const commentsClone = cloneDeep(comments);
@@ -48,9 +57,15 @@ const ImageComment = ({ visible, imgSrc, onOk, onCancel }) => {
   const onUndo = () => {
     saveableCanvas && saveableCanvas.current.undo();
   };
+
+  const { width: canvasWidth, height: canvasHeight } = reCaculatorImageSize(
+    imgWidth,
+    imgHeight
+  );
   return (
     <>
       <Modal
+        destroyOnClose={true}
         centered
         title="Image comment"
         visible={visible}
@@ -58,22 +73,24 @@ const ImageComment = ({ visible, imgSrc, onOk, onCancel }) => {
         onCancel={onLocalCancel}
         width={1024}
       >
-        <Row gutter={[24, 24]} className="image-comment">
-          <Col span="12">
+        <div className="modal-image-comment__body">
+          <div>
             <CanvasDraw
               ref={saveableCanvas}
               brushColor={currentColor}
               catenaryColor="#000000"
               lazyRadius={0}
               brushRadius={2}
+              saveData={imageDrawData}
               imgSrc={imgSrc}
+              canvasWidth={canvasWidth}
+              canvasHeight={canvasHeight}
             />
             <div className="btn-undo-wrapper">
               <Button onClick={onUndo} shape="circle" icon={<UndoOutlined />} />
             </div>
-          </Col>
-          <Col span="12">
-            <Divider orientation="left">Comments</Divider>
+          </div>
+          <div>
             <div className="image-comment__list-comment">
               {comments.map((comment, index) => {
                 return (
@@ -90,6 +107,7 @@ const ImageComment = ({ visible, imgSrc, onOk, onCancel }) => {
                       }}
                     />
                     <TextArea
+                      value={comment.content}
                       onClick={() => onClickInput(index)}
                       onChange={(e) => onChangeComment(index, e)}
                       rows={2}
@@ -116,8 +134,8 @@ const ImageComment = ({ visible, imgSrc, onOk, onCancel }) => {
             >
               Add Comment
             </Button>
-          </Col>
-        </Row>
+          </div>
+        </div>
       </Modal>
     </>
   );
@@ -170,3 +188,12 @@ const COLOR_ARRAY = [
   '#99E6E6',
   '#6666FF',
 ];
+
+const reCaculatorImageSize = (width, height) => {
+  const staticWidth = 500;
+  const newHeight = (staticWidth / width) * height;
+  return {
+    width: staticWidth,
+    height: newHeight,
+  };
+};
