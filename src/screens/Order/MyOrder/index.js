@@ -14,6 +14,7 @@ import { useHistory } from 'react-router-dom';
 import Filter from './components/Filter';
 import { ANT_TABLE_PAGINATION_DEFAULT, PAGINATION } from '../../../constants';
 import { adminUserService, orderService } from '../../../services';
+import { toDateString } from '../../../utils/DateTimeUtils';
 
 const MyOrder = () => {
   const history = useHistory();
@@ -69,6 +70,10 @@ const MyOrder = () => {
         const res = await orderService.getAll(searchParams);
         setLoadingData(false);
         const { content, totalElements, number } = res;
+        content.forEach((el) => {
+          el.createdDate = toDateString(el.createdDate);
+        });
+
         setData(content);
         setPagination({
           total: totalElements,
@@ -162,6 +167,11 @@ const MyOrder = () => {
     {
       title: 'Type',
       dataIndex: 'orderType',
+      width: '20%',
+    },
+    {
+      title: 'Created Date',
+      dataIndex: 'createdDate',
       width: '20%',
     },
     {
