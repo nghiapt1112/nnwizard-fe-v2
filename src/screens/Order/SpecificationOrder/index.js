@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Button,
+  Checkbox,
   Col,
   Divider,
   Image as ANTDImage,
@@ -21,20 +22,34 @@ import { orderService, S3Service, templateService } from '../../../services';
 import ImageComment from '../../../components/ImageComment';
 import { isEmpty } from '../../../utils/objectUtils';
 import { useHistory } from 'react-router-dom';
+import { settingService } from '../../../services/setting.service';
 
-const { TextArea } = Input;
-const onChange = () => {};
+const ADVANCE_SETTINGS = ['ADVANCE', 'ADDON', 'RETOUCHING', 'BASE_PRICE'];
 
 const CreateSpecificationOrder = () => {
   const history = useHistory();
   const [isSaving, setIsSaving] = useState(false);
   const [order, setOrder] = useState({ basicSetting: {}, images: [] });
   const [templates, setTemplates] = useState([]);
+  const [codes, setCodes] = useState([]);
   const [imageSelectedIndex, setImageSelectedIndex] = useState(-1);
   const [imageSelected, setImageSelected] = useState({});
   const [modalImageCommentVisible, setModalImageCommentVisible] = useState(
     false
   );
+
+  useEffect(() => {
+    async function fetchSettings() {
+      const res = await settingService.getAll({
+        page: 1,
+        size: 10000,
+        types: [...ADVANCE_SETTINGS, 'BASIC'],
+      });
+      setCodes(res.content);
+    }
+
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     async function fetchTemplates() {
@@ -53,6 +68,7 @@ const CreateSpecificationOrder = () => {
       if (res && res.basicSetting) {
         const tmpOrder = cloneDeep(order);
         tmpOrder.basicSetting = res.basicSetting;
+        tmpOrder.settingIds = res.settingIds;
         setOrder(tmpOrder);
       }
     } catch (e) {
@@ -165,6 +181,22 @@ const CreateSpecificationOrder = () => {
       };
     });
   };
+  const onChange = (key, value) => {
+    const tmpOrder = cloneDeep(order);
+    tmpOrder.basicSetting[key] = value;
+    setOrder(tmpOrder);
+  };
+  const onChangeAdvance = (code) => {
+    const tmpOrder = cloneDeep(order);
+    const indexCode = tmpOrder.settingIds && tmpOrder.settingIds[code];
+    if (indexCode && indexCode >= 0) {
+      tmpOrder.settingIds.splice(indexCode, 1);
+    } else {
+      if (!tmpOrder.settingIds) tmpOrder.settingIds = [];
+      tmpOrder.settingIds.push(code);
+    }
+    setOrder(tmpOrder);
+  };
   const onSubmit = async () => {
     try {
       setIsSaving(true);
@@ -199,27 +231,32 @@ const CreateSpecificationOrder = () => {
     }
   };
   const {
-    fileFormat,
-    background,
-    size,
-    modelCropping,
-    maxOutputFileSize,
-    colorProfile,
-    metaData,
-    jpgQuality,
-    progressive,
-    normalizeRotation,
-    preFix,
-    postFix,
-    dpi,
-    compression,
-  } = order.basicSetting;
+    basicSetting: {
+      fileFormat,
+      background,
+      size,
+      modelCropping,
+      maxOutputFileSize,
+      colorProfile,
+      metaData,
+      jpgQuality,
+      progressive,
+      normalizeRotation,
+      preFix,
+      postFix,
+      dpi,
+      compression,
+    },
+    settingIds = [],
+  } = order;
 
   return (
     <>
       <div className="header-page">
         <h2>
-          {true ? 'Update Specification Order' : 'Create Specification Order'}
+          {order.orderId
+            ? 'Update Specification Order'
+            : 'Create Specification Order'}
         </h2>
         <div>
           <Select
@@ -237,6 +274,36 @@ const CreateSpecificationOrder = () => {
           </Select>
         </div>
       </div>
+      <Row gutter={[24, 0]}>
+        <Col span="6">
+          <div className="basic-setting__item">
+            <div className="basic-setting__label">Order Name</div>
+            <div className="basic-setting__control">
+              <Input
+                value={order.orderName}
+                onChange={({ target: { value } }) =>
+                  onChange('orderName', value)
+                }
+                size="small"
+                style={{ width: 150 }}
+              />
+            </div>
+          </div>
+        </Col>
+        <Col span="6">
+          <div className="basic-setting__item">
+            <div className="basic-setting__label">Image Link</div>
+            <div className="basic-setting__control">
+              <Input
+                value={order.imgLink}
+                onChange={({ target: { value } }) => onChange('imgLink', value)}
+                size="small"
+                style={{ width: 150 }}
+              />
+            </div>
+          </div>
+        </Col>
+      </Row>
       <Row gutter={[24, 0]}>
         <Col span={10}>
           <Row>
@@ -264,6 +331,14 @@ const CreateSpecificationOrder = () => {
                     </Button>
                   </div>
                 )}
+                {order.images && order.images.length ? (
+                  <div className="img-price">
+                    <div className="img-price__usd">
+                      {order.prices || '$1.45'}
+                    </div>
+                    <div>per/image</div>
+                  </div>
+                ) : null}
                 <div className="img-list">
                   {order.images.map((img, index) => {
                     return (
@@ -536,15 +611,44 @@ const CreateSpecificationOrder = () => {
               </div>
             </Col>
             <Col span="24">
-              <Divider orientation="left">Retouching</Divider>
+              <Divider orientation="left">Addon Setting</Divider>
             </Col>
             <Col span="24">
-              <TextArea rows={3} />
-              <TextArea
-                className="gx-mt-3"
-                placeholder="Add something more here"
-                rows={6}
-              />
+              <div className="advance-setting__list">
+                {codes
+                  .filter((code) => code.settingType === 'ADDON')
+                  .map((setting, index) => (
+                    <Checkbox
+                      checked={settingIds.includes(setting.code)}
+                      onChange={({ target: { checked } }) =>
+                        onChangeAdvance(setting.code)
+                      }
+                      key={index}
+                    >
+                      {setting.formTitle}
+                    </Checkbox>
+                  ))}
+              </div>
+            </Col>
+            <Col span="24">
+              <Divider orientation="left">Retouch Setting</Divider>
+            </Col>
+            <Col span="24">
+              <div className="advance-setting__list">
+                {codes
+                  .filter((code) => code.settingType === 'RETOUCHING')
+                  .map((setting, index) => (
+                    <Checkbox
+                      checked={settingIds.includes(setting.code)}
+                      onChange={({ target: { checked } }) =>
+                        onChangeAdvance(setting.code)
+                      }
+                      key={index}
+                    >
+                      {setting.formTitle}
+                    </Checkbox>
+                  ))}
+              </div>
             </Col>
           </Row>
         </Col>
