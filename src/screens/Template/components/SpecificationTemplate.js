@@ -66,7 +66,7 @@ const SpecificationTemplate = ({
             </div>
           </div>
         </Col>
-        <Col span="6">
+        <Col span="8">
           <div className="basic-setting__item">
             <div className="basic-setting__label">Price</div>
             <div className="basic-setting__control">

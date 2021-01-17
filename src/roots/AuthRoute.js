@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { NavLink, Redirect, Route } from 'react-router-dom';
-import { Layout, Menu } from 'antd';
+import { Button, Layout, Menu, Space, Dropdown } from 'antd';
 import {
   AppstoreOutlined,
   ContainerOutlined,
@@ -10,6 +10,7 @@ import {
   MenuUnfoldOutlined,
   UnorderedListOutlined,
   UserOutlined,
+  BellOutlined,
 } from '@ant-design/icons';
 
 const { SubMenu } = Menu;
@@ -24,6 +25,13 @@ const getActiveMenu = (pathname) => {
     return pathname;
   }
 };
+
+const AccountMenu = (
+  <Menu>
+    <Menu.Item>My Profile</Menu.Item>
+    <Menu.Item>Logout</Menu.Item>
+  </Menu>
+);
 
 const AuthRoute = (props) => {
   const { loggedIn } = useSelector((state) => state.authentication);
@@ -73,10 +81,6 @@ const AuthRoute = (props) => {
                 Master Data
               </NavLink>
             </Menu.Item>
-            {/*<SubMenu key="sub3" title="Submenu">*/}
-            {/*  <Menu.Item key="11">Option 11</Menu.Item>*/}
-            {/*  <Menu.Item key="12">Option 12</Menu.Item>*/}
-            {/*</SubMenu>*/}
           </SubMenu>
         </Menu>
       </Sider>
@@ -89,6 +93,15 @@ const AuthRoute = (props) => {
               onClick: () => setCollapsed(!collapsed),
             }
           )}
+          <Space
+            style={{ float: 'right', marginRight: '20px' }}
+            align="baseline"
+          >
+            <Button icon={<BellOutlined />} />
+            <Dropdown overlay={AccountMenu} placement="bottomCenter">
+              <Button icon={<UserOutlined />} />
+            </Dropdown>
+          </Space>
         </Header>
         <Content
           className="site-layout-background"

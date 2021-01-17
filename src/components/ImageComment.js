@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Input, Modal } from 'antd';
-import { CloseOutlined, PlusOutlined, UndoOutlined } from '@ant-design/icons';
+import {
+  CloseOutlined,
+  PlusOutlined,
+  UndoOutlined,
+  CheckCircleOutlined,
+} from '@ant-design/icons';
 import CanvasDraw from 'react-canvas-draw';
 import { cloneDeep } from 'lodash';
 import './styles.less';
@@ -24,7 +29,14 @@ const ImageComment = ({
   const saveableCanvas = useRef(null);
   const onAddComment = () => {
     const commentsClone = cloneDeep(comments);
-    const newColor = COLOR_ARRAY[commentsClone.length];
+    let indexColor = COLOR_ARRAY.length - 1;
+    let newColor = COLOR_ARRAY[indexColor];
+    do {
+      const hasSomeColor = commentsClone.some((cm) => cm.color === newColor);
+      if (!hasSomeColor) break;
+      indexColor--;
+      newColor = COLOR_ARRAY[indexColor];
+    } while (indexColor >= 0);
     commentsClone.push({ content: '', color: newColor });
     setComments(commentsClone);
     setCurrentColor(newColor);
@@ -40,8 +52,8 @@ const ImageComment = ({
     commentsClone.splice(index, 1);
     setComments(commentsClone);
   };
-  const onClickInput = (index) => {
-    setCurrentColor(COLOR_ARRAY[index]);
+  const onClickInput = (color) => {
+    setCurrentColor(color);
   };
   const onLocalOk = () => {
     onOk &&
@@ -100,19 +112,27 @@ const ImageComment = ({
                   >
                     <div
                       style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         borderBottomLeftRadius: 5,
                         borderTopLeftRadius: 5,
                         width: 30,
                         backgroundColor: comment.color,
                       }}
-                    />
+                    >
+                      {comment.color === currentColor ? (
+                        <CheckCircleOutlined style={{ color: '#fff' }} />
+                      ) : null}
+                    </div>
                     <TextArea
                       value={comment.content}
-                      onClick={() => onClickInput(index)}
+                      onClick={() => onClickInput(comment.color)}
                       onChange={(e) => onChangeComment(index, e)}
                       rows={2}
                     />
                     <Button
+                      disabled={comments.length === 1}
                       onClick={() => onDeleteComment(index)}
                       size="small"
                       danger
