@@ -25,7 +25,7 @@ function create(order) {
 }
 
 function update(orderId, order) {
-  return api.put(`/order/real-estate-setting/${orderId}`, order);
+  return api.put(`/order/re/${orderId}`, order);
 }
 
 function generateLinkUploadFile(payload) {

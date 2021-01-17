@@ -2,7 +2,7 @@
 export const ORDER_REQUEST_TYPE = [
   { value: 'GENERAL', text: 'General' },
   { value: 'REAL_ESTATE', text: 'Real Estate' },
-  { value: 'RETOUCHING', text: 'Retouching' },
+  { value: 'SPECIFICATION', text: 'SPECIFICATION' },
   { value: 'PRODUCT', text: 'Product' },
   { value: 'NEW_BORN', text: 'New Born' },
 ];
