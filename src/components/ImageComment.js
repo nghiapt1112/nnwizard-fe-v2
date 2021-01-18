@@ -22,11 +22,13 @@ const ImageComment = ({
   onOk,
   onCancel,
 }) => {
-  const [currentColor, setCurrentColor] = useState(COLOR_ARRAY[0]);
-  const [comments, setComments] = useState(
-    commentsList || [{ content: '', color: currentColor }]
-  );
   const saveableCanvas = useRef(null);
+  const [currentColor, setCurrentColor] = useState(COLOR_ARRAY[0]);
+  const [comments, setComments] = useState([]);
+  React.useEffect(() => {
+    setComments(commentsList || []);
+  }, [commentsList]);
+
   const onAddComment = () => {
     const commentsClone = cloneDeep(comments);
     let indexColor = COLOR_ARRAY.length - 1;

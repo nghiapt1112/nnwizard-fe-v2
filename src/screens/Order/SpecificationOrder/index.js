@@ -663,16 +663,18 @@ const CreateSpecificationOrder = () => {
           </Button>
         </Col>
       </Row>
-      <ImageComment
-        imgSrc={imageSelected.base64}
-        imgWidth={imageSelected.width}
-        imgHeight={imageSelected.height}
-        commentsList={imageSelected.comments}
-        imageDrawData={imageSelected.imageDrawData}
-        visible={modalImageCommentVisible}
-        onCancel={() => setModalImageCommentVisible(false)}
-        onOk={onImageCommentOk}
-      />
+      {imageSelected && (
+        <ImageComment
+          imgSrc={imageSelected.base64}
+          imgWidth={imageSelected.width}
+          imgHeight={imageSelected.height}
+          commentsList={imageSelected.comments}
+          imageDrawData={imageSelected.imageDrawData}
+          visible={modalImageCommentVisible}
+          onCancel={() => setModalImageCommentVisible(false)}
+          onOk={onImageCommentOk}
+        />
+      )}
     </>
   );
 };
