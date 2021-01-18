@@ -48,7 +48,7 @@ const App = () => {
 
         {/*END-co-general*/}
         <AuthRoute path="/update-order/:id" type="private">
-          <CreateGeneralOrder />
+          <CreateSpecificationOrder />
         </AuthRoute>
         <AuthRoute path="/user-setting" type="private">
           <UserSetting />

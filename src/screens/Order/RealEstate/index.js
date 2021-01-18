@@ -267,31 +267,39 @@ const CreateOrderRealEstate = () => {
       if (!orderId) {
         // Create order
         const payloadCreate = {
-          orderType: 'GENERAL',
-          orderName: `GENERAL${new Date().getTime()}`,
+          orderType: 'REAL_ESTATE',
+          orderName: `REAL_ESTATE${new Date().getTime()}`,
         };
         const { id } = await orderService.create(payloadCreate);
         updateOrderID = id;
       }
       // Upload image
+      debugger;
       const links = await getLinkUploadFile(updateOrderID);
-      links && (await uploadFiles(links));
-      // Submit Setting
-      const payloadUpdate = getSenderData(links);
+      // links && (await uploadFiles(links));
+      if (links) {
+        try {
+          await uploadFiles(links);
+          // Submit Setting
+          const payloadUpdate = getSenderData(links);
 
-      const rushVal = {};
-      rushVal[rushServiceFormValue[rushServiceSelected].value] = true;
-      await orderService.update(updateOrderID, {
-        orderSetting: {
-          codes: { ...rushVal },
-        },
-        images: [...payloadUpdate],
-      });
-      setIsSaving(false);
-      notification.success({
-        message: 'Create Order Successfully',
-      });
-      history.push('/my-order');
+          const rushVal = {};
+          rushVal[rushServiceFormValue[rushServiceSelected].value] = true;
+          await orderService.update(updateOrderID, {
+            orderSetting: {
+              codes: { ...rushVal },
+            },
+            images: [...payloadUpdate],
+          });
+          setIsSaving(false);
+          notification.success({
+            message: 'Create Order Successfully',
+          });
+          history.push('/my-order');
+        } catch (error) {
+          console.log('Error');
+        }
+      }
     } catch (error) {
       setIsSaving(false);
       notification.error({
@@ -304,15 +312,34 @@ const CreateOrderRealEstate = () => {
     return instructions.map((instruction) => {
       let link =
         links && links.find(({ oName }) => oName === instruction.file.name);
-      const { imgId, preSignedURL, publicUrl } = link ? link : instruction.file;
+      debugger;
+      const {
+        imgId,
+        preSignedURL,
+        publicUrl,
+        fileSize,
+        thumbPreSignedURL,
+        thumbPublicUrl,
+        thumbnailID,
+        uniqueName,
+        validDate,
+        oName,
+      } = link ? link : instruction.file;
       return {
         setting: {
           ...instruction,
           file: undefined,
         },
         imgId,
+        oName,
         preSignedURL,
         publicUrl,
+        fileSize,
+        thumbPreSignedURL,
+        thumbPublicUrl,
+        thumbnailID,
+        uniqueName,
+        validDate,
       };
     });
   };
