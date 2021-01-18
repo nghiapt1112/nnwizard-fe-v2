@@ -1,0 +1,26 @@
+.notification {
+  notification-list {
+  }
+  .notification-item {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    padding: 5px 0;
+    border-bottom: 1px solid #F8F9F9;
+
+    .notification-item__time {
+      color: #666;
+      text-align: right;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+    &:hover {
+      cursor: pointer;
+      strong {
+        text-decoration: underline;
+      }
+    }
+  }
+}

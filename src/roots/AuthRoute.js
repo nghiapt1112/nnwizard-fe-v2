@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { NavLink, Redirect, Route } from 'react-router-dom';
-import { Button, Layout, Menu, Space, Dropdown } from 'antd';
+import { Button, Layout, Menu, Space, Dropdown, Popover } from 'antd';
 import {
   AppstoreOutlined,
   ContainerOutlined,
@@ -12,6 +12,8 @@ import {
   UserOutlined,
   BellOutlined,
 } from '@ant-design/icons';
+
+import './styles.less';
 
 const { SubMenu } = Menu;
 
@@ -31,6 +33,23 @@ const AccountMenu = (
     <Menu.Item>My Profile</Menu.Item>
     <Menu.Item>Logout</Menu.Item>
   </Menu>
+);
+
+const Notification = (
+  <div className="notification">
+    <div className="notification-list">
+      <div className="notification-item">
+        <strong>Noti title</strong>
+        <span>Noti content</span>
+        <span className="notification-item__time">11:30 20/12/2020</span>
+      </div>
+      <div className="notification-item">
+        <strong>Noti title</strong>
+        <span>Noti content</span>
+        <span className="notification-item__time">11:30 20/12/2020</span>
+      </div>
+    </div>
+  </div>
 );
 
 const AuthRoute = (props) => {
@@ -97,7 +116,14 @@ const AuthRoute = (props) => {
             style={{ float: 'right', marginRight: '20px' }}
             align="baseline"
           >
-            <Button icon={<BellOutlined />} />
+            <Popover
+              placement="leftBottom"
+              title="Notification"
+              content={Notification}
+              trigger="click"
+            >
+              <Button icon={<BellOutlined />} />
+            </Popover>
             <Dropdown overlay={AccountMenu} placement="bottomCenter">
               <Button icon={<UserOutlined />} />
             </Dropdown>
