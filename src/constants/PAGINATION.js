@@ -1,6 +1,6 @@
 export const PAGINATION = {
   PAGE_START: 1,
-  PAGE_SIZE: 1500,
+  PAGE_SIZE: 50,
 };
 
 export const ANT_TABLE_PAGINATION_DEFAULT = {

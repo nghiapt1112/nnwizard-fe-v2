@@ -67,7 +67,8 @@ const CreateSpecificationOrder = () => {
     if (!orderId) return;
     async function fetchOrderById() {
       try {
-        setOrder(await orderService.getById(orderId));
+        const tmpOrder = await orderService.getById(orderId);
+        setOrder(tmpOrder);
       } catch (error) {
         notification.error({
           message: error,
@@ -134,10 +135,12 @@ const CreateSpecificationOrder = () => {
       imgSelected.comments && imgSelected.comments.length
         ? JSON.parse(imgSelected.comments[0])
         : {};
-    const image = await getImage(imgSelected.base64);
+    const image = await getImage(imgSelected.base64 || imgSelected.publicUrl);
     imgSelected.width = image.width;
     imgSelected.height = image.height;
     setImageSelected({
+      imgId: imgSelected.imgId,
+      publicUrl: imgSelected.publicUrl,
       base64: imgSelected.base64,
       width: image.width,
       height: image.height,
@@ -193,14 +196,17 @@ const CreateSpecificationOrder = () => {
   };
 
   const getSenderData = (links) => {
-    return order.images.map((image) => {
+    const results = cloneDeep(order.images);
+    results.forEach((image) => {
       let link = links && links.find(({ oName }) => oName === image.fileName);
-      // const { imgId, preSignedURL, publicUrl } = link ? link : image;
-      return {
-        comments: image.comments,
-        ...link,
-      };
+      if (link) {
+        image = {
+          comments: image.comments,
+          ...link,
+        };
+      }
     });
+    return results;
   };
 
   const onChange = (key, value) => {
@@ -224,7 +230,7 @@ const CreateSpecificationOrder = () => {
   const onSubmit = async () => {
     try {
       setIsSaving(true);
-      let updateOrderID = order.orderId;
+      let updateOrderID = order.id;
       if (!updateOrderID) {
         // Create order
         const payloadCreate = {
@@ -349,7 +355,10 @@ const CreateSpecificationOrder = () => {
                 {imageSelectedIndex !== -1 && (
                   <div className="img-view">
                     <ANTDImage
-                      src={order.images[imageSelectedIndex].base64}
+                      src={
+                        order.images[imageSelectedIndex].base64 ||
+                        order.images[imageSelectedIndex].publicUrl
+                      }
                       fallback={CONSTANTS.DEFAULT_IMG}
                     />
                     <Button
@@ -383,7 +392,7 @@ const CreateSpecificationOrder = () => {
                           key={img}
                           width={70}
                           height={70}
-                          src={img.base64}
+                          src={img.base64 || img.thumbPublicUrl}
                           fallback={CONSTANTS.DEFAULT_IMG}
                         />
                         <Button
@@ -696,7 +705,7 @@ const CreateSpecificationOrder = () => {
       </Row>
       {imageSelected && (
         <ImageComment
-          imgSrc={imageSelected.base64}
+          imgSrc={imageSelected.base64 || imageSelected.thumbPublicUrl}
           imgWidth={imageSelected.width}
           imgHeight={imageSelected.height}
           commentsList={imageSelected.comments}
