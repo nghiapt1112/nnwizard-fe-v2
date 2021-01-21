@@ -15,7 +15,7 @@ const UploadButton = ({ title = 'Upload Files ...', onChange }) => {
       </Button>
       <input
         multiple
-        accept="image/*"
+        accept="image/*, .NEF, .RAF"
         onChange={onChange}
         ref={inputFiles}
         type="file"

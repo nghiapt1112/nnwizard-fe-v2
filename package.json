@@ -10,6 +10,7 @@
     "antd": "^4.6.6",
     "axios": "^0.20.0",
     "craco-less": "^1.17.0",
+    "dcraw": "^1.0.3",
     "history": "^5.0.0",
     "lodash": "^4.17.20",
     "rc-color-picker": "^1.2.6",
