@@ -108,7 +108,7 @@ const CreateSpecificationOrder = () => {
       filesBase64.map((file) => {
         return {
           ...file,
-          rawFile: file,
+          rawFile: file.blob,
           fileName: file.blob.name,
           type: file.blob.type,
           size: file.size,
@@ -197,16 +197,17 @@ const CreateSpecificationOrder = () => {
 
   const getSenderData = (links) => {
     const results = cloneDeep(order.images);
-    results.forEach((image) => {
+    return results.map((image) => {
       let link = links && links.find(({ oName }) => oName === image.fileName);
       if (link) {
-        image = {
+        return {
           comments: image.comments,
           ...link,
         };
+      } else {
+        return image;
       }
     });
-    return results;
   };
 
   const onChange = (key, value) => {
