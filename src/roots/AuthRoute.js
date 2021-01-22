@@ -20,7 +20,6 @@ const { SubMenu } = Menu;
 const { Header, Sider, Content } = Layout;
 
 const getActiveMenu = (pathname) => {
-  console.log(pathname);
   if (pathname.startsWith('/update-order')) {
     return '/my-order';
   } else {
@@ -53,11 +52,14 @@ const Notification = (
 );
 
 const AuthRoute = (props) => {
-  const { loggedIn } = useSelector((state) => state.authentication);
+  const { loggedIn, userInfo } = useSelector((state) => state.authentication);
   const [collapsed, setCollapsed] = useState(false);
+  const isAdmin = userInfo && userInfo.roles.includes('ADMIN');
+
   const { type, location } = props;
   if (!loggedIn && type === 'private') return <Redirect to="/login" />;
   else if (loggedIn && type === 'guest') return <Redirect to="/my-order" />;
+
   return type === 'private' ? (
     <Layout className="app">
       <Sider trigger={null} collapsible collapsed={collapsed}>
@@ -89,18 +91,20 @@ const AuthRoute = (props) => {
             </NavLink>
           </Menu.Item>
 
-          <SubMenu key="sub2" icon={<AppstoreOutlined />} title="Admin">
-            <Menu.Item key="/m-user" icon={<ContainerOutlined />}>
-              <NavLink activeClassName="selected" to="/m-user">
-                User Management
-              </NavLink>
-            </Menu.Item>
-            <Menu.Item key="/m-data" icon={<ContainerOutlined />}>
-              <NavLink activeClassName="selected" to="/m-data">
-                Master Data
-              </NavLink>
-            </Menu.Item>
-          </SubMenu>
+          {isAdmin ? (
+            <SubMenu key="sub2" icon={<AppstoreOutlined />} title="Admin">
+              <Menu.Item key="/m-user" icon={<ContainerOutlined />}>
+                <NavLink activeClassName="selected" to="/m-user">
+                  User Management
+                </NavLink>
+              </Menu.Item>
+              <Menu.Item key="/m-data" icon={<ContainerOutlined />}>
+                <NavLink activeClassName="selected" to="/m-data">
+                  Master Data
+                </NavLink>
+              </Menu.Item>
+            </SubMenu>
+          ) : null}
         </Menu>
       </Sider>
       <Layout className="site-layout">

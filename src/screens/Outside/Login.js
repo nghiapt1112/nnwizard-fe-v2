@@ -25,7 +25,9 @@ const Login = () => {
     try {
       const { userName, password } = values;
       await userService.login(userName, password);
+      const userInfo = await userService.getProfile(userName, password);
       dispatch(authenticationAction.loginSuccess());
+      dispatch(authenticationAction.getUserInfoSuccess(userInfo));
       history.push('/my-order');
     } catch (error) {
       const {

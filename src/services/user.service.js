@@ -10,6 +10,7 @@ export const userService = {
   logout,
   register,
   getProfile,
+  getUserInfo,
   updateProfile,
 };
 
@@ -27,6 +28,10 @@ function logout() {
 }
 
 function getProfile() {
+  return api.get(`/user/profile`);
+}
+
+function getUserInfo() {
   return api.get(`/user/profile`);
 }
 

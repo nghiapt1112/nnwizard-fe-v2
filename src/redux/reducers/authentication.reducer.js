@@ -19,6 +19,11 @@ export function authentication(state = initialState, action) {
       return {
         loggedIn: true,
       };
+    case authenticationConstants.GET_USER_INFO_SUCCESS:
+      return {
+        ...state,
+        userInfo: action.payload,
+      };
     case authenticationConstants.LOGOUT:
       localStorageService.clearToken();
       return {};
