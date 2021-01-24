@@ -393,7 +393,7 @@ const CreateSpecificationOrder = () => {
                           key={img}
                           width={70}
                           height={70}
-                          src={img.base64 || img.thumbPublicUrl}
+                          src={img.base64 || img.publicUrl}
                           fallback={CONSTANTS.DEFAULT_IMG}
                         />
                         <Button
@@ -706,7 +706,7 @@ const CreateSpecificationOrder = () => {
       </Row>
       {imageSelected && (
         <ImageComment
-          imgSrc={imageSelected.base64 || imageSelected.thumbPublicUrl}
+          imgSrc={imageSelected.base64 || imageSelected.publicUrl}
           imgWidth={imageSelected.width}
           imgHeight={imageSelected.height}
           commentsList={imageSelected.comments}
