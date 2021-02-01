@@ -69,6 +69,7 @@ const CreateSpecificationOrder = () => {
       try {
         const tmpOrder = await orderService.getById(orderId);
         setOrder(tmpOrder);
+        tmpOrder.images && tmpOrder.images.length && setImageSelectedIndex(0);
       } catch (error) {
         notification.error({
           message: error,
@@ -112,6 +113,7 @@ const CreateSpecificationOrder = () => {
           fileName: file.blob.name,
           type: file.blob.type,
           size: file.size,
+          thumbnailFile: file.thumbnailFile || file.blob,
         };
       })
     );
@@ -165,16 +167,16 @@ const CreateSpecificationOrder = () => {
   };
 
   const uploadFiles = (links) => {
-    const uploadProcess = links
-      .map(({ preSignedURL, oName }) => {
-        const image = order.images.find(
-          (file) => file.fileName === oName && !file.imgId
-        );
-        if (!image) return null;
-        return S3Service.upload(preSignedURL, image.rawFile);
-      })
-      .filter((promise) => promise);
-    return Promise.all(uploadProcess);
+    const process = [];
+    links.forEach(({ preSignedURL, thumbPreSignedURL, oName }) => {
+      const image = order.images.find(
+        (file) => file.fileName === oName && !file.imgId
+      );
+      if (!image) return null;
+      process.push(S3Service.upload(preSignedURL, image.rawFile));
+      process.push(S3Service.upload(thumbPreSignedURL, image.thumbnailFile));
+    });
+    return Promise.all(process);
   };
 
   const getLinkUploadFile = (orderId) => {
@@ -358,7 +360,7 @@ const CreateSpecificationOrder = () => {
                     <ANTDImage
                       src={
                         order.images[imageSelectedIndex].base64 ||
-                        order.images[imageSelectedIndex].publicUrl
+                        order.images[imageSelectedIndex].thumbPublicUrl
                       }
                       fallback={CONSTANTS.DEFAULT_IMG}
                     />
