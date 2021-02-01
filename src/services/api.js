@@ -64,7 +64,7 @@ api.interceptors.response.use(
       }
 
       if (error.response.status === 403) {
-        return Promise.reject('Forbidden');
+        return Promise.reject('User has no permission');
       }
       const {
         response: { data, statusText },
@@ -75,7 +75,7 @@ api.interceptors.response.use(
         statusText;
       return Promise.reject(erMessage);
     } catch (error) {
-      return Promise.reject('ERROR');
+      return Promise.reject('Server Busy');
     }
   }
 );

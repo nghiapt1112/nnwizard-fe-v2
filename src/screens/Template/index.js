@@ -23,8 +23,11 @@ import {
 import { settingService } from '../../services/setting.service';
 import './styles.less';
 import { calculatorPrice } from '../Order/priceHelper';
-
-const ADVANCE_SETTINGS = ['ADVANCE', 'ADDON', 'RETOUCHING', 'BASE_PRICE'];
+import {
+  getBasePrice,
+  ADVANCE_SETTINGS,
+  getAdvanceSettingFormValue,
+} from '../../utils/orderUtils';
 
 const Template = () => {
   const [templateType, setTemplateType] = useState(TEMPLATE_TYPE.GENERAL);
@@ -61,20 +64,6 @@ const Template = () => {
         (setting) => (priceHolderVal[setting.value] = setting.price)
       );
       setPriceHolder(priceHolderVal);
-    }
-
-    function getAdvanceSettingFormValue(res) {
-      return res.content
-        .filter((el) => ADVANCE_SETTINGS.includes(el.settingType))
-        .map((el) => {
-          return {
-            value: el.code,
-            text: el.formTitle || el.code,
-            price: el.price,
-            type: el.settingType,
-            orderType: el.requestType,
-          };
-        });
     }
 
     fetchSettings();
@@ -180,14 +169,6 @@ const Template = () => {
     setFormModalData(tmpFormModalData);
     setPrice(
       basePrice + calculatorPrice(priceHolder, tmpFormModalData.settingIds)
-    );
-  };
-
-  const getBasePrice = (advanceSetting, settingType) => {
-    return (
-      advanceSetting.find(
-        (el) => el.type === settingType /*&& el.orderType === 'REAL_ESTATE'*/
-      )?.price || 0
     );
   };
 

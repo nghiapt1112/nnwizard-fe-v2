@@ -42,7 +42,6 @@ const UserManagement = () => {
       try {
         const res = await adminUserService.findAllUsers(searchParams);
         const rolesRes = await adminRoleService.findAllRoles();
-        setLoadingData(false);
         const { content, totalElements, number } = res;
         content.forEach((el) => (el.roles = el.roles.join(',')));
         setRoles([...rolesRes]);
@@ -55,6 +54,8 @@ const UserManagement = () => {
         notification.error({
           message: error,
         });
+      } finally {
+        setLoadingData(false);
       }
     };
 

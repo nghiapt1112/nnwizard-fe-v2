@@ -5,3 +5,4 @@ export * from './masterdata.service';
 export * from './adminUser.service';
 export * from './adminRole.service';
 export * from './StorageService';
+export * from './payment.service';

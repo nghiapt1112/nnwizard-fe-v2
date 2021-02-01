@@ -11,6 +11,7 @@ import {
   UnorderedListOutlined,
   UserOutlined,
   BellOutlined,
+  LineChartOutlined,
 } from '@ant-design/icons';
 
 import './styles.less';
@@ -69,7 +70,7 @@ const AuthRoute = (props) => {
   }, [location.pathname]);
 
   if (!loggedIn && type === 'private') return <Redirect to="/login" />;
-  else if (loggedIn && type === 'guest') return <Redirect to="/my-order" />;
+  else if (loggedIn && type === 'guest') return <Redirect to="/dashboard" />;
 
   return type === 'private' ? (
     <Layout className="app">
@@ -81,6 +82,11 @@ const AuthRoute = (props) => {
           selectedKeys={[getActiveMenu(location.pathname)]}
           defaultOpenKeys={['sub2']}
         >
+          <Menu.Item key="/dashboard" icon={<LineChartOutlined />}>
+            <NavLink activeClassName="selected" to="/dashboard">
+              DashBoard
+            </NavLink>
+          </Menu.Item>
           <Menu.Item key="/c-orders" icon={<FileOutlined />}>
             <NavLink activeClassName="selected" to="/c-orders">
               Create Order
@@ -89,6 +95,11 @@ const AuthRoute = (props) => {
           <Menu.Item key="/my-order" icon={<UnorderedListOutlined />}>
             <NavLink activeClassName="selected" to="/my-order">
               My Order
+            </NavLink>
+          </Menu.Item>
+          <Menu.Item key="/checkout" icon={<UnorderedListOutlined />}>
+            <NavLink activeClassName="selected" to="/checkout">
+              Checkout
             </NavLink>
           </Menu.Item>
           <Menu.Item key="/template" icon={<ContainerOutlined />}>

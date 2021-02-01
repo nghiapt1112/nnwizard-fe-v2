@@ -15,6 +15,9 @@ import MyOrder from './screens/Order/MyOrder';
 import UserSetting from './screens/UserSetting';
 import MasterData from './screens/Admin/MasterData';
 import UserManagement from './screens/Admin/UserManagement';
+import DashBoard from './screens/DashBoard';
+import Checkout from './screens/Order/Checkout';
+import OrderReview from './screens/Order/OrderReview';
 
 const App = () => {
   return (
@@ -32,6 +35,10 @@ const App = () => {
         <AuthRoute path="/template" type="private">
           <Template />
         </AuthRoute>
+        {/*Dash Board*/}
+        <AuthRoute path="/dashboard" type="private">
+          <DashBoard />
+        </AuthRoute>
         {/*ORDER*/}
         <AuthRoute path="/c-orders" type="private">
           <OrderChooser />
@@ -45,7 +52,6 @@ const App = () => {
         <AuthRoute path="/co-specification" type="private">
           <CreateSpecificationOrder />
         </AuthRoute>
-
         {/*END-co-general*/}
         <AuthRoute path="/update-order/:id" type="private">
           <CreateSpecificationOrder />
@@ -58,6 +64,12 @@ const App = () => {
         </AuthRoute>
         <AuthRoute path="/m-user" type="private">
           <UserManagement />
+        </AuthRoute>
+        <AuthRoute path="/checkout" type="private">
+          <Checkout />
+        </AuthRoute>
+        <AuthRoute path="/order-review" type="private">
+          <OrderReview />
         </AuthRoute>
         <AuthRoute path="/" type="private">
           <MyOrder />

@@ -1,7 +1,7 @@
 import dcraw from 'dcraw';
 
 export const bytesToMegaBytes = (bytes) => bytes / (1024 * 1024);
-export const FILES_NEED_CONVERT = ['NEF', 'RAF'];
+export const FILES_NEED_CONVERT = ['NEF', 'RAF', 'DNG', 'CRW', 'CR2', 'ARW'];
 
 export const getFileExtension = (filename) => {
   return /[.]/.exec(filename) ? /[^.]+$/.exec(filename)[0] : undefined;
@@ -21,6 +21,9 @@ export const toBase64 = (file) => {
         const blob = new Blob([thumbnail], { type: 'image/png' });
         const urlCreator = window.URL || window.webkitURL;
         const imageUrl = urlCreator.createObjectURL(blob);
+        // const metadata = dcraw(buf, { verbose: true, identify: true })
+        //   .split('\n')
+        //   .filter(String);
         resolve({
           base64: imageUrl,
           blob: file,

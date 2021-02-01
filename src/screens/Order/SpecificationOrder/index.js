@@ -6,6 +6,7 @@ import {
   Divider,
   Image as ANTDImage,
   Input,
+  InputNumber,
   notification,
   Row,
   Select,
@@ -23,7 +24,12 @@ import ImageComment from '../../../components/ImageComment';
 import { isEmpty } from '../../../utils/objectUtils';
 import { useHistory, useParams } from 'react-router-dom';
 import { settingService } from '../../../services/setting.service';
-const ADVANCE_SETTINGS = ['ADVANCE', 'ADDON', 'RETOUCHING', 'BASE_PRICE'];
+import {
+  getAdvanceSettingFormValue,
+  getBasePrice,
+  ADVANCE_SETTINGS,
+} from '../../../utils/orderUtils';
+import { calculatorPrice } from '../priceHelper';
 
 const CreateSpecificationOrder = () => {
   const history = useHistory();
@@ -31,12 +37,17 @@ const CreateSpecificationOrder = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [order, setOrder] = useState({ basicSetting: {}, images: [] });
   const [templates, setTemplates] = useState([]);
-  const [codes, setCodes] = useState([]);
+  const [advanceSetting, setAdvanceSetting] = useState([]);
+  const [priceHolder, setPriceHolder] = useState({});
+  const [price, setPrice] = useState(0);
+
   const [imageSelectedIndex, setImageSelectedIndex] = useState(-1);
   const [imageSelected, setImageSelected] = useState({});
   const [modalImageCommentVisible, setModalImageCommentVisible] = useState(
     false
   );
+  const [basePrice, setBasePrice] = useState(0);
+  const [orderPrice, setOrderPrice] = useState(0);
 
   useEffect(() => {
     async function fetchSettings() {
@@ -45,7 +56,13 @@ const CreateSpecificationOrder = () => {
         size: 10000,
         types: [...ADVANCE_SETTINGS, 'BASIC'],
       });
-      setCodes(res.content);
+      const advanceVal = getAdvanceSettingFormValue(res);
+      const priceHolderVal = {};
+      advanceVal.forEach(
+        (setting) => (priceHolderVal[setting.value] = setting.price)
+      );
+      setAdvanceSetting(advanceVal);
+      setPriceHolder(priceHolderVal);
     }
 
     fetchSettings();
@@ -65,11 +82,15 @@ const CreateSpecificationOrder = () => {
 
   useEffect(() => {
     if (!orderId) return;
+
     async function fetchOrderById() {
       try {
         const tmpOrder = await orderService.getById(orderId);
         setOrder(tmpOrder);
         tmpOrder.images && tmpOrder.images.length && setImageSelectedIndex(0);
+
+        setOrderPrice(tmpOrder.price);
+        setBasePrice(getBasePrice(advanceSetting, 'BASE_PRICE'));
       } catch (error) {
         notification.error({
           message: error,
@@ -220,13 +241,19 @@ const CreateSpecificationOrder = () => {
 
   const onChangeAdvance = (code) => {
     const tmpOrder = cloneDeep(order);
-    const indexCode = tmpOrder.settingIds && tmpOrder.settingIds[code];
-    if (indexCode && indexCode >= 0) {
-      tmpOrder.settingIds.splice(indexCode, 1);
+    const orderSettingIds = tmpOrder.settingIds || [];
+    debugger;
+    if (orderSettingIds.includes(code)) {
+      const indexCode = orderSettingIds.indexOf(code);
+      orderSettingIds.splice(indexCode, 1);
     } else {
-      if (!tmpOrder.settingIds) tmpOrder.settingIds = [];
-      tmpOrder.settingIds.push(code);
+      orderSettingIds.push(code);
     }
+    setOrderPrice(
+      // orderPrice + 1
+      basePrice + calculatorPrice(priceHolder, orderSettingIds)
+    );
+    tmpOrder.settingIds = orderSettingIds;
     setOrder(tmpOrder);
   };
 
@@ -258,9 +285,15 @@ const CreateSpecificationOrder = () => {
         name: order.name,
       });
       // setIsSaving(false);
-      notification.success({
-        message: 'Create Order Successfully',
-      });
+      notification.success(
+        updateOrderID
+          ? {
+              message: 'Update Order Successfully',
+            }
+          : {
+              message: 'Create Order Successfully',
+            }
+      );
       history.push('/my-order');
     } catch (error) {
       notification.error({
@@ -270,13 +303,14 @@ const CreateSpecificationOrder = () => {
       setIsSaving(false);
     }
   };
+
   const {
     basicSetting: {
       fileFormat,
       background,
       size,
       modelCropping,
-      maxOutputFileSize,
+      minMaxSize,
       colorProfile,
       metaData,
       jpgQuality,
@@ -293,11 +327,7 @@ const CreateSpecificationOrder = () => {
   return (
     <>
       <div className="header-page">
-        <h2>
-          {order.orderId
-            ? 'Update Specification Order'
-            : 'Create Specification Order'}
-        </h2>
+        <h2>{order.id ? 'Update Order' : 'Create Order'}</h2>
         <div>
           <Select
             onChange={(val) => onChangeTemplate(val)}
@@ -320,7 +350,7 @@ const CreateSpecificationOrder = () => {
             <div className="basic-setting__label">Order Name</div>
             <div className="basic-setting__control">
               <Input
-                value={order.orderName}
+                value={order.name}
                 onChange={({ target: { value } }) =>
                   onChange('orderName', value)
                 }
@@ -337,6 +367,23 @@ const CreateSpecificationOrder = () => {
               <Input
                 value={order.imgLink}
                 onChange={({ target: { value } }) => onChange('imgLink', value)}
+                size="small"
+                style={{ width: 150 }}
+              />
+            </div>
+          </div>
+        </Col>
+        <Col span="6">
+          <div className="basic-setting__item">
+            <div className="basic-setting__label">Images Done</div>
+            <div className="basic-setting__control">
+              <InputNumber
+                min={0}
+                max={100}
+                value={order.imgsDone}
+                onChange={({ target: { value } }) =>
+                  onChange('imgsDone', value)
+                }
                 size="small"
                 style={{ width: 150 }}
               />
@@ -376,9 +423,7 @@ const CreateSpecificationOrder = () => {
                 )}
                 {order.images && order.images.length ? (
                   <div className="img-price">
-                    <div className="img-price__usd">
-                      {order.prices || '$1.45'}
-                    </div>
+                    <div className="img-price__usd">{orderPrice}</div>
                     <div>per/image</div>
                   </div>
                 ) : null}
@@ -520,8 +565,8 @@ const CreateSpecificationOrder = () => {
                 <div className="basic-setting__label">Max output file size</div>
                 <div className="basic-setting__control">
                   <Select
-                    value={maxOutputFileSize}
-                    onChange={(val) => onChange('maxOutputFileSize', val)}
+                    value={minMaxSize}
+                    onChange={(val) => onChange('minMaxSize', val)}
                     size="small"
                     style={{ width: 150 }}
                   >
@@ -658,17 +703,17 @@ const CreateSpecificationOrder = () => {
             </Col>
             <Col span="24">
               <div className="advance-setting__list">
-                {codes
-                  .filter((code) => code.settingType === 'ADDON')
+                {advanceSetting
+                  .filter((code) => code.type === 'ADDON')
                   .map((setting, index) => (
                     <Checkbox
-                      checked={settingIds.includes(setting.code)}
+                      checked={settingIds.includes(setting.value)}
                       onChange={({ target: { checked } }) =>
-                        onChangeAdvance(setting.code)
+                        onChangeAdvance(setting.value)
                       }
                       key={index}
                     >
-                      {setting.formTitle}
+                      {setting.text} ${setting.price}
                     </Checkbox>
                   ))}
               </div>
@@ -678,17 +723,17 @@ const CreateSpecificationOrder = () => {
             </Col>
             <Col span="24">
               <div className="advance-setting__list">
-                {codes
-                  .filter((code) => code.settingType === 'RETOUCHING')
+                {advanceSetting
+                  .filter((code) => code.type === 'RETOUCHING')
                   .map((setting, index) => (
                     <Checkbox
-                      checked={settingIds.includes(setting.code)}
+                      checked={settingIds.includes(setting.value)}
                       onChange={({ target: { checked } }) =>
-                        onChangeAdvance(setting.code)
+                        onChangeAdvance(setting.value)
                       }
                       key={index}
                     >
-                      {setting.formTitle}
+                      {setting.text} ${setting.price}
                     </Checkbox>
                   ))}
               </div>
