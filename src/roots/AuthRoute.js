@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { NavLink, Redirect, Route } from 'react-router-dom';
 import { Button, Layout, Menu, Space, Dropdown, Popover } from 'antd';
 import {
@@ -14,6 +14,8 @@ import {
 } from '@ant-design/icons';
 
 import './styles.less';
+import { userService } from '../services';
+import { authenticationAction } from '../redux/actions';
 
 const { SubMenu } = Menu;
 
@@ -52,11 +54,20 @@ const Notification = (
 );
 
 const AuthRoute = (props) => {
+  const dispatch = useDispatch();
   const { loggedIn, userInfo } = useSelector((state) => state.authentication);
   const [collapsed, setCollapsed] = useState(false);
   const isAdmin = userInfo && userInfo.roles.includes('ADMIN');
-
   const { type, location } = props;
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const userInfo = await userService.getProfile();
+      dispatch(authenticationAction.getUserInfoSuccess(userInfo));
+    };
+    loggedIn && fetchProfile();
+  }, [location.pathname]);
+
   if (!loggedIn && type === 'private') return <Redirect to="/login" />;
   else if (loggedIn && type === 'guest') return <Redirect to="/my-order" />;
 
