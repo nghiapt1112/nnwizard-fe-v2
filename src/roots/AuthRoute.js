@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { NavLink, Redirect, Route } from 'react-router-dom';
-import { Button, Layout, Menu, Space, Dropdown, Popover } from 'antd';
+import { Button, Drawer, Layout, Menu, Space, Dropdown, Popover } from 'antd';
 import {
   AppstoreOutlined,
   ContainerOutlined,
@@ -17,6 +17,8 @@ import {
 import './styles.less';
 import { userService } from '../services';
 import { authenticationAction } from '../redux/actions';
+import ProfileMenu from '../screens/NavBar';
+import { useHistory } from 'react-router-dom';
 
 const { SubMenu } = Menu;
 
@@ -29,13 +31,6 @@ const getActiveMenu = (pathname) => {
     return pathname;
   }
 };
-
-const AccountMenu = (
-  <Menu>
-    <Menu.Item>My Profile</Menu.Item>
-    <Menu.Item>Logout</Menu.Item>
-  </Menu>
-);
 
 const Notification = (
   <div className="notification">
@@ -56,10 +51,12 @@ const Notification = (
 
 const AuthRoute = (props) => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const { loggedIn, userInfo } = useSelector((state) => state.authentication);
   const [collapsed, setCollapsed] = useState(false);
   const isAdmin = userInfo && userInfo.roles.includes('ADMIN');
   const { type, location } = props;
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -71,6 +68,21 @@ const AuthRoute = (props) => {
 
   if (!loggedIn && type === 'private') return <Redirect to="/login" />;
   else if (loggedIn && type === 'guest') return <Redirect to="/dashboard" />;
+
+  const onProfileClick = (value) => {
+    const key = value.key;
+    debugger;
+    if (key === 'm-logout') {
+      dispatch(authenticationAction.logout());
+    } else if (key === 'm-my-profile') {
+      history.push('/user-setting');
+    } else if (key === 'm-drawer') {
+      setVisible(!visible);
+    }
+  };
+  const onCloseDrawer = () => {
+    setVisible(!visible);
+  };
 
   return type === 'private' ? (
     <Layout className="app">
@@ -150,7 +162,10 @@ const AuthRoute = (props) => {
             >
               <Button icon={<BellOutlined />} />
             </Popover>
-            <Dropdown overlay={AccountMenu} placement="bottomCenter">
+            <Dropdown
+              overlay={<ProfileMenu onMenuClicked={onProfileClick} />}
+              placement="bottomCenter"
+            >
               <Button icon={<UserOutlined />} />
             </Dropdown>
           </Space>
@@ -167,6 +182,17 @@ const AuthRoute = (props) => {
           <Route {...props} />
         </Content>
       </Layout>
+      <Drawer
+        title="Basic Drawer"
+        placement={'right'}
+        closable={false}
+        onClose={onCloseDrawer}
+        visible={visible}
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Drawer>
     </Layout>
   ) : (
     <Route {...props} />

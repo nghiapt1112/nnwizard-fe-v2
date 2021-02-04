@@ -1,4 +1,4 @@
 export default {
-  apiUrl2: 'http://be.dev.nnwizard.com/api',
-  apiUrl: 'http://localhost:38081/api',
+  apiUrl2: 'https://be.dev.nnwizard.com/api',
+  apiUrl: 'http://18.191.238.149:38081/api',
 };

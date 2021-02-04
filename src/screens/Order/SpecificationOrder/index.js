@@ -242,7 +242,6 @@ const CreateSpecificationOrder = () => {
   const onChangeAdvance = (code) => {
     const tmpOrder = cloneDeep(order);
     const orderSettingIds = tmpOrder.settingIds || [];
-    debugger;
     if (orderSettingIds.includes(code)) {
       const indexCode = orderSettingIds.indexOf(code);
       orderSettingIds.splice(indexCode, 1);
@@ -263,27 +262,25 @@ const CreateSpecificationOrder = () => {
       let updateOrderID = order.id;
       if (!updateOrderID) {
         // Create order
-        const payloadCreate = {
+        const { id } = await orderService.create({
           orderType: 'REAL_ESTATE',
-          orderName: `REAL_ESTATE_${new Date().getTime()}`,
-        };
-        const { id } = await orderService.create(payloadCreate);
+          orderName: order.name,
+        });
         updateOrderID = id;
       }
       // Upload image
       const links = await getLinkUploadFile(updateOrderID);
       links && (await uploadFiles(links));
       // Submit Setting
-      const updateData = getSenderData(links);
-      await orderService.updateRealEstate(updateOrderID, {
+      const orderUpdate = {
         id: updateOrderID,
-        images: updateData,
-        basicSetting: {
-          ...order.basicSetting,
-        },
+        images: getSenderData(links),
+        basicSetting: { ...order.basicSetting },
         settingIds: order.settingIds || {},
         name: order.name,
-      });
+      };
+      orderUpdate.basicSetting.fileFormat = undefined;
+      await orderService.updateRealEstate(updateOrderID, orderUpdate);
       // setIsSaving(false);
       notification.success(
         updateOrderID
@@ -302,6 +299,11 @@ const CreateSpecificationOrder = () => {
     } finally {
       setIsSaving(false);
     }
+  };
+  const onImsDoneChange = (value) => {
+    order.imgsDone = value;
+    console.log(order.imgsDone);
+    setOrder(order);
   };
 
   const {
@@ -381,9 +383,7 @@ const CreateSpecificationOrder = () => {
                 min={0}
                 max={100}
                 value={order.imgsDone}
-                onChange={({ target: { value } }) =>
-                  onChange('imgsDone', value)
-                }
+                onChange={onImsDoneChange}
                 size="small"
                 style={{ width: 150 }}
               />
