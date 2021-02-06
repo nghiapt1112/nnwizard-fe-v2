@@ -11,13 +11,15 @@ import {
   Row,
   Select,
   Switch,
+  Popover,
+  Collapse,
 } from 'antd';
 import { CloseOutlined, CommentOutlined } from '@ant-design/icons';
 import ColorPicker from 'rc-color-picker';
 import { cloneDeep } from 'lodash';
 import * as CONSTANTS from '../../../constants';
 import UploadButton from '../../../components/UploadButton';
-import { getImage, toBase64 } from '../../../utils/converts';
+import { getImage, toBase64, bytesToSize } from '../../../utils/converts';
 import './styles.less';
 import { orderService, S3Service, templateService } from '../../../services';
 import ImageComment from '../../../components/ImageComment';
@@ -40,6 +42,7 @@ const CreateSpecificationOrder = () => {
   const [advanceSetting, setAdvanceSetting] = useState([]);
   const [priceHolder, setPriceHolder] = useState({});
   const [price, setPrice] = useState(0);
+  const [visible, setVisible] = useState(false);
 
   const [imageSelectedIndex, setImageSelectedIndex] = useState(-1);
   const [imageSelected, setImageSelected] = useState({});
@@ -126,6 +129,7 @@ const CreateSpecificationOrder = () => {
     const filesBase64 = await Promise.all(
       Array.from(filesSelected).map((file) => toBase64(file))
     );
+    debugger;
     tmpImages = tmpImages.concat(
       filesBase64.map((file) => {
         return {
@@ -133,11 +137,22 @@ const CreateSpecificationOrder = () => {
           rawFile: file.blob,
           fileName: file.blob.name,
           type: file.blob.type,
-          size: file.size,
+          size: file.blob.size || 0,
           thumbnailFile: file.thumbnailFile || file.blob,
+          metaData: file.metaData,
         };
       })
     );
+    tmpImages
+      // .map((el) => {
+      //   return {
+      //     Camera: el.metaData.Camera,
+      //   };
+      // })
+      .forEach((el) => {
+        console.log('meta data ', el.metaData);
+        console.log('Size ', el.size);
+      });
     tmpOrder.images = tmpImages;
     setOrder(tmpOrder);
     setImageSelectedIndex(tmpImages.length - 1);
@@ -306,6 +321,21 @@ const CreateSpecificationOrder = () => {
     setOrder(order);
   };
 
+  const popContent = (
+    <div>
+      <ul>
+        {(order.images[imageSelectedIndex]?.metaData || [])
+          .filter((el) => el.substring(0, 7) === 'Camera:')
+          .map((el, index) => {
+            return <li key={index}>{el}</li>;
+          })}
+        <li>
+          File Size: {bytesToSize(order.images[imageSelectedIndex]?.size || 0)}
+        </li>
+      </ul>
+    </div>
+  );
+
   const {
     basicSetting: {
       fileFormat,
@@ -392,7 +422,7 @@ const CreateSpecificationOrder = () => {
         </Col>
       </Row>
       <Row gutter={[24, 0]}>
-        <Col span={10}>
+        <Col span={14}>
           <Row>
             <Col span="24">
               <Divider orientation="left">Upload Images</Divider>
@@ -419,6 +449,14 @@ const CreateSpecificationOrder = () => {
                     >
                       Add Comment
                     </Button>
+                    <Popover
+                      className="btn-add-comment"
+                      size="small"
+                      icon={<CommentOutlined />}
+                      content={popContent}
+                    >
+                      Image Info
+                    </Popover>
                   </div>
                 )}
                 {order.images && order.images.length ? (
@@ -460,285 +498,315 @@ const CreateSpecificationOrder = () => {
             </Col>
           </Row>
         </Col>
-        <Col span={14}>
+        <Col span={10}>
           <Row gutter={[24, 0]}>
             <Col span="24">
-              <Divider orientation="left">Basic Setting</Divider>
+              <Divider orientation="left">Image Meta data</Divider>
             </Col>
-            <Col span="12">
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">Prefix</div>
-                <div className="basic-setting__control">
-                  <Input
-                    value={preFix}
-                    onChange={({ target: { value } }) =>
-                      onChange('preFix', value)
-                    }
-                    size="small"
-                    placeholder="prefix_filename.jpg"
-                    style={{ width: 150 }}
-                  />
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">Postfix</div>
-                <div className="basic-setting__control">
-                  <Input
-                    value={postFix}
-                    onChange={({ target: { value } }) =>
-                      onChange('postFix', value)
-                    }
-                    size="small"
-                    placeholder="filename_postfix.jp"
-                    style={{ width: 150 }}
-                  />
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">File format</div>
-                <div className="basic-setting__control">
-                  <Select
-                    value={fileFormat}
-                    onChange={(val) => onChange('fileFormat', val)}
-                    mode="multiple"
-                    size="small"
-                    style={{ width: 150 }}
-                  >
-                    {CONSTANTS.FILE_FORMAT.map((item, index) => {
-                      return (
-                        <Select.Option key={index} value={item.value}>
-                          {item.text}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">Background</div>
-                <div className="basic-setting__control">
-                  <ColorPicker
-                    color={background || '#fff'}
-                    onChange={({ color }) => onChange('background', color)}
-                    className="basic-setting__color-picker"
-                    placement="bottomRight"
-                  />
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">Size</div>
-                <div className="basic-setting__control">
-                  <Select
-                    value={size}
-                    onChange={(val) => onChange('size', val)}
-                    size="small"
-                    style={{ width: 150 }}
-                  >
-                    {CONSTANTS.SIZE.map((item, index) => {
-                      return (
-                        <Select.Option key={index} value={item.value}>
-                          {item.text}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">
-                  <span className="gx-mr-1">Model cropping</span>
-                </div>
-                <div className="basic-setting__control">
-                  <Switch
-                    checked={modelCropping}
-                    onChange={(val) => onChange('modelCropping', val)}
-                    size="small"
-                    defaultChecked
-                    checkedChildren="Yes"
-                    unCheckedChildren="No"
-                  />
-                </div>
-              </div>
-            </Col>
-            <Col span="12">
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">Max output file size</div>
-                <div className="basic-setting__control">
-                  <Select
-                    value={minMaxSize}
-                    onChange={(val) => onChange('minMaxSize', val)}
-                    size="small"
-                    style={{ width: 150 }}
-                  >
-                    {CONSTANTS.MIN_MAX_SIZE.map((item, index) => {
-                      return (
-                        <Select.Option key={index} value={item.value}>
-                          {item.text}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">DPI</div>
-                <div className="basic-setting__control">
-                  <Select
-                    value={dpi}
-                    onChange={(value) => onChange('dpi', value)}
-                    size="small"
-                    style={{ width: 150 }}
-                  >
-                    {CONSTANTS.DPI.map((item, index) => {
-                      return (
-                        <Select.Option key={index} value={item.value}>
-                          {item.text}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">Color profile</div>
-                <div className="basic-setting__control">
-                  <ColorPicker
-                    color={colorProfile || '#fff'}
-                    onChange={({ color }) => onChange('colorProfile', color)}
-                    className="basic-setting__color-picker"
-                    placement="bottomRight"
-                  />
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">Meta data</div>
-                <div className="basic-setting__control">
-                  <Select
-                    value={metaData}
-                    onChange={(value) => onChange('metaData', value)}
-                    size="small"
-                    style={{ width: 150 }}
-                  >
-                    {CONSTANTS.META_DATA.map((item, index) => {
-                      return (
-                        <Select.Option key={index} value={item.value}>
-                          {item.text}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">Compression</div>
-                <div className="basic-setting__control">
-                  <Select
-                    value={compression}
-                    onChange={(value) => onChange('compression', value)}
-                    size="small"
-                    style={{ width: 150 }}
-                  >
-                    {CONSTANTS.COMPRESSION.map((item, index) => {
-                      return (
-                        <Select.Option key={index} value={item.value}>
-                          {item.text}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">JPG quality</div>
-                <div className="basic-setting__control">
-                  <Select
-                    value={jpgQuality}
-                    onChange={(value) => onChange('jpgQuality', value)}
-                    size="small"
-                    style={{ width: 150 }}
-                  >
-                    {CONSTANTS.JPG_QUALITY.map((item, index) => {
-                      return (
-                        <Select.Option key={index} value={item.value}>
-                          {item.text}
-                        </Select.Option>
-                      );
-                    })}
-                  </Select>
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">
-                  <span className="gx-mr-1">Progressive</span>
-                </div>
-                <div className="basic-setting__control">
-                  <Switch
-                    checked={progressive}
-                    onChange={(val) => onChange('progressive', val)}
-                    size="small"
-                    defaultChecked
-                    checkedChildren="Yes"
-                    unCheckedChildren="No"
-                  />
-                </div>
-              </div>
-              <div className="basic-setting__item">
-                <div className="basic-setting__label">
-                  <span className="gx-mr-1">Normalize rotation</span>
-                </div>
-                <div className="basic-setting__control">
-                  <Switch
-                    checked={normalizeRotation}
-                    onChange={(val) => onChange('normalizeRotation', val)}
-                    size="small"
-                    defaultChecked
-                    checkedChildren="Yes"
-                    unCheckedChildren="No"
-                  />
-                </div>
-              </div>
-            </Col>
-            <Col span="24">
-              <Divider orientation="left">Addon Setting</Divider>
-            </Col>
-            <Col span="24">
-              <div className="advance-setting__list">
-                {advanceSetting
-                  .filter((code) => code.type === 'ADDON')
-                  .map((setting, index) => (
-                    <Checkbox
-                      checked={settingIds.includes(setting.value)}
-                      onChange={({ target: { checked } }) =>
-                        onChangeAdvance(setting.value)
-                      }
-                      key={index}
-                    >
-                      {setting.text} ${setting.price}
-                    </Checkbox>
-                  ))}
-              </div>
-            </Col>
-            <Col span="24">
-              <Divider orientation="left">Retouch Setting</Divider>
-            </Col>
-            <Col span="24">
-              <div className="advance-setting__list">
-                {advanceSetting
-                  .filter((code) => code.type === 'RETOUCHING')
-                  .map((setting, index) => (
-                    <Checkbox
-                      checked={settingIds.includes(setting.value)}
-                      onChange={({ target: { checked } }) =>
-                        onChangeAdvance(setting.value)
-                      }
-                      key={index}
-                    >
-                      {setting.text} ${setting.price}
-                    </Checkbox>
-                  ))}
-              </div>
-            </Col>
+            <Col span="12">{popContent}</Col>
           </Row>
+          <Collapse defaultActiveKey={['1', '2']}>
+            <Collapse.Panel
+              header={
+                <span>
+                  Basic Setting <strong>0$</strong>
+                </span>
+              }
+              key="1"
+            >
+              <Row gutter={[24, 0]}>
+                <Col span="24">
+                  <Divider orientation="left">Basic Setting</Divider>
+                </Col>
+                <Col span="12">
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">Prefix</div>
+                    <div className="basic-setting__control">
+                      <Input
+                        value={preFix}
+                        onChange={({ target: { value } }) =>
+                          onChange('preFix', value)
+                        }
+                        size="small"
+                        placeholder="prefix_filename.jpg"
+                        style={{ width: 150 }}
+                      />
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">Postfix</div>
+                    <div className="basic-setting__control">
+                      <Input
+                        value={postFix}
+                        onChange={({ target: { value } }) =>
+                          onChange('postFix', value)
+                        }
+                        size="small"
+                        placeholder="filename_postfix.jp"
+                        style={{ width: 150 }}
+                      />
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">File format</div>
+                    <div className="basic-setting__control">
+                      <Select
+                        value={fileFormat}
+                        onChange={(val) => onChange('fileFormat', val)}
+                        mode="multiple"
+                        size="small"
+                        style={{ width: 150 }}
+                      >
+                        {CONSTANTS.FILE_FORMAT.map((item, index) => {
+                          return (
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">Background</div>
+                    <div className="basic-setting__control">
+                      <ColorPicker
+                        color={background || '#fff'}
+                        onChange={({ color }) => onChange('background', color)}
+                        className="basic-setting__color-picker"
+                        placement="bottomRight"
+                      />
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">Size</div>
+                    <div className="basic-setting__control">
+                      <Select
+                        value={size}
+                        onChange={(val) => onChange('size', val)}
+                        size="small"
+                        style={{ width: 150 }}
+                      >
+                        {CONSTANTS.SIZE.map((item, index) => {
+                          return (
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">
+                      <span className="gx-mr-1">Model cropping</span>
+                    </div>
+                    <div className="basic-setting__control">
+                      <Switch
+                        checked={modelCropping}
+                        onChange={(val) => onChange('modelCropping', val)}
+                        size="small"
+                        defaultChecked
+                        checkedChildren="Yes"
+                        unCheckedChildren="No"
+                      />
+                    </div>
+                  </div>
+                </Col>
+                <Col span="12">
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">
+                      Max output file size
+                    </div>
+                    <div className="basic-setting__control">
+                      <Select
+                        value={minMaxSize}
+                        onChange={(val) => onChange('minMaxSize', val)}
+                        size="small"
+                        style={{ width: 150 }}
+                      >
+                        {CONSTANTS.MIN_MAX_SIZE.map((item, index) => {
+                          return (
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">DPI</div>
+                    <div className="basic-setting__control">
+                      <Select
+                        value={dpi}
+                        onChange={(value) => onChange('dpi', value)}
+                        size="small"
+                        style={{ width: 150 }}
+                      >
+                        {CONSTANTS.DPI.map((item, index) => {
+                          return (
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">Color profile</div>
+                    <div className="basic-setting__control">
+                      <ColorPicker
+                        color={colorProfile || '#fff'}
+                        onChange={({ color }) =>
+                          onChange('colorProfile', color)
+                        }
+                        className="basic-setting__color-picker"
+                        placement="bottomRight"
+                      />
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">Meta data</div>
+                    <div className="basic-setting__control">
+                      <Select
+                        value={metaData}
+                        onChange={(value) => onChange('metaData', value)}
+                        size="small"
+                        style={{ width: 150 }}
+                      >
+                        {CONSTANTS.META_DATA.map((item, index) => {
+                          return (
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">Compression</div>
+                    <div className="basic-setting__control">
+                      <Select
+                        value={compression}
+                        onChange={(value) => onChange('compression', value)}
+                        size="small"
+                        style={{ width: 150 }}
+                      >
+                        {CONSTANTS.COMPRESSION.map((item, index) => {
+                          return (
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">JPG quality</div>
+                    <div className="basic-setting__control">
+                      <Select
+                        value={jpgQuality}
+                        onChange={(value) => onChange('jpgQuality', value)}
+                        size="small"
+                        style={{ width: 150 }}
+                      >
+                        {CONSTANTS.JPG_QUALITY.map((item, index) => {
+                          return (
+                            <Select.Option key={index} value={item.value}>
+                              {item.text}
+                            </Select.Option>
+                          );
+                        })}
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">
+                      <span className="gx-mr-1">Progressive</span>
+                    </div>
+                    <div className="basic-setting__control">
+                      <Switch
+                        checked={progressive}
+                        onChange={(val) => onChange('progressive', val)}
+                        size="small"
+                        defaultChecked
+                        checkedChildren="Yes"
+                        unCheckedChildren="No"
+                      />
+                    </div>
+                  </div>
+                  <div className="basic-setting__item">
+                    <div className="basic-setting__label">
+                      <span className="gx-mr-1">Normalize rotation</span>
+                    </div>
+                    <div className="basic-setting__control">
+                      <Switch
+                        checked={normalizeRotation}
+                        onChange={(val) => onChange('normalizeRotation', val)}
+                        size="small"
+                        defaultChecked
+                        checkedChildren="Yes"
+                        unCheckedChildren="No"
+                      />
+                    </div>
+                  </div>
+                </Col>
+              </Row>
+            </Collapse.Panel>
+
+            <Collapse.Panel
+              header={
+                <span>
+                  Addon Setting <strong>0$</strong>
+                </span>
+              }
+              key="2"
+            >
+              <Row gutter={[24, 0]}>
+                <Col span="24">
+                  <div className="advance-setting__list">
+                    {advanceSetting
+                      .filter((code) => code.type === 'ADDON')
+                      .map((setting, index) => (
+                        <Checkbox
+                          checked={settingIds.includes(setting.value)}
+                          onChange={({ target: { checked } }) =>
+                            onChangeAdvance(setting.value)
+                          }
+                          key={index}
+                        >
+                          {setting.text} ${setting.price}
+                        </Checkbox>
+                      ))}
+                  </div>
+                </Col>
+                <Col span="24">
+                  <Divider orientation="left">Retouch Setting</Divider>
+                </Col>
+                <Col span="24">
+                  <div className="advance-setting__list">
+                    {advanceSetting
+                      .filter((code) => code.type === 'RETOUCHING')
+                      .map((setting, index) => (
+                        <Checkbox
+                          checked={settingIds.includes(setting.value)}
+                          onChange={({ target: { checked } }) =>
+                            onChangeAdvance(setting.value)
+                          }
+                          key={index}
+                        >
+                          {setting.text} ${setting.price}
+                        </Checkbox>
+                      ))}
+                  </div>
+                </Col>
+              </Row>
+            </Collapse.Panel>
+          </Collapse>
         </Col>
         <Col span={24}>
           <Button
