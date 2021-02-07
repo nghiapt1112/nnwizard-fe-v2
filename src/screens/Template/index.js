@@ -162,7 +162,6 @@ const Template = () => {
     const tmpFormModalData = { ...formModalData };
     tmpFormModalData.codes = tmpFormModalData.codes || {};
     tmpFormModalData.codes[key] = value;
-    debugger;
     tmpFormModalData.settingIds = getSelectedSettingCodes(
       tmpFormModalData.codes
     );

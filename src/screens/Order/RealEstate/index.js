@@ -274,7 +274,6 @@ const CreateOrderRealEstate = () => {
         updateOrderID = id;
       }
       // Upload image
-      debugger;
       const links = await getLinkUploadFile(updateOrderID);
       // links && (await uploadFiles(links));
       if (links) {
@@ -312,7 +311,6 @@ const CreateOrderRealEstate = () => {
     return instructions.map((instruction) => {
       let link =
         links && links.find(({ oName }) => oName === instruction.file.name);
-      debugger;
       const {
         imgId,
         preSignedURL,

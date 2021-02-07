@@ -71,7 +71,6 @@ const AuthRoute = (props) => {
 
   const onProfileClick = (value) => {
     const key = value.key;
-    debugger;
     if (key === 'm-logout') {
       dispatch(authenticationAction.logout());
     } else if (key === 'm-my-profile') {

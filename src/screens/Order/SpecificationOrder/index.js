@@ -129,7 +129,6 @@ const CreateSpecificationOrder = () => {
     const filesBase64 = await Promise.all(
       Array.from(filesSelected).map((file) => toBase64(file))
     );
-    debugger;
     tmpImages = tmpImages.concat(
       filesBase64.map((file) => {
         return {
@@ -143,16 +142,10 @@ const CreateSpecificationOrder = () => {
         };
       })
     );
-    tmpImages
-      // .map((el) => {
-      //   return {
-      //     Camera: el.metaData.Camera,
-      //   };
-      // })
-      .forEach((el) => {
-        console.log('meta data ', el.metaData);
-        console.log('Size ', el.size);
-      });
+    tmpImages.forEach((el) => {
+      console.log('meta data ', el.metaData);
+      console.log('Size ', el.size);
+    });
     tmpOrder.images = tmpImages;
     setOrder(tmpOrder);
     setImageSelectedIndex(tmpImages.length - 1);
@@ -326,12 +319,20 @@ const CreateSpecificationOrder = () => {
       <ul>
         {(order.images[imageSelectedIndex]?.metaData || [])
           .filter((el) => el.substring(0, 7) === 'Camera:')
-          .map((el, index) => {
-            return <li key={index}>{el}</li>;
-          })}
-        <li>
-          File Size: {bytesToSize(order.images[imageSelectedIndex]?.size || 0)}
-        </li>
+          .map((el, index) => (
+            <li key={index}>{el}</li>
+          ))}
+        {order.images[imageSelectedIndex]?.fileName ? (
+          <li>Name: {order.images[imageSelectedIndex]?.fileName}</li>
+        ) : (
+          <li>Name: {'No images selected'}</li>
+        )}
+
+        {order.images[imageSelectedIndex]?.size && (
+          <li>
+            Size: {bytesToSize(order.images[imageSelectedIndex]?.size || 0)}
+          </li>
+        )}
       </ul>
     </div>
   );
@@ -501,7 +502,7 @@ const CreateSpecificationOrder = () => {
         <Col span={10}>
           <Row gutter={[24, 0]}>
             <Col span="24">
-              <Divider orientation="left">Image Meta data</Divider>
+              <Divider orientation="left">Image Info</Divider>
             </Col>
             <Col span="12">{popContent}</Col>
           </Row>
@@ -515,9 +516,6 @@ const CreateSpecificationOrder = () => {
               key="1"
             >
               <Row gutter={[24, 0]}>
-                <Col span="24">
-                  <Divider orientation="left">Basic Setting</Divider>
-                </Col>
                 <Col span="12">
                   <div className="basic-setting__item">
                     <div className="basic-setting__label">Prefix</div>
