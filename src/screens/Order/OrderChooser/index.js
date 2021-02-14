@@ -14,9 +14,6 @@ const OrderChooser = () => {
       case 'REAL_ESTATE':
         history.push('/co-specification');
         break;
-      case 'SPECIFICATION':
-        history.push('/co-specification');
-        break;
       default:
     }
   };

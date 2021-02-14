@@ -23,7 +23,7 @@ import { getImage, toBase64, bytesToSize } from '../../../utils/converts';
 import './styles.less';
 import { orderService, S3Service, templateService } from '../../../services';
 import ImageComment from '../../../components/ImageComment';
-import { isEmpty } from '../../../utils/objectUtils';
+import { isEmpty, shortenFileName } from '../../../utils/objectUtils';
 import { useHistory, useParams } from 'react-router-dom';
 import { settingService } from '../../../services/setting.service';
 import {
@@ -32,6 +32,8 @@ import {
   ADVANCE_SETTINGS,
 } from '../../../utils/orderUtils';
 import { calculatorPrice } from '../priceHelper';
+
+const metaDataListFilter = ['Camera', 'Image size', 'Filter pattern'];
 
 const CreateSpecificationOrder = () => {
   const history = useHistory();
@@ -85,13 +87,14 @@ const CreateSpecificationOrder = () => {
 
   useEffect(() => {
     if (!orderId) return;
-
     async function fetchOrderById() {
       try {
         const tmpOrder = await orderService.getById(orderId);
+        if (!tmpOrder.basicSetting) {
+          tmpOrder.basicSetting = {};
+        }
         setOrder(tmpOrder);
         tmpOrder.images && tmpOrder.images.length && setImageSelectedIndex(0);
-
         setOrderPrice(tmpOrder.price);
         setBasePrice(getBasePrice(advanceSetting, 'BASE_PRICE'));
       } catch (error) {
@@ -241,7 +244,13 @@ const CreateSpecificationOrder = () => {
     });
   };
 
+  const onOrderBasicSettingChange = (k, v) => {
+    order[k] = v;
+    setOrder(order);
+  };
+
   const onChange = (key, value) => {
+    debugger;
     const tmpOrder = cloneDeep(order);
     tmpOrder.basicSetting[key] = value;
     setOrder(tmpOrder);
@@ -270,6 +279,8 @@ const CreateSpecificationOrder = () => {
       let updateOrderID = order.id;
       if (!updateOrderID) {
         // Create order
+        debugger;
+
         const { id } = await orderService.create({
           orderType: 'REAL_ESTATE',
           orderName: order.name,
@@ -284,7 +295,7 @@ const CreateSpecificationOrder = () => {
         id: updateOrderID,
         images: getSenderData(links),
         basicSetting: { ...order.basicSetting },
-        settingIds: order.settingIds || {},
+        settingIds: order.settingIds || [],
         name: order.name,
       };
       orderUpdate.basicSetting.fileFormat = undefined;
@@ -316,44 +327,53 @@ const CreateSpecificationOrder = () => {
 
   const popContent = (
     <div>
-      <ul>
-        {(order.images[imageSelectedIndex]?.metaData || [])
-          .filter((el) => el.substring(0, 7) === 'Camera:')
-          .map((el, index) => (
-            <li key={index}>{el}</li>
-          ))}
+      <ul style={{ listStyleType: 'none' }}>
         {order.images[imageSelectedIndex]?.fileName ? (
-          <li>Name: {order.images[imageSelectedIndex]?.fileName}</li>
+          <li>
+            Name: {shortenFileName(order.images[imageSelectedIndex]?.fileName)}
+          </li>
         ) : (
-          <li>Name: {'No images selected'}</li>
+          <li>{'No images selected'}</li>
         )}
 
         {order.images[imageSelectedIndex]?.size && (
-          <li>
+          <li
+            style={
+              order.images[imageSelectedIndex]?.size < 1024000
+                ? { backgroundColor: 'yellow' }
+                : {}
+            }
+          >
             Size: {bytesToSize(order.images[imageSelectedIndex]?.size || 0)}
           </li>
         )}
+        {(order.images[imageSelectedIndex]?.metaData || [])
+          .filter((el) => metaDataListFilter.includes(el.split(':')[0]))
+          .map((el, index) => (
+            <li key={index}>{el}</li>
+          ))}
       </ul>
     </div>
   );
 
   const {
+    name = '',
     basicSetting: {
-      fileFormat,
-      background,
-      size,
-      modelCropping,
-      minMaxSize,
-      colorProfile,
-      metaData,
-      jpgQuality,
-      progressive,
-      normalizeRotation,
-      preFix,
-      postFix,
-      dpi,
-      compression,
-    },
+      fileFormat = 'PNG',
+      background = '',
+      size = '',
+      modelCropping = '',
+      minMaxSize = '',
+      colorProfile = '',
+      metaData = '',
+      jpgQuality = '',
+      progressive = '',
+      normalizeRotation = '',
+      preFix = '',
+      postFix = '',
+      dpi = '',
+      compression = '',
+    } = {},
     settingIds = [],
   } = order;
 
@@ -385,10 +405,10 @@ const CreateSpecificationOrder = () => {
               <Input
                 value={order.name}
                 onChange={({ target: { value } }) =>
-                  onChange('orderName', value)
+                  onOrderBasicSettingChange('name', value)
                 }
                 size="small"
-                style={{ width: 150 }}
+                style={{ width: 'auto' }}
               />
             </div>
           </div>
@@ -399,9 +419,11 @@ const CreateSpecificationOrder = () => {
             <div className="basic-setting__control">
               <Input
                 value={order.imgLink}
-                onChange={({ target: { value } }) => onChange('imgLink', value)}
+                onChange={({ target: { value } }) =>
+                  onOrderBasicSettingChange('imgLink', value)
+                }
                 size="small"
-                style={{ width: 150 }}
+                style={{ width: 'auto' }}
               />
             </div>
           </div>
@@ -416,7 +438,7 @@ const CreateSpecificationOrder = () => {
                 value={order.imgsDone}
                 onChange={onImsDoneChange}
                 size="small"
-                style={{ width: 150 }}
+                style={{ width: 'auto' }}
               />
             </div>
           </div>
@@ -460,14 +482,12 @@ const CreateSpecificationOrder = () => {
                     </Popover>
                   </div>
                 )}
-                {order.images && order.images.length ? (
-                  <div className="img-price">
-                    <div className="img-price__usd">{orderPrice}</div>
-                    <div>per/image</div>
-                  </div>
-                ) : null}
+                <div className="img-price">
+                  <div className="img-price__usd">{orderPrice}</div>
+                  <div>per/image</div>
+                </div>
                 <div className="img-list">
-                  {order.images.map((img, index) => {
+                  {(order.images || []).map((img, index) => {
                     return (
                       <div className="img-item" key={index}>
                         <ANTDImage
@@ -504,7 +524,7 @@ const CreateSpecificationOrder = () => {
             <Col span="24">
               <Divider orientation="left">Image Info</Divider>
             </Col>
-            <Col span="12">{popContent}</Col>
+            <Col span="24">{popContent}</Col>
           </Row>
           <Collapse defaultActiveKey={['1', '2']}>
             <Collapse.Panel
@@ -521,7 +541,7 @@ const CreateSpecificationOrder = () => {
                     <div className="basic-setting__label">Prefix</div>
                     <div className="basic-setting__control">
                       <Input
-                        value={preFix}
+                        value={order.basicSetting.preFix || ''}
                         onChange={({ target: { value } }) =>
                           onChange('preFix', value)
                         }
@@ -535,7 +555,7 @@ const CreateSpecificationOrder = () => {
                     <div className="basic-setting__label">Postfix</div>
                     <div className="basic-setting__control">
                       <Input
-                        value={postFix}
+                        value={order.basicSetting.postFix || ''}
                         onChange={({ target: { value } }) =>
                           onChange('postFix', value)
                         }
@@ -549,7 +569,7 @@ const CreateSpecificationOrder = () => {
                     <div className="basic-setting__label">File format</div>
                     <div className="basic-setting__control">
                       <Select
-                        value={fileFormat}
+                        value={order.basicSetting.fileFormat}
                         onChange={(val) => onChange('fileFormat', val)}
                         mode="multiple"
                         size="small"
@@ -569,7 +589,7 @@ const CreateSpecificationOrder = () => {
                     <div className="basic-setting__label">Background</div>
                     <div className="basic-setting__control">
                       <ColorPicker
-                        color={background || '#fff'}
+                        color={order.basicSetting.background || '#fff'}
                         onChange={({ color }) => onChange('background', color)}
                         className="basic-setting__color-picker"
                         placement="bottomRight"
@@ -580,7 +600,7 @@ const CreateSpecificationOrder = () => {
                     <div className="basic-setting__label">Size</div>
                     <div className="basic-setting__control">
                       <Select
-                        value={size}
+                        value={order.basicSetting.size}
                         onChange={(val) => onChange('size', val)}
                         size="small"
                         style={{ width: 150 }}
@@ -601,7 +621,7 @@ const CreateSpecificationOrder = () => {
                     </div>
                     <div className="basic-setting__control">
                       <Switch
-                        checked={modelCropping}
+                        checked={order.basicSetting.modelCropping}
                         onChange={(val) => onChange('modelCropping', val)}
                         size="small"
                         defaultChecked
@@ -618,7 +638,7 @@ const CreateSpecificationOrder = () => {
                     </div>
                     <div className="basic-setting__control">
                       <Select
-                        value={minMaxSize}
+                        value={order.basicSetting.minMaxSize}
                         onChange={(val) => onChange('minMaxSize', val)}
                         size="small"
                         style={{ width: 150 }}
@@ -637,7 +657,7 @@ const CreateSpecificationOrder = () => {
                     <div className="basic-setting__label">DPI</div>
                     <div className="basic-setting__control">
                       <Select
-                        value={dpi}
+                        value={order.basicSetting.dpi}
                         onChange={(value) => onChange('dpi', value)}
                         size="small"
                         style={{ width: 150 }}
@@ -656,7 +676,7 @@ const CreateSpecificationOrder = () => {
                     <div className="basic-setting__label">Color profile</div>
                     <div className="basic-setting__control">
                       <ColorPicker
-                        color={colorProfile || '#fff'}
+                        color={order.basicSetting.colorProfile || '#fff'}
                         onChange={({ color }) =>
                           onChange('colorProfile', color)
                         }
@@ -669,7 +689,7 @@ const CreateSpecificationOrder = () => {
                     <div className="basic-setting__label">Meta data</div>
                     <div className="basic-setting__control">
                       <Select
-                        value={metaData}
+                        value={order.basicSetting.metaData}
                         onChange={(value) => onChange('metaData', value)}
                         size="small"
                         style={{ width: 150 }}
@@ -688,7 +708,7 @@ const CreateSpecificationOrder = () => {
                     <div className="basic-setting__label">Compression</div>
                     <div className="basic-setting__control">
                       <Select
-                        value={compression}
+                        value={order.basicSetting.compression}
                         onChange={(value) => onChange('compression', value)}
                         size="small"
                         style={{ width: 150 }}
@@ -707,7 +727,7 @@ const CreateSpecificationOrder = () => {
                     <div className="basic-setting__label">JPG quality</div>
                     <div className="basic-setting__control">
                       <Select
-                        value={jpgQuality}
+                        value={order.basicSetting.jpgQuality}
                         onChange={(value) => onChange('jpgQuality', value)}
                         size="small"
                         style={{ width: 150 }}
@@ -728,7 +748,7 @@ const CreateSpecificationOrder = () => {
                     </div>
                     <div className="basic-setting__control">
                       <Switch
-                        checked={progressive}
+                        checked={order.basicSetting.progressive}
                         onChange={(val) => onChange('progressive', val)}
                         size="small"
                         defaultChecked
@@ -743,7 +763,7 @@ const CreateSpecificationOrder = () => {
                     </div>
                     <div className="basic-setting__control">
                       <Switch
-                        checked={normalizeRotation}
+                        checked={order.basicSetting.normalizeRotation}
                         onChange={(val) => onChange('normalizeRotation', val)}
                         size="small"
                         defaultChecked
