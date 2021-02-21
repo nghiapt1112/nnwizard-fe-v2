@@ -11,8 +11,8 @@ import {
   Row,
   Select,
   Switch,
-  Popover,
   Collapse,
+  Spin,
 } from 'antd';
 import { CloseOutlined, CommentOutlined } from '@ant-design/icons';
 import ColorPicker from 'rc-color-picker';
@@ -298,13 +298,12 @@ const CreateSpecificationOrder = () => {
         settingIds: order.settingIds || [],
         name: order.name,
       };
-      orderUpdate.basicSetting.fileFormat = undefined;
       await orderService.updateRealEstate(updateOrderID, orderUpdate);
       // setIsSaving(false);
       notification.success(
         updateOrderID
           ? {
-              message: 'Update Order Successfully',
+              message: `Update Order ${updateOrderID} Successfully`,
             }
           : {
               message: 'Create Order Successfully',
@@ -355,27 +354,6 @@ const CreateSpecificationOrder = () => {
       </ul>
     </div>
   );
-
-  const {
-    name = '',
-    basicSetting: {
-      fileFormat = 'PNG',
-      background = '',
-      size = '',
-      modelCropping = '',
-      minMaxSize = '',
-      colorProfile = '',
-      metaData = '',
-      jpgQuality = '',
-      progressive = '',
-      normalizeRotation = '',
-      preFix = '',
-      postFix = '',
-      dpi = '',
-      compression = '',
-    } = {},
-    settingIds = [],
-  } = order;
 
   return (
     <>
@@ -470,16 +448,8 @@ const CreateSpecificationOrder = () => {
                       onClick={onOpenModalImageComment}
                       icon={<CommentOutlined />}
                     >
-                      Add Comment
+                      Image Comment
                     </Button>
-                    <Popover
-                      className="btn-add-comment"
-                      size="small"
-                      icon={<CommentOutlined />}
-                      content={popContent}
-                    >
-                      Image Info
-                    </Popover>
                   </div>
                 )}
                 <div className="img-price">
@@ -527,14 +497,7 @@ const CreateSpecificationOrder = () => {
             <Col span="24">{popContent}</Col>
           </Row>
           <Collapse defaultActiveKey={['1', '2']}>
-            <Collapse.Panel
-              header={
-                <span>
-                  Basic Setting <strong>0$</strong>
-                </span>
-              }
-              key="1"
-            >
+            <Collapse.Panel header={<span>Basic Setting</span>} key="1">
               <Row gutter={[24, 0]}>
                 <Col span="12">
                   <div className="basic-setting__item">
@@ -776,53 +739,54 @@ const CreateSpecificationOrder = () => {
               </Row>
             </Collapse.Panel>
 
-            <Collapse.Panel
-              header={
-                <span>
-                  Addon Setting <strong>0$</strong>
-                </span>
-              }
-              key="2"
-            >
-              <Row gutter={[24, 0]}>
-                <Col span="24">
-                  <div className="advance-setting__list">
-                    {advanceSetting
-                      .filter((code) => code.type === 'ADDON')
-                      .map((setting, index) => (
-                        <Checkbox
-                          checked={settingIds.includes(setting.value)}
-                          onChange={({ target: { checked } }) =>
-                            onChangeAdvance(setting.value)
-                          }
-                          key={index}
-                        >
-                          {setting.text} ${setting.price}
-                        </Checkbox>
-                      ))}
-                  </div>
-                </Col>
-                <Col span="24">
-                  <Divider orientation="left">Retouch Setting</Divider>
-                </Col>
-                <Col span="24">
-                  <div className="advance-setting__list">
-                    {advanceSetting
-                      .filter((code) => code.type === 'RETOUCHING')
-                      .map((setting, index) => (
-                        <Checkbox
-                          checked={settingIds.includes(setting.value)}
-                          onChange={({ target: { checked } }) =>
-                            onChangeAdvance(setting.value)
-                          }
-                          key={index}
-                        >
-                          {setting.text} ${setting.price}
-                        </Checkbox>
-                      ))}
-                  </div>
-                </Col>
-              </Row>
+            <Collapse.Panel header={<span>Addon Setting</span>} key="2">
+              {advanceSetting ? (
+                <Row gutter={[24, 0]}>
+                  <Col span="24">
+                    <div className="advance-setting__list">
+                      {advanceSetting
+                        .filter((code) => code.type === 'ADDON')
+                        .map((setting, index) => (
+                          <Checkbox
+                            checked={(order.settingIds || []).includes(
+                              setting.value
+                            )}
+                            onChange={({ target: { checked } }) =>
+                              onChangeAdvance(setting.value)
+                            }
+                            key={index}
+                          >
+                            {setting.text} ${setting.price}
+                          </Checkbox>
+                        ))}
+                    </div>
+                  </Col>
+                  <Col span="24">
+                    <Divider orientation="left">Retouch Setting</Divider>
+                  </Col>
+                  <Col span="24">
+                    <div className="advance-setting__list">
+                      {advanceSetting
+                        .filter((code) => code.type === 'RETOUCHING')
+                        .map((setting, index) => (
+                          <Checkbox
+                            checked={(order.settingIds || []).includes(
+                              setting.value
+                            )}
+                            onChange={({ target: { checked } }) =>
+                              onChangeAdvance(setting.value)
+                            }
+                            key={index}
+                          >
+                            {setting.text} ${setting.price}
+                          </Checkbox>
+                        ))}
+                    </div>
+                  </Col>
+                </Row>
+              ) : (
+                <Spin />
+              )}
             </Collapse.Panel>
           </Collapse>
         </Col>

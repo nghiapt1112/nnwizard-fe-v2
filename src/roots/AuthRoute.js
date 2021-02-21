@@ -53,7 +53,7 @@ const AuthRoute = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { loggedIn, userInfo } = useSelector((state) => state.authentication);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const isAdmin = userInfo && userInfo.roles.includes('ADMIN');
   const { type, location } = props;
   const [visible, setVisible] = useState(false);
@@ -91,7 +91,6 @@ const AuthRoute = (props) => {
           theme="dark"
           mode="inline"
           selectedKeys={[getActiveMenu(location.pathname)]}
-          defaultOpenKeys={['sub2']}
         >
           <Menu.Item key="/dashboard" icon={<LineChartOutlined />}>
             <NavLink activeClassName="selected" to="/dashboard">
@@ -125,7 +124,7 @@ const AuthRoute = (props) => {
           </Menu.Item>
 
           {isAdmin ? (
-            <SubMenu key="sub2" icon={<AppstoreOutlined />} title="Admin">
+            <SubMenu key="m-admin" icon={<AppstoreOutlined />} title="Admin">
               <Menu.Item key="/m-user" icon={<ContainerOutlined />}>
                 <NavLink activeClassName="selected" to="/m-user">
                   User Management
@@ -173,8 +172,8 @@ const AuthRoute = (props) => {
           className="site-layout-background"
           style={{
             display: 'inline-table',
-            margin: '24px 16px',
-            padding: 24,
+            margin: '10px 10px',
+            padding: 10,
             minHeight: '280',
           }}
         >

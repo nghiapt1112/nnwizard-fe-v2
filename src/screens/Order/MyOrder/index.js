@@ -158,6 +158,7 @@ const MyOrder = () => {
       title: 'Order Name',
       dataIndex: 'name',
       width: '40%',
+      // eslint-disable-next-line react/display-name
       render: (_, record) => (
         <Button type="link" size="small" onClick={() => openEditClick(record)}>
           {record.name}
@@ -184,6 +185,7 @@ const MyOrder = () => {
       dataIndex: 'tid',
       width: '20%',
       align: 'center',
+      // eslint-disable-next-line react/display-name
       render: (_, record) => (
         <Space size="middle">
           <Select

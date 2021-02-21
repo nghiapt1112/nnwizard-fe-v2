@@ -199,6 +199,7 @@ const MasterData = () => {
       dataIndex: 'id',
       width: '20%',
       align: 'center',
+      // eslint-disable-next-line react/display-name
       render: (_, record) => (
         <Space size="middle">
           <Button

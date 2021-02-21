@@ -206,6 +206,7 @@ const UserManagement = () => {
       dataIndex: 'userId',
       width: '20%',
       align: 'center',
+      // eslint-disable-next-line react/display-name
       render: (_, record) => (
         <Space size="middle">
           <Button
