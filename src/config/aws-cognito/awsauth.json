@@ -1,0 +1,13 @@
+{
+  "domain": "dev-nnwizard.auth.ap-southeast-1.amazoncognito.com",
+  "scope": [
+    "phone",
+    "email",
+    "profile",
+    "openid",
+    "aws.cognito.signin.user.admin"
+  ],
+  "redirectSignIn": "http://localhost:8088/",
+  "redirectSignOut": "http://localhost:8088/login",
+  "responseType": "token"
+}

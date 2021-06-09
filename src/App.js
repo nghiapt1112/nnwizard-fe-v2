@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter, Switch } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Switch, useHistory } from 'react-router-dom';
 import './styles/index.less';
 import './App.less';
 import AuthRoute from './roots/AuthRoute';
@@ -17,13 +17,86 @@ import UserManagement from './screens/Admin/UserManagement';
 import DashBoard from './screens/DashBoard';
 import Checkout from './screens/Order/Checkout';
 import OrderReview from './screens/Order/OrderReview';
+import CognitoLogin from './screens/Outside/CognitoLogin';
+import awsconfig from './config/aws-cognito/awsconfig.json';
+import awsauth from './config/aws-cognito/awsauth.json';
+import Amplify, { Auth, Hub } from 'aws-amplify';
+import { useDispatch } from 'react-redux';
+import { authenticationAction } from './redux/actions';
+import LocalStorageService from './services/LocalStorageService';
+import { userService } from './services';
+const localStorageService = LocalStorageService.getService();
 
 const App = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+  useEffect(() => {
+    Hub.listen('auth', ({ payload: { event, data } }) => {
+      console.log('event:', event);
+      switch (event) {
+        case 'signIn':
+        case 'cognitoHostedUI':
+          // setToken('grating...');
+          // getToken().then((userToken) => setToken(userToken.idToken.jwtToken));
+          console.log('sign in');
+          break;
+        case 'signOut':
+          // setToken(null);
+          console.log('sign out');
+          break;
+        case 'signIn_failure':
+        case 'cognitoHostedUI_failure':
+          console.log('Sign in failure', data);
+          break;
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    Auth.currentAuthenticatedUser()
+      .then((user) => {
+        console.log('currentAuthenticatedUser', user);
+        Auth.currentSession().then((res) => {
+          let accessToken = res.getAccessToken();
+          let jwt = accessToken.getJwtToken();
+          let refreshToken = res.getRefreshToken().getToken();
+          // console.log(refreshToken);
+          console.log(res);
+          // console.log(`myAccessToken: ${JSON.stringify(accessToken)}`);
+          // console.log(`myJwt: ${jwt}`);
+          localStorageService.setToken({
+            access_token: jwt,
+            refresh_token: refreshToken,
+          });
+          dispatch(authenticationAction.loginSuccess());
+          const userInfo = userService.getProfile();
+          console.log(`userInfo: ${userInfo}`);
+          dispatch(
+            authenticationAction.getUserInfoSuccess({ username: 'ptnghia1' })
+          );
+
+          // sessionStorage.setItem(
+          //   ACCESS_TOKEN_EXPIRY,
+          //   (accessToken.payload.exp * 1000).toString()
+          // );
+          // sessionStorage.setItem(ACCESS_TOKEN, jwt);
+          // sessionStorage.setItem(REFRESH_TOKEN, refreshToken);
+          // setLoggedInUser(jwt);
+          // setIsToken(true);
+        });
+      })
+      .catch((error) => {
+        console.log('Not signed in');
+        console.log(error);
+        // setIsToken(true);
+      });
+  }, []);
+
   return (
     <BrowserRouter>
       <Switch>
         <AuthRoute path="/login" type="guest">
-          <Login />
+          <CognitoLogin />
         </AuthRoute>
         <AuthRoute path="/register" type="guest">
           <Register />

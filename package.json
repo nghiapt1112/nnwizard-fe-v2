@@ -8,11 +8,13 @@
     "@nivo/core": "^0.67.0",
     "@nivo/pie": "^0.67.0",
     "antd": "^4.12.3",
+    "aws-amplify": "^3.3.27",
     "axios": "^0.21.1",
     "craco-less": "^1.17.0",
     "dcraw": "^1.0.3",
     "history": "^5.0.0",
     "lodash": "^4.17.20",
+    "query-string": "^7.0.0",
     "rc-color-picker": "^1.2.6",
     "react": "^17.0.1",
     "react-canvas-draw": "git+https://github.com/nghiapt1112/react-canvas-draw",
@@ -24,7 +26,7 @@
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "PORT=8088 craco start",
     "build": "craco build",
     "test": "craco test",
     "lint": "eslint ./src"

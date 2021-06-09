@@ -324,6 +324,31 @@ const CreateSpecificationOrder = () => {
     setOrder(order);
   };
 
+  const getSettingOptions = (allAdvanceSettings, settingType) => {
+    if (
+      !allAdvanceSettings ||
+      !allAdvanceSettings.some((el) => el.type === settingType)
+    ) {
+      return null;
+    }
+    return (
+      <>
+        {allAdvanceSettings
+          .filter((code) => code.type === settingType)
+          .map((setting, index) => (
+            <Checkbox
+              checked={(order.settingIds || []).includes(setting.value)}
+              onChange={({ target: { checked } }) =>
+                onChangeAdvance(setting.value)
+              }
+              key={index}
+            >
+              {setting.text} ${setting.price}
+            </Checkbox>
+          ))}
+      </>
+    );
+  };
   const popContent = (
     <div>
       <ul style={{ listStyleType: 'none' }}>
@@ -338,7 +363,7 @@ const CreateSpecificationOrder = () => {
         {order.images[imageSelectedIndex]?.size && (
           <li
             style={
-              order.images[imageSelectedIndex]?.size < 1024000
+              order.images[imageSelectedIndex]?.size < 2048000
                 ? { backgroundColor: 'yellow' }
                 : {}
             }
@@ -739,26 +764,23 @@ const CreateSpecificationOrder = () => {
               </Row>
             </Collapse.Panel>
 
-            <Collapse.Panel header={<span>Addon Setting</span>} key="2">
+            <Collapse.Panel header={<span>Other Setting</span>} key="2">
               {advanceSetting ? (
                 <Row gutter={[24, 0]}>
                   <Col span="24">
+                    <Divider orientation="left">General Setting</Divider>
+                  </Col>
+                  <Col span="24">
                     <div className="advance-setting__list">
-                      {advanceSetting
-                        .filter((code) => code.type === 'ADDON')
-                        .map((setting, index) => (
-                          <Checkbox
-                            checked={(order.settingIds || []).includes(
-                              setting.value
-                            )}
-                            onChange={({ target: { checked } }) =>
-                              onChangeAdvance(setting.value)
-                            }
-                            key={index}
-                          >
-                            {setting.text} ${setting.price}
-                          </Checkbox>
-                        ))}
+                      {getSettingOptions(advanceSetting, 'ADVANCE')}
+                    </div>
+                  </Col>
+                  <Col span="24">
+                    <Divider orientation="left">Addon Setting</Divider>
+                  </Col>
+                  <Col span="24">
+                    <div className="advance-setting__list">
+                      {getSettingOptions(advanceSetting, 'ADDON')}
                     </div>
                   </Col>
                   <Col span="24">
@@ -766,21 +788,7 @@ const CreateSpecificationOrder = () => {
                   </Col>
                   <Col span="24">
                     <div className="advance-setting__list">
-                      {advanceSetting
-                        .filter((code) => code.type === 'RETOUCHING')
-                        .map((setting, index) => (
-                          <Checkbox
-                            checked={(order.settingIds || []).includes(
-                              setting.value
-                            )}
-                            onChange={({ target: { checked } }) =>
-                              onChangeAdvance(setting.value)
-                            }
-                            key={index}
-                          >
-                            {setting.text} ${setting.price}
-                          </Checkbox>
-                        ))}
+                      {getSettingOptions(advanceSetting, 'RETOUCHING')}
                     </div>
                   </Col>
                 </Row>

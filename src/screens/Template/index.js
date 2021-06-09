@@ -127,14 +127,17 @@ const Template = () => {
     setLoadingData(true);
     try {
       const res = await templateService.getById(tid);
-      const { basicSetting, settingIds, ...rest } = res;
+      let { basicSetting, settingIds, ...rest } = res;
       const margin =
         basicSetting?.margin_top ||
         basicSetting?.margin_bottom ||
         basicSetting?.margin_left ||
         basicSetting?.margin_right;
       const codes = {};
-      (settingIds || []).forEach((el) => (codes[el] = true));
+      if (!settingIds) {
+        settingIds = [];
+      }
+      settingIds.forEach((el) => (codes[el] = true));
       setFormModalData({
         ...basicSetting,
         ...rest,

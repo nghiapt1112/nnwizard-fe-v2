@@ -4,7 +4,7 @@ import ColorPicker from 'rc-color-picker';
 import { Checkbox, Col, Divider, Input, Row, Select, Switch } from 'antd';
 import * as CONSTANTS from '../../../constants';
 import { TEMPLATE_TYPE } from '../../../constants';
-
+import SettingOptions from '../../SharedComponents/SettingOptions';
 const SpecificationTemplate = ({
   advanceSetting,
   price,
@@ -307,46 +307,24 @@ const SpecificationTemplate = ({
             </div>
           </div>
         </Col>
-        <Col span="24">
-          <Divider orientation="left">Addon Setting</Divider>
-        </Col>
-        <Col span="24">
-          <div className="advance-setting__list">
-            {advanceSetting
-              .filter((el) => el.type === 'ADDON')
-              .map((setting, index) => (
-                <Checkbox
-                  checked={codes[setting.value]}
-                  onChange={({ target: { checked } }) =>
-                    onChangeAdvance(setting.value, checked)
-                  }
-                  key={index}
-                >
-                  {setting.text} ${setting.price}
-                </Checkbox>
-              ))}
-          </div>
-        </Col>
-        <Col span="24">
-          <Divider orientation="left">Retouch Setting</Divider>
-        </Col>
-        <Col span="24">
-          <div className="advance-setting__list">
-            {advanceSetting
-              .filter((el) => el.type === 'RETOUCHING')
-              .map((setting, index) => (
-                <Checkbox
-                  checked={codes[setting.value]}
-                  onChange={({ target: { checked } }) =>
-                    onChangeAdvance(setting.value, checked)
-                  }
-                  key={index}
-                >
-                  {setting.text} ${setting.price}
-                </Checkbox>
-              ))}
-          </div>
-        </Col>
+        <SettingOptions
+          advanceSetting={advanceSetting}
+          settingType={'ADVANCE'}
+          onChangeAdvance
+          codes
+        />
+        <SettingOptions
+          advanceSetting={advanceSetting}
+          settingType={'ADDON'}
+          onChangeAdvance
+          codes
+        />
+        <SettingOptions
+          advanceSetting={advanceSetting}
+          settingType={'RETOUCHING'}
+          onChangeAdvance
+          codes
+        />
       </Row>
     </div>
   );

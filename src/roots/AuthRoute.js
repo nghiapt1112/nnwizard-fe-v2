@@ -54,7 +54,7 @@ const AuthRoute = (props) => {
   const history = useHistory();
   const { loggedIn, userInfo } = useSelector((state) => state.authentication);
   const [collapsed, setCollapsed] = useState(true);
-  const isAdmin = userInfo && userInfo.roles.includes('ADMIN');
+  const isAdmin = userInfo && userInfo.roles?.includes('ADMIN');
   const { type, location } = props;
   const [visible, setVisible] = useState(false);
 

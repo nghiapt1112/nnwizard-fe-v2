@@ -1,0 +1,24 @@
+{
+  "Auth": {
+    "region": "ap-southeast-1",
+    "userPoolId": "ap-southeast-1_fzPb1HG24",
+    "userPoolWebClientId": "5a69tf2n2ntau8g4rm1e4hpv0o",
+    "mandatorySignIn": false,
+    "cookieStorage": {
+      "domain": "localhost",
+      "path": "/",
+      "expires": 365,
+      "secure": true
+    },
+    "redirectSignIn": "http://localhost:8088/",
+    "redirectSignOut": "http://localhost:8088/login"
+  },
+  "API": {
+    "endpoints": [
+      {
+        "name": "NNWizard",
+        "endpoint": "http://localhost:8088/"
+      }
+    ]
+  }
+}
